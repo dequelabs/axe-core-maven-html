@@ -57,4 +57,4 @@ defined. If you want to test a single `WebElement`, you may pass it into
 `analyze` instead of using `include` and `exclude`.
 
 The aXe documentation should be consulted for more details on customizing and
-analyzing calls to `dqre.a11yCheck`.
+analyzing calls to `axe.a11yCheck`.
