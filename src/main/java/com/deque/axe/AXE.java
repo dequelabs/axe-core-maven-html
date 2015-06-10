@@ -58,7 +58,7 @@ public class AXE {
 		}
 
 		sb.append(lineSeparator);
-		sb.append("dqre.configure({reporter: 'v1'})");
+		sb.append("axe.configure({reporter: 'v1'})");
 		return sb.toString();
 	}
 
@@ -234,14 +234,14 @@ public class AXE {
 			String command;
 
 			if (includes.size() > 1 || excludes.size() > 0) {
-				command = String.format("dqre.a11yCheck({include: [%s], exclude: [%s]}, %s, arguments[arguments.length - 1]);",
-						"'" + StringUtils.join(includes, "','") + "'",
-						excludes.size() == 0 ? "" : "'" + StringUtils.join(excludes, "','") + "'",
+				command = String.format("axe.a11yCheck({include: [%s], exclude: [%s]}, %s, arguments[arguments.length - 1]);",
+						"['" + StringUtils.join(includes, "'],['") + "']",
+						excludes.size() == 0 ? "" : "['" + StringUtils.join(excludes, "'],['") + "']",
 						options);
 			} else if (includes.size() == 1) {
-				command = String.format("dqre.a11yCheck('%s', %s, arguments[arguments.length - 1]);", includes.get(0).replace("'", ""), options);
+				command = String.format("axe.a11yCheck('%s', %s, arguments[arguments.length - 1]);", includes.get(0).replace("'", ""), options);
 			} else {
-				command = String.format("dqre.a11yCheck(document, %s, arguments[arguments.length - 1]);", options);
+				command = String.format("axe.a11yCheck(document, %s, arguments[arguments.length - 1]);", options);
 			}
 
 			return execute(command);
@@ -253,7 +253,7 @@ public class AXE {
 		 * @return         An aXe results document
 		 */
 		public JSONObject analyze(final WebElement context) {
-			String command = String.format("dqre.a11yCheck(arguments[0], %s, arguments[arguments.length - 1]);", options);
+			String command = String.format("axe.a11yCheck(arguments[0], %s, arguments[arguments.length - 1]);", options);
 
 			return execute(command, context);
 		}
