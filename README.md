@@ -58,3 +58,8 @@ defined. If you want to test a single `WebElement`, you may pass it into
 
 The aXe documentation should be consulted for more details on customizing and
 analyzing calls to `axe.a11yCheck`.
+
+## Contributing ##
+
+This repository is available for download and enhancement. We will accept pull
+requests once we publish our Contributor agreement.

@@ -13,7 +13,7 @@
 	<description>
 		Tools for using aXe for web accessibility testing with JUnit and Selenium.
 	</description>
-	<url></url>
+	<url>https://github.com/dequelabs/axe-selenium-java</url>
 
 	<licenses>
 		<license>
@@ -32,9 +32,9 @@
 	</developers>
 
 	<scm>
-		<connection></connection>
-		<developerConnection></developerConnection>
-		<url></url>
+		<connection>scm:git:git@github.com:dequelabs/axe-selenium-java.git</connection>
+		<developerConnection>scm:git:git@github.com:dequelabs/axe-selenium-java.git</developerConnection>
+		<url>https://github.com/dequelabs/axe-selenium-java</url>
 	</scm>
 
 	<properties>
