@@ -1,11 +1,11 @@
-# Selenium Java README #
+# aXe Selenium (Java) Integration README #
 
 This example demonstrates how to use aXe to run web accessibility tests in Java
 projects with the Selenium browser automation tool and Java development tools.
 
 Selenium integration enables testing of full pages and sites.
 
-## To configure the example ##
+## Requirements ##
 
 * Firefox must be installed; follow the directions at http://getfirefox.com to
   install it.  On Unix, ensure that Firefox is on your path.
@@ -19,16 +19,27 @@ Selenium integration enables testing of full pages and sites.
 
 1. Move to the `selenium-java` directory.
 2. Ensure that `axe.min.js` is located in `/src/test/resources`.
-3. `mvn test` to build and run the jUnit tests that drive Selenium.
+3. `mvn test` to build and run the JUnit tests that drive Selenium.
 
 This should launch an automated Firefox window, load and analyze the
-configured web pages, and then pass/fail a jUnit test depending on whether
+configured web pages, and then pass/fail a JUnit test depending on whether
 there are any accessibility violations detected.
 
 ## To modify the example ##
 
 To run the example tests on your own web page, change the URL passed to
 `driver.get` in `ExampleTest.setUp()`.
+
+## To use the AXE helper library in your own tests ##
+
+Include this library as a test-scoped dependency in your POM:
+
+    <dependency>
+        <groupId>com.deque</groupId>
+        <artifactId>axe-selenium</artifactId>
+        <version>1.0</version>
+        <scope>test</scope>
+    </dependency>
 
 `AXE` defines three public methods and a nested `Builder` class for your
 unit tests.
@@ -42,8 +53,9 @@ specified name in the current working directory.
 
 The `Builder` class allows tests to chain configuration and analyze pages. The
 constructor takes in a `WebDriver` that has already navigated to the page under
-test; from there, you can set `options()`, `include()` and `exclude()`
-selectors, and finally, `analyze()` the page.
+test and a `java.net.URL` pointing to the aXe script; from there, you can set
+`options()`, `include()` and `exclude()` selectors, and finally, `analyze()`
+the page.
 
 * `options` wires a JSON string to aXe, allowing rules to be toggled on
 or off. See the `testAccessibilityWithOptions` unit test for an example.
