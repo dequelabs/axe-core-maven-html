@@ -140,7 +140,7 @@ public class AXE {
 				sb
 						.append(lineSeparator)
 						.append("  ")
-						.append((char) (j + 97))
+						.append(getOrdinal(j + 1))
 						.append(") ")
 						.append(node.getJSONArray("target"))
 						.append(lineSeparator)
@@ -152,6 +152,20 @@ public class AXE {
 
 		return sb.toString();
 	}
+
+    private static String getOrdinal(int number) {
+        String ordinal = "";
+
+        int mod;
+
+        while (number > 0) {
+            mod = (number - 1) % 26;
+            ordinal = (char) (mod + 97) + ordinal;
+            number = (number - mod) / 26;
+        }
+
+        return ordinal;
+    }
 
 	/**
 	 * Writes the raw violations array out to a JSON file with the specified name.
