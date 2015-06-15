@@ -41,8 +41,13 @@ Include this library as a test-scoped dependency in your POM:
         <scope>test</scope>
     </dependency>
 
-`AXE` defines three public methods and a nested `Builder` class for your
-unit tests.
+`axe.js` or `axe.min.js` must be available to your test fixtures as a
+`java.net.URL`. The simplest way to do this is to include it in your own
+`src.test.resources` and pass `MyTest.class.getResource("/axe.min.js")` to the
+`Builder` constructor as demonstrated in the `ExampleTest`.
+
+The `AXE` helper defines three public methods and a nested `Builder` class for
+your unit tests.
 
 * `inject` will inject the required script into the page under test and any
 iframes.  This only needs to be run against a given page once, and `Builder`
