@@ -63,7 +63,11 @@ test and a `java.net.URL` pointing to the aXe script; from there, you can set
 the page.
 
 * `options` wires a JSON string to aXe, allowing rules to be toggled on
-or off. See the `testAccessibilityWithOptions` unit test for an example.
+or off. See the `testAccessibilityWithOptions` unit test for a sample
+single-rule execution, and the [axe-core API documentation](https://github.com/dequelabs/axe-core/blob/master/doc/API.md#b-options-parameter)
+for full documentation on the options object. The runOnly option with tags
+may be of particular interest, allowing aXe to execute all rules with the
+specified tag(s).
 * `include` adds to the list of included selectors. If you do not call
 `include` at all, aXe will run against the entire document.
 * `exclude` adds to the list of excluded selectors. Exclusions allow you to
