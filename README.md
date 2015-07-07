@@ -82,5 +82,4 @@ analyzing calls to `axe.a11yCheck`.
 
 ## Contributing ##
 
-This repository is available for download and enhancement. We will accept pull
-requests once we publish our Contributor agreement.
+In order to contribute, you must accept the [contributor licence agreement](https://cla-assistant.io/dequelabs/axe-selenium-java) (CLA). Acceptance of this agreement will be checked automatically and pull requests without a CLA cannot be merged.
