@@ -57,8 +57,6 @@ public class AXE {
 			}
 		}
 
-		sb.append(lineSeparator);
-		sb.append("axe.configure({reporter: 'v1'})");
 		return sb.toString();
 	}
 
@@ -122,7 +120,6 @@ public class AXE {
 			JSONObject violation = violations.getJSONObject(i);
 			sb
 					.append(lineSeparator)
-					.append(lineSeparator)
 					.append(i + 1)
 					.append(") ")
 					.append(violation.getString("help"));
@@ -143,15 +140,42 @@ public class AXE {
 						.append(getOrdinal(j + 1))
 						.append(") ")
 						.append(node.getJSONArray("target"))
-						.append(lineSeparator)
-						.append("   ")
-						.append(node.getString("failureSummary").replaceAll("\n", lineSeparator + "    "))
 						.append(lineSeparator);
+
+                JSONArray all = node.getJSONArray("all");
+                JSONArray none = node.getJSONArray("none");
+
+                for (int k = 0; k < none.length(); k++) {
+                    all.put(none.getJSONObject(k));
+                }
+
+                appendFixes(sb, all, "Fix all of the following:");
+                appendFixes(sb, node.getJSONArray("any"), "Fix any of the following:");
 			}
 		}
 
 		return sb.toString();
 	}
+
+    private static void appendFixes(final StringBuilder sb, final JSONArray arr, final String heading) {
+        if (arr != null && arr.length() > 0) {
+            sb
+                    .append("    ")
+                    .append(heading)
+                    .append(lineSeparator);
+
+            for (int i = 0; i < arr.length(); i++) {
+                JSONObject fix = arr.getJSONObject(i);
+
+                sb
+                        .append("      ")
+                        .append(fix.get("message"))
+                        .append(lineSeparator);
+            }
+
+            sb.append(lineSeparator);
+        }
+    }
 
     private static String getOrdinal(int number) {
         String ordinal = "";
@@ -168,11 +192,12 @@ public class AXE {
     }
 
 	/**
-	 * Writes the raw violations array out to a JSON file with the specified name.
+	 * Writes a raw object out to a JSON file with the specified name.
 	 * @param name Desired filename, sans extension
-	 * @param violations Violations array to write out
+	 * @param output Object to write. Most useful if you pass in either the Builder.analyze() response or the
+     *               violations array it contains.
 	 */
-	public static void writeResults(final String name, final JSONArray violations) {
+	public static void writeResults(final String name, final Object output) {
 		Writer writer = null;
 
 		try {
@@ -180,7 +205,7 @@ public class AXE {
 					new OutputStreamWriter(
 					new FileOutputStream(name + ".json"), "utf-8"));
 
-			writer.write(violations.toString());
+			writer.write(output.toString());
 		} catch (IOException ignored) {
 		} finally {
 			try {writer.close();}

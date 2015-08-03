@@ -65,7 +65,7 @@ public class ExampleTest {
 		if (violations.length() == 0) {
 			assertTrue("No violations found", true);
 		} else {
-			AXE.writeResults(testName.getMethodName(), violations);
+			AXE.writeResults(testName.getMethodName(), responseJSON);
 
 			assertTrue(AXE.report(violations), false);
 		}
@@ -85,7 +85,7 @@ public class ExampleTest {
 		if (violations.length() == 0) {
 			assertTrue("No violations found", true);
 		} else {
-			AXE.writeResults(testName.getMethodName(), violations);
+			AXE.writeResults(testName.getMethodName(), responseJSON);
 
 			assertTrue(AXE.report(violations), false);
 		}
@@ -106,7 +106,7 @@ public class ExampleTest {
 		if (violations.length() == 0) {
 			assertTrue("No violations found", true);
 		} else {
-			AXE.writeResults(testName.getMethodName(), violations);
+			AXE.writeResults(testName.getMethodName(), responseJSON);
 
 			assertTrue(AXE.report(violations), false);
 		}
@@ -127,7 +127,7 @@ public class ExampleTest {
 		if (violations.length() == 0) {
 			assertTrue("No violations found", true);
 		} else {
-			AXE.writeResults(testName.getMethodName(), violations);
+			AXE.writeResults(testName.getMethodName(), responseJSON);
 
 			assertTrue(AXE.report(violations), false);
 		}
@@ -146,7 +146,7 @@ public class ExampleTest {
 		if (violations.length() == 0) {
 			assertTrue("No violations found", true);
 		} else {
-			AXE.writeResults(testName.getMethodName(), violations);
+			AXE.writeResults(testName.getMethodName(), responseJSON);
 
 			assertTrue(AXE.report(violations), false);
 		}
