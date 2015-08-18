@@ -37,7 +37,7 @@ Include this library as a test-scoped dependency in your POM:
     <dependency>
         <groupId>com.deque</groupId>
         <artifactId>axe-selenium</artifactId>
-        <version>1.0</version>
+        <version>1.1</version>
         <scope>test</scope>
     </dependency>
 
