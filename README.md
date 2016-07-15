@@ -19,7 +19,8 @@ Selenium integration enables testing of full pages and sites.
 
 1. Move to the `selenium-java` directory.
 2. Ensure that `axe.min.js` is located in `/src/test/resources`.
-3. `mvn test` to build and run the JUnit tests that drive Selenium.
+3. `node src/test/resources/test-app.js` to start the fixture server.
+4. `mvn test` to build and run the JUnit tests that drive Selenium against the fixture.
 
 This should launch an automated Firefox window, load and analyze the
 configured web pages, and then pass/fail a JUnit test depending on whether
