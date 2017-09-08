@@ -61,19 +61,31 @@ public class AXE {
 	}
 
 	/**
-	 * Recursively injects aXe into all iframes and the top level document.
-	 *
+	 * Recursively injects a script to the top level document with the option to skip iframes.
 	 * @param driver WebDriver instance to inject into
+	 * @param scriptUrl URL to the script to inject
+	 * @param skipFrames True if the script should not be injected into iframes
 	 */
-	public static void inject(final WebDriver driver, final URL scriptUrl) {
+	public static void inject(final WebDriver driver, final URL scriptUrl, Boolean skipFrames) {
 		final String script = getContents(scriptUrl);
-		final ArrayList<WebElement> parents = new ArrayList<WebElement>();
 
-		injectIntoFrames(driver, script, parents);
+		if (!skipFrames) {
+			final ArrayList<WebElement> parents = new ArrayList<WebElement>();
+			injectIntoFrames(driver, script, parents);
+		}
 
 		JavascriptExecutor js = (JavascriptExecutor) driver;
 		driver.switchTo().defaultContent();
 		js.executeScript(script);
+	}
+
+	/**
+	 * Recursively injects a script into all iframes and the top level document.
+	 * @param driver WebDriver instance to inject into
+	 * @param scriptUrl URL to the script to inject
+	 */
+	public static void inject(final WebDriver driver, final URL scriptUrl) {
+		inject(driver, scriptUrl, false);
 	}
 
 	/**
@@ -223,16 +235,25 @@ public class AXE {
 		private final List<String> includes = new ArrayList<String>();
 		private final List<String> excludes = new ArrayList<String>();
 		private String options = "null";
+		private Boolean skipFrames = false;
 
 		/**
-		 * Injects the aXe script into the WebDriver.
+		 * Initializes the Builder class to chain configuration before analyzing pages.
 		 * @param driver An initialized WebDriver
+		 * @param script The javascript URL of aXe
 		 */
 		public Builder(final WebDriver driver, final URL script) {
 			this.driver = driver;
 			this.script = script;
+		}
 
-			AXE.inject(this.driver, this.script);
+		/**
+		 * Skips iframe checks
+		 */
+		public Builder skipFrames() {
+			this.skipFrames = true;
+
+			return this;
 		}
 
 		/**
@@ -298,6 +319,8 @@ public class AXE {
 		}
 
 		private JSONObject execute(final String command, final Object... args) {
+			AXE.inject(this.driver, this.script, this.skipFrames);
+
 			this.driver.manage().timeouts().setScriptTimeout(30, TimeUnit.SECONDS);
 
 			Object response = ((JavascriptExecutor) this.driver).executeAsyncScript(command, args);
