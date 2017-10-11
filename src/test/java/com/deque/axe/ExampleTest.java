@@ -72,6 +72,26 @@ public class ExampleTest {
 	}
 
 	/**
+	 * Test with skip frames
+	 */
+	@Test
+	public void testAccessibilityWithSkipFrames() {
+		JSONObject responseJSON = new AXE.Builder(driver, scriptUrl)
+				.skipFrames()
+				.analyze();
+
+		JSONArray violations = responseJSON.getJSONArray("violations");
+
+		if (violations.length() == 0) {
+			assertTrue("No violations found", true);
+		} else {
+			AXE.writeResults(testName.getMethodName(), responseJSON);
+
+			assertTrue(AXE.report(violations), false);
+		}
+	}
+
+	/**
 	 * Test with options
 	 */
 	@Test

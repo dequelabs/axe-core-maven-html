@@ -60,8 +60,8 @@ specified name in the current working directory.
 The `Builder` class allows tests to chain configuration and analyze pages. The
 constructor takes in a `WebDriver` that has already navigated to the page under
 test and a `java.net.URL` pointing to the aXe script; from there, you can set
-`options()`, `include()` and `exclude()` selectors, and finally, `analyze()`
-the page.
+`options()`, `include()` and `exclude()` selectors, `skipFrames()`, and finally,
+`analyze()` the page.
 
 * `options` wires a JSON string to aXe, allowing rules to be toggled on
 or off. See the `testAccessibilityWithOptions` unit test for a sample
@@ -74,6 +74,7 @@ specified tag(s).
 * `exclude` adds to the list of excluded selectors. Exclusions allow you to
 focus scope exactly where you need it, ignoring child elements you don't want
 to test.
+* `skipFrames` prevents aXe to be recursively injected into all iframes.
 * `analyze` executes aXe with any configuration you have previously
 defined. If you want to test a single `WebElement`, you may pass it into
 `analyze` instead of using `include` and `exclude`.
