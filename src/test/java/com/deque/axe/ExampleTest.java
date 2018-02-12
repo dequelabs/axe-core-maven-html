@@ -24,6 +24,8 @@ import org.junit.rules.TestName;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxDriverLogLevel;
+import org.openqa.selenium.firefox.FirefoxOptions;
 
 import java.net.URL;
 
@@ -40,8 +42,14 @@ public class ExampleTest {
 	 */
 	@Before
 	public void setUp() {
-		driver = new FirefoxDriver();
+		// Silence Gecko/Marionette extremely verbose logging level
+		System.setProperty(FirefoxDriver.SystemProperty.DRIVER_USE_MARIONETTE, "true");
+		System.setProperty(FirefoxDriver.SystemProperty.BROWSER_LOGFILE, "/dev/null");
 
+		FirefoxOptions opts = new FirefoxOptions();
+		opts.setLogLevel(FirefoxDriverLogLevel.fromString("ERROR"));
+
+		driver = new FirefoxDriver(opts);
 		driver.get("http://localhost:5005");
 	}
 
@@ -66,7 +74,6 @@ public class ExampleTest {
 			assertTrue("No violations found", true);
 		} else {
 			AXE.writeResults(testName.getMethodName(), responseJSON);
-
 			assertTrue(AXE.report(violations), false);
 		}
 	}
