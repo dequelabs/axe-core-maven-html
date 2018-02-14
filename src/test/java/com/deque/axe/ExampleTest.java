@@ -23,9 +23,7 @@ import org.junit.Test;
 import org.junit.rules.TestName;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.firefox.FirefoxDriverLogLevel;
-import org.openqa.selenium.firefox.FirefoxOptions;
+import org.openqa.selenium.chrome.ChromeDriver;
 
 import java.net.URL;
 
@@ -42,15 +40,8 @@ public class ExampleTest {
 	 */
 	@Before
 	public void setUp() {
-		// Silence Gecko/Marionette extremely verbose logging level
-		System.setProperty(FirefoxDriver.SystemProperty.DRIVER_USE_MARIONETTE, "true");
-		System.setProperty(FirefoxDriver.SystemProperty.BROWSER_LOGFILE, "/dev/null");
-
-		FirefoxOptions opts = new FirefoxOptions();
-		opts.setLogLevel(FirefoxDriverLogLevel.fromString("ERROR"));
-
-		driver = new FirefoxDriver(opts);
-		driver.get("http://localhost:5005");
+		// ChromeDriver needed to test for Shadow DOM testing support
+		driver = new ChromeDriver();
 	}
 
 	/**
@@ -66,6 +57,7 @@ public class ExampleTest {
 	 */
 	@Test
 	public void testAccessibility() {
+		driver.get("http://localhost:5005");
 		JSONObject responseJSON = new AXE.Builder(driver, scriptUrl).analyze();
 
 		JSONArray violations = responseJSON.getJSONArray("violations");
@@ -83,6 +75,7 @@ public class ExampleTest {
 	 */
 	@Test
 	public void testAccessibilityWithSkipFrames() {
+		driver.get("http://localhost:5005");
 		JSONObject responseJSON = new AXE.Builder(driver, scriptUrl)
 				.skipFrames()
 				.analyze();
@@ -93,7 +86,6 @@ public class ExampleTest {
 			assertTrue("No violations found", true);
 		} else {
 			AXE.writeResults(testName.getMethodName(), responseJSON);
-
 			assertTrue(AXE.report(violations), false);
 		}
 	}
@@ -103,6 +95,7 @@ public class ExampleTest {
 	 */
 	@Test
 	public void testAccessibilityWithOptions() {
+		driver.get("http://localhost:5005");
 		JSONObject responseJSON = new AXE.Builder(driver, scriptUrl)
 				.options("{ rules: { 'accesskeys': { enabled: false } } }")
 				.analyze();
@@ -123,6 +116,7 @@ public class ExampleTest {
 	 */
 	@Test
 	public void testAccessibilityWithSelector() {
+		driver.get("http://localhost:5005");
 		JSONObject responseJSON = new AXE.Builder(driver, scriptUrl)
 				.include("title")
 				.include("p")
@@ -144,6 +138,7 @@ public class ExampleTest {
 	 */
 	@Test
 	public void testAccessibilityWithIncludesAndExcludes() {
+		driver.get("http://localhost:5005");
 		JSONObject responseJSON = new AXE.Builder(driver, scriptUrl)
 				.include("div")
 				.exclude("h1")
@@ -155,7 +150,6 @@ public class ExampleTest {
 			assertTrue("No violations found", true);
 		} else {
 			AXE.writeResults(testName.getMethodName(), responseJSON);
-
 			assertTrue(AXE.report(violations), false);
 		}
 	}
@@ -165,6 +159,8 @@ public class ExampleTest {
 	 */
 	@Test
 	public void testAccessibilityWithWebElement() {
+		driver.get("http://localhost:5005");
+
 		JSONObject responseJSON = new AXE.Builder(driver, scriptUrl)
 				.analyze(driver.findElement(By.tagName("p")));
 
@@ -174,8 +170,31 @@ public class ExampleTest {
 			assertTrue("No violations found", true);
 		} else {
 			AXE.writeResults(testName.getMethodName(), responseJSON);
-
 			assertTrue(AXE.report(violations), false);
+		}
+	}
+
+	/**
+	 * Test a page with Shadow DOM violations
+	 */
+	@Test
+	public void testAccessibilityWithShadowElement() {
+		driver.get("http://localhost:5005/shadow-error.html");
+
+		JSONObject responseJSON = new AXE.Builder(driver, scriptUrl).analyze();
+
+		JSONArray violations = responseJSON.getJSONArray("violations");
+
+		JSONArray nodes = ((JSONObject)violations.get(0)).getJSONArray("nodes");
+		JSONArray target = ((JSONObject)nodes.get(0)).getJSONArray("target");
+
+		if (violations.length() == 1) {
+//			assertTrue(AXE.report(violations), true);
+			assertEquals(String.valueOf(target), "[[\"#upside-down\",\"ul\"]]");
+		} else {
+			AXE.writeResults(testName.getMethodName(), responseJSON);
+			assertTrue("No violations found", false);
+
 		}
 	}
 }
