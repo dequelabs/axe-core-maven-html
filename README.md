@@ -7,10 +7,9 @@ Selenium integration enables testing of full pages and sites.
 
 ## Requirements ##
 
-* Firefox must be installed; follow the directions at: http://getfirefox.com to
-  install it.  On Unix, ensure that Firefox is on your path.
-* Gecko Driver must be installed; follow the directions at https://github.com/mozilla/geckodriver to install it. _Please note: Gecko Driver can be temperamental depending on the installed FireFox version
-  and the `selenium-java` version, choose the correct version that matches your installed version of Selenium and FireFox browser, list of versions can be found here: https://github.com/mozilla/geckodriver/releases ._
+* Chrome must be installed; follow the directions at https://www.google.com/chrome/ to
+  install it.  On Unix, ensure that Chrome is on your path.
+* Chrome Driver must be installed; follow the directions at: https://sites.google.com/a/chromium.org/chromedriver/getting-started to install it.
 * The Java SE Development Kit must be installed; follow the directions at
   http://www.oracle.com/technetwork/java/javase/downloads/index.html to install
   it.
