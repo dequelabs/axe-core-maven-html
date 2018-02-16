@@ -7,8 +7,9 @@ Selenium integration enables testing of full pages and sites.
 
 ## Requirements ##
 
-* Firefox must be installed; follow the directions at http://getfirefox.com to
-  install it.  On Unix, ensure that Firefox is on your path.
+* Chrome must be installed; follow the directions at https://www.google.com/chrome/ to
+  install it.  On Unix, ensure that Chrome is on your path.
+* Chrome Driver must be installed; follow the directions at: https://sites.google.com/a/chromium.org/chromedriver/getting-started to install it.
 * The Java SE Development Kit must be installed; follow the directions at
   http://www.oracle.com/technetwork/java/javase/downloads/index.html to install
   it.
@@ -80,7 +81,7 @@ defined. If you want to test a single `WebElement`, you may pass it into
 `analyze` instead of using `include` and `exclude`.
 
 The aXe documentation should be consulted for more details on customizing and
-analyzing calls to `axe.a11yCheck`.
+analyzing calls to `axe.run`.
 
 ## Contributing ##
 

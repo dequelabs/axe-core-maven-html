@@ -234,7 +234,7 @@ public class AXE {
 		private final URL script;
 		private final List<String> includes = new ArrayList<String>();
 		private final List<String> excludes = new ArrayList<String>();
-		private String options = "null";
+		private String options = "{}";
 		private Boolean skipFrames = false;
 
 		/**
@@ -294,14 +294,14 @@ public class AXE {
 			String command;
 
 			if (includes.size() > 1 || excludes.size() > 0) {
-				command = String.format("axe.a11yCheck({include: [%s], exclude: [%s]}, %s, arguments[arguments.length - 1]);",
+				command = String.format("var done = arguments[arguments.length - 1]; axe.run({include: [%s], exclude: [%s]}, %s, function(err, res) { done(res); });",
 						"['" + StringUtils.join(includes, "'],['") + "']",
 						excludes.size() == 0 ? "" : "['" + StringUtils.join(excludes, "'],['") + "']",
 						options);
 			} else if (includes.size() == 1) {
-				command = String.format("axe.a11yCheck('%s', %s, arguments[arguments.length - 1]);", includes.get(0).replace("'", ""), options);
+				command = String.format("var done = arguments[arguments.length - 1]; axe.run('%s', %s, function(err, res) { done(res); });", includes.get(0).replace("'", ""), options);
 			} else {
-				command = String.format("axe.a11yCheck(document, %s, arguments[arguments.length - 1]);", options);
+				command = String.format("var done = arguments[arguments.length - 1]; axe.run(document, %s, function(err, res) { done(res); });", options);
 			}
 
 			return execute(command);
@@ -313,7 +313,7 @@ public class AXE {
 		 * @return         An aXe results document
 		 */
 		public JSONObject analyze(final WebElement context) {
-			String command = String.format("axe.a11yCheck(arguments[0], %s, arguments[arguments.length - 1]);", options);
+			String command = String.format("var done = arguments[arguments.length - 1]; axe.run(arguments[0], %s, function(err, res) { done(res); });", options);
 
 			return execute(command, context);
 		}
