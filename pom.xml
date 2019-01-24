@@ -6,7 +6,7 @@
 
 	<groupId>com.deque</groupId>
 	<artifactId>axe-selenium</artifactId>
-	<version>2.1</version>
+	<version>3.0</version>
 	<packaging>jar</packaging>
 
 	<name>aXe Selenium Integration</name>
