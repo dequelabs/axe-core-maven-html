@@ -111,6 +111,26 @@ public class ExampleTest {
 		}
 	}
 
+	@Test
+	public void testCustomTimeout() {
+		driver.get("http://localhost:5005");
+
+		boolean didTimeout = false;
+		try {
+			new AXE.Builder(driver, ExampleTest.class.getResource("/timeout.js"))
+				.setTimeout(1)
+				.analyze();
+		} catch (Exception e) {
+			String msg = e.getMessage();
+			if (msg.indexOf("1 seconds") == -1) {
+				assertTrue("Did not error with timeout message", msg.indexOf("1 seconds") != -1);
+			}
+			didTimeout = true;
+		}
+
+		assertTrue("Did set custom timeout", didTimeout);
+	}
+
 	/**
 	 * Test a specific selector or selectors
 	 */

@@ -236,6 +236,7 @@ public class AXE {
 		private final List<String> excludes = new ArrayList<String>();
 		private String options = "{}";
 		private Boolean skipFrames = false;
+		private int timeout = 30;
 
 		/**
 		 * Initializes the Builder class to chain configuration before analyzing pages.
@@ -245,6 +246,15 @@ public class AXE {
 		public Builder(final WebDriver driver, final URL script) {
 			this.driver = driver;
 			this.script = script;
+		}
+
+		/**
+		 * Set the script timeout.
+		 * @param timeout
+		 */
+		public Builder setTimeout(int timeout) {
+			this.timeout = timeout;
+			return this;
 		}
 
 		/**
@@ -321,7 +331,7 @@ public class AXE {
 		private JSONObject execute(final String command, final Object... args) {
 			AXE.inject(this.driver, this.script, this.skipFrames);
 
-			this.driver.manage().timeouts().setScriptTimeout(30, TimeUnit.SECONDS);
+			this.driver.manage().timeouts().setScriptTimeout(this.timeout, TimeUnit.SECONDS);
 
 			Object response = ((JavascriptExecutor) this.driver).executeAsyncScript(command, args);
 
