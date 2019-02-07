@@ -1,0 +1,39 @@
+version: 2
+
+defaults: &defaults
+    docker:
+      - image: circleci/openjdk:11-node-browsers
+    working_directory: ~/axe-selenium-java
+
+jobs:
+  dependencies:
+    <<: *defaults
+    steps:
+      - checkout
+      - restore_cache:
+          key: v1-mvn-deps-{{ checksum "pom.xml" }}
+      - run: mvn install -DskipTests
+      - save_cache:
+          key: v1-mvn-deps-{{ checksum "pom.xml" }}
+          paths:
+            - ~/.m2
+  tests:
+    <<: *defaults
+    steps:
+      - checkout
+      - restore_cache:
+          key: v1-mvn-deps-{{ checksum "pom.xml" }}
+      - run:
+          command: node src/test/resources/test-app.js
+          background: true
+      - run: sleep 5 # sleep to allow the server some time to boot
+      - run: mvn test
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - dependencies
+      - tests:
+          requires:
+            - dependencies
