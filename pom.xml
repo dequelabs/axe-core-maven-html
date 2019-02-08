@@ -1,26 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.deque</groupId>
-	<artifactId>axe-selenium</artifactId>
-	<version>2.1</version>
-	<packaging>jar</packaging>
+    <groupId>com.deque</groupId>
+    <artifactId>axe-selenium</artifactId>
+    <version>3.0</version>
+    <packaging>jar</packaging>
 
-	<name>aXe Selenium Integration</name>
-	<description>
+    <name>aXe Selenium Integration</name>
+    <description>
 		Tools for using aXe for web accessibility testing with JUnit and Selenium.
-	</description>
-	<url>https://github.com/dequelabs/axe-selenium-java</url>
+    </description>
+    <url>https://github.com/dequelabs/axe-selenium-java</url>
 
-	<licenses>
-		<license>
-			<name>Mozilla Public License, Version 2.0</name>
-			<url>https://www.mozilla.org/MPL/2.0/</url>
-		</license>
-	</licenses>
+    <licenses>
+        <license>
+            <name>Mozilla Public License, Version 2.0</name>
+            <url>https://www.mozilla.org/MPL/2.0/</url>
+        </license>
+    </licenses>
 
     <distributionManagement>
         <repository>
@@ -33,30 +32,41 @@
         </snapshotRepository>
     </distributionManagement>
 
-	<developers>
-		<developer>
-			<name>Dian Fay</name>
-			<email>dian.fay@deque.com</email>
-			<organization>Deque Labs</organization>
-			<organizationUrl>http://www.deque.com</organizationUrl>
-		</developer>
-	</developers>
+    <developers>
+        <developer>
+            <name>Dian Fay</name>
+            <email>dian.fay@deque.com</email>
+            <organization>Deque Labs</organization>
+            <organizationUrl>http://www.deque.com</organizationUrl>
+        </developer>
+    </developers>
 
-	<scm>
-		<connection>scm:git:git@github.com:dequelabs/axe-selenium-java.git</connection>
-		<developerConnection>scm:git:git@github.com:dequelabs/axe-selenium-java.git</developerConnection>
-		<url>https://github.com/dequelabs/axe-selenium-java</url>
-	</scm>
+    <scm>
+        <connection>scm:git:git@github.com:dequelabs/axe-selenium-java.git</connection>
+        <developerConnection>scm:git:git@github.com:dequelabs/axe-selenium-java.git</developerConnection>
+        <url>https://github.com/dequelabs/axe-selenium-java</url>
+    </scm>
 
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	</properties>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.6</maven.compiler.source>
+        <maven.compiler.target>1.6</maven.compiler.target>
+    </properties>
 
     <profiles>
         <profile>
             <id>release</id>
             <build>
                 <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <version>3.1</version>
+                        <configuration>
+                            <source>1.7</source>
+                            <target>1.7</target>
+                        </configuration>
+                    </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-source-plugin</artifactId>
@@ -97,10 +107,10 @@
                             </execution>
                         </executions>
                         <configuration>
-                          <gpgArguments>
-                            <arg>--pinentry-mode</arg>
-                            <arg>loopback</arg>
-                          </gpgArguments>
+                            <gpgArguments>
+                                <arg>--pinentry-mode</arg>
+                                <arg>loopback</arg>
+                            </gpgArguments>
                         </configuration>
                     </plugin>
                     <plugin>
@@ -119,27 +129,27 @@
         </profile>
     </profiles>
 
-	<dependencies>
-		<dependency>
-			<groupId>org.seleniumhq.selenium</groupId>
-			<artifactId>selenium-java</artifactId>
-			<version>2.53.1</version>
-		</dependency>
-		<dependency>
-			<groupId>org.json</groupId>
-			<artifactId>json</artifactId>
-			<version>20160212</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-lang3</artifactId>
-			<version>3.4</version>
-		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.12</version>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
+    <dependencies>
+        <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-java</artifactId>
+            <version>3.8.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20160212</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.4</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 </project>
