@@ -226,6 +226,18 @@ public class AXE {
 	}
 
 	/**
+	 * AxeRuntimeException represents an error returned from `axe.run()`.
+	 */
+
+	public static class AxeRuntimeException extends RuntimeException {
+		private static final long serialVersionUID = -123456789087654L;
+
+		public AxeRuntimeException(String message) {
+			super(message);
+		}
+	}
+
+	/**
 	 * Chainable builder for invoking aXe. Instantiate a new Builder and configure testing with the include(),
 	 * exclude(), and options() methods before calling analyze() to run.
 	 */
@@ -298,34 +310,58 @@ public class AXE {
 
 		/**
 		 * Run aXe against the page.
+		 * 
 		 * @return An aXe results document
 		 */
 		public JSONObject analyze() {
-			String command;
+			String axeContext;
+			String axeOptions;
 
 			if (includes.size() > 1 || excludes.size() > 0) {
-				command = String.format("var done = arguments[arguments.length - 1]; axe.run({include: [%s], exclude: [%s]}, %s, function(err, res) { done(res); });",
-						"['" + StringUtils.join(includes, "'],['") + "']",
-						excludes.size() == 0 ? "" : "['" + StringUtils.join(excludes, "'],['") + "']",
-						options);
+				String includesJoined = "['" + StringUtils.join(includes, "'],['") + "']";
+				String excludesJoined = excludes.size() == 0 ? "" : "['" + StringUtils.join(excludes, "'],['") + "']";
+
+				axeContext = "document";
+				axeOptions = String.format("{ include: [%s], exclude: [%s] }", includesJoined, excludesJoined);
 			} else if (includes.size() == 1) {
-				command = String.format("var done = arguments[arguments.length - 1]; axe.run('%s', %s, function(err, res) { done(res); });", includes.get(0).replace("'", ""), options);
+				axeContext = String.format("'%s'", this.includes.get(0).replace("'", ""));
+				axeOptions = options;
 			} else {
-				command = String.format("var done = arguments[arguments.length - 1]; axe.run(document, %s, function(err, res) { done(res); });", options);
+				axeContext = "document";
+				axeOptions = options;
 			}
 
-			return execute(command);
+			String snippet = getAxeSnippet(axeContext, axeOptions);
+			return execute(snippet);
+		}
+
+		private String getAxeSnippet(String context, String options) {
+			return String.format(
+				"var callback = arguments[arguments.length - 1];" + 
+				"var context = %s;" + 
+				"var options = %s;" + 
+				"var result = { error: '', results: null };" + 
+				"axe.run(context, options, function (err, res) {" + 
+				"  if (err) {" + 
+				"    result.error = err.message;" + 
+				"  } else {" +
+				"    result.results = res;" + 
+				"  }" + 
+				"  callback(result);" + 
+				"});",
+				context, options
+			);
 		}
 
 		/**
 		 * Run aXe against a specific WebElement.
-		 * @param  context A WebElement to test
-		 * @return         An aXe results document
+		 * 
+		 * @param context A WebElement to test
+		 * @return An aXe results document
 		 */
 		public JSONObject analyze(final WebElement context) {
-			String command = String.format("var done = arguments[arguments.length - 1]; axe.run(arguments[0], %s, function(err, res) { done(res); });", options);
-
-			return execute(command, context);
+			String snippet = getAxeSnippet("arguments[0]", options);
+			return execute(snippet, context);
 		}
 
 		private JSONObject execute(final String command, final Object... args) {
@@ -334,8 +370,17 @@ public class AXE {
 			this.driver.manage().timeouts().setScriptTimeout(this.timeout, TimeUnit.SECONDS);
 
 			Object response = ((JavascriptExecutor) this.driver).executeAsyncScript(command, args);
+			JSONObject result = new JSONObject((Map) response);
+			String error = result.getString("error");
 
-			return new JSONObject((Map) response);
+			// If the error is non-nil, raise a runtime error.
+			if (error != null && !error.isEmpty()) {
+				throw new AxeRuntimeException(error);
+			}
+
+			// If there was no error, there must have been results.
+			JSONObject results = result.getJSONObject("results");
+			return results;
 		}
 	}
 }
