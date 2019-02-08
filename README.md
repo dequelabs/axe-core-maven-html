@@ -1,4 +1,6 @@
-# aXe Selenium (Java) Integration README #
+# aXe Selenium (Java) Integration
+
+[![CircleCI](https://circleci.com/gh/dequelabs/axe-selenium-java.svg?style=svg)](https://circleci.com/gh/dequelabs/axe-selenium-java)
 
 This example demonstrates how to use aXe to run web accessibility tests in Java
 projects with the Selenium browser automation tool and Java development tools.
