@@ -197,4 +197,23 @@ public class ExampleTest {
 
 		}
 	}
+
+	@Test
+	public void testAxeErrorHandling() {
+		driver.get("http://localhost:5005/");
+
+		URL errorScript = ExampleTest.class.getResource("/axe-error.js");
+		AXE.Builder builder = new AXE.Builder(driver, errorScript);
+
+		boolean didError = false;
+
+		try {
+			builder.analyze();
+		} catch (AXE.AxeRuntimeException e) {
+			assertEquals(e.getMessage(), "boom!"); // See axe-error.js
+			didError = true;
+		}
+
+		assertTrue("Did raise axe-core error", didError);
+	}
 }
