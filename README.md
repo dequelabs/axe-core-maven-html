@@ -65,7 +65,7 @@ In order to contribute, you must accept the [contributor licence agreement](http
 
 This package is deployed to Maven Central via OSSRH. To deploy this package, follow [these instructions on StackOverflow](https://stackoverflow.com/a/42917618).
 
-Additionally add your OSSRH credentials to your `~/.m2/setgtings.xml` file as such:
+Additionally add your OSSRH credentials to your `~/.m2/settings.xml` file as such:
 
 ```xml
 <servers>
