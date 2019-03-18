@@ -28,13 +28,13 @@ To run the example tests on your own web page, change the URL passed to `driver.
 
 ## To use the AXE helper library in your own tests
 
-Include this library as a test-scoped dependency in your POM:
+Include this library as a test-scoped dependency in your POM. Ensure the `version` matches the one in `[pom.xml](./pom.xml)`:
 
 ```xml
 <dependency>
   <groupId>com.deque</groupId>
   <artifactId>axe-selenium</artifactId>
-  <version>2.0</version>
+  <version>3.0</version>
   <scope>test</scope>
 </dependency>
 ```
