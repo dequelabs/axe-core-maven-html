@@ -355,9 +355,9 @@ public class AXE {
 		 * @param context A WebElement to test
 		 * @return An aXe results document
 		 */
-		public JSONObject analyze(final WebElement context) {
+		public JSONObject analyze(final WebElement... context) {
 			String snippet = getAxeSnippet("arguments[0]", options);
-			return execute(snippet, context);
+			return execute(snippet, (Object) context);
 		}
 
 		private JSONObject execute(final String command, final Object... args) {
@@ -365,8 +365,21 @@ public class AXE {
 
 			this.driver.manage().timeouts().setScriptTimeout(this.timeout, TimeUnit.SECONDS);
 
-			Object response = ((JavascriptExecutor) this.driver).executeAsyncScript(command, args);
-			JSONObject result = new JSONObject((Map) response);
+			JSONObject result= new JSONObject();
+
+			if (args.length > 0)
+			    for (Object arg: args) {
+				    Object response = ((JavascriptExecutor) this.driver).executeAsyncScript(command, arg);
+				    JSONObject oneResult = new JSONObject((Map)response);
+				    for (String key : oneResult.keySet()) {
+					    result.accumulate(key, oneResult.get(key));
+				}
+
+			} else {
+				Object response = ((JavascriptExecutor) this.driver).executeAsyncScript(command, args);
+				result = new JSONObject((Map)response);
+			}
+
 			String error = result.getString("error");
 
 			// If the error is non-nil, raise a runtime error.
