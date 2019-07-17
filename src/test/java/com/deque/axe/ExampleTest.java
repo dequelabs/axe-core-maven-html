@@ -162,6 +162,7 @@ public class ExampleTest {
 		JSONObject responseJSON = new AXE.Builder(driver, scriptUrl)
 				.include("body")
 				.exclude("h1")
+				.exclude("h2")
 				.analyze();
 
 		JSONArray violations = responseJSON.getJSONArray("violations");
@@ -179,18 +180,23 @@ public class ExampleTest {
 	 */
 	@Test
 	public void testAccessibilityWithWebElement() {
-		driver.get("http://localhost:5005");
+		driver.get("http://localhost:5005/include-exclude.html");
 
 		JSONObject responseJSON = new AXE.Builder(driver, scriptUrl)
-				.analyze(driver.findElement(By.tagName("p")));
+				.analyze(driver.findElement(By.tagName("h1")), driver.findElement(By.tagName("h2")));
 
 		JSONArray violations = responseJSON.getJSONArray("violations");
 
-		if (violations.length() == 0) {
-			assertTrue("No violations found", true);
+		JSONArray nodes = ((JSONObject)violations.get(0)).getJSONArray("nodes");
+		JSONArray target1 = ((JSONObject)nodes.get(0)).getJSONArray("target");
+		JSONArray target2 = ((JSONObject)nodes.get(1)).getJSONArray("target");
+
+		if (violations.length() == 1) {
+			assertEquals(String.valueOf(target1), "[\"h1 > span\"]");
+			assertEquals(String.valueOf(target2), "[\"h2 > span\"]");
 		} else {
 			AXE.writeResults(testName.getMethodName(), responseJSON);
-			assertTrue(AXE.report(violations), false);
+			assertTrue("No violations found", false);
 		}
 	}
 
@@ -275,7 +281,7 @@ public class ExampleTest {
 		JSONArray target = ((JSONObject)nodes.get(0)).getJSONArray("target");
 
 		if (violations.length() == 1) {
-			assertEquals(String.valueOf(target), "[\"span\"]");
+			assertEquals(String.valueOf(target), "[\"h1 > span\"]");
 		} else {
 			AXE.writeResults(testName.getMethodName(), responseJSON);
 			assertTrue("No violations found", false);
