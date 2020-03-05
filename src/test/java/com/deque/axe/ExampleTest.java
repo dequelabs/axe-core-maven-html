@@ -158,9 +158,9 @@ public class ExampleTest {
 	 */
 	@Test
 	public void testAccessibilityWithIncludesAndExcludes() {
-		driver.get("http://localhost:5005");
+		driver.get("http://localhost:5005/include-exclude.html");
 		JSONObject responseJSON = new AXE.Builder(driver, scriptUrl)
-				.include("div")
+				.include("body")
 				.exclude("h1")
 				.analyze();
 
@@ -235,5 +235,50 @@ public class ExampleTest {
 		}
 
 		assertTrue("Did raise axe-core error", didError);
+	}
+
+	/**
+	 * Test few include
+	 */
+	@Test
+	public void testAccessibilityWithFewInclude() {
+		driver.get("http://localhost:5005/include-exclude.html");
+		JSONObject responseJSON = new AXE.Builder(driver, scriptUrl)
+				.include("div")
+				.include("p")
+				.analyze();
+
+		JSONArray violations = responseJSON.getJSONArray("violations");
+
+		if (violations.length() == 0) {
+			assertTrue("No violations found", true);
+		} else {
+			AXE.writeResults(testName.getMethodName(), responseJSON);
+			assertTrue(AXE.report(violations), false);
+		}
+	}
+
+	/**
+	 * Test includes and excludes with violation
+	 */
+	@Test
+	public void testAccessibilityWithIncludesAndExcludesWithViolation() {
+		driver.get("http://localhost:5005/include-exclude.html");
+		JSONObject responseJSON = new AXE.Builder(driver, scriptUrl)
+				.include("body")
+				.exclude("div")
+				.analyze();
+
+		JSONArray violations = responseJSON.getJSONArray("violations");
+
+		JSONArray nodes = ((JSONObject)violations.get(0)).getJSONArray("nodes");
+		JSONArray target = ((JSONObject)nodes.get(0)).getJSONArray("target");
+
+		if (violations.length() == 1) {
+			assertEquals(String.valueOf(target), "[\"span\"]");
+		} else {
+			AXE.writeResults(testName.getMethodName(), responseJSON);
+			assertTrue("No violations found", false);
+		}
 	}
 }
