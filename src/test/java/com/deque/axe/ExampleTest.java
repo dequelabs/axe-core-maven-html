@@ -235,5 +235,23 @@ public class ExampleTest {
 		}
 
 		assertTrue("Did raise axe-core error", didError);
+// 	}
+
+	@Test
+	public void testIncludeExclude2() {
+		driver.get("http://localhost:5005/include2.html");
+		JSONObject responseJSON = new AXE.Builder(driver, scriptUrl)
+			.include("main")
+			.exclude("header")
+			.analyze();
+
+		JSONArray violations = responseJSON.getJSONArray("violations");
+
+		if (violations.length() == 0) {
+			assertTrue("No violations found", true);
+		} else {
+			AXE.writeResults(testName.getMethodName(), responseJSON);
+			assertTrue(AXE.report(violations), false);
+		}
 	}
 }

@@ -4,7 +4,7 @@
 require('http').createServer(function (req, res) {
 	if(req.url === '/shadow-error.html') {
 		res.writeHead(200, { 'Content-Type': 'text/html' });
-        res.end(`
+		res.end(`
 			<!doctype html>
 			<html lang="en">
 				<head>
@@ -23,9 +23,29 @@ require('http').createServer(function (req, res) {
 				</body>
 			</html>
 		`);
+	} else if(req.url === '/include2.html') {
+		res.writeHead(200, { 'Content-Type': 'text/html' });
+		res.end(`
+			<!doctype html>
+			<html lang="en">
+				<head>
+					<title>Test Page</title>
+				</head>
+				<body>
+					<header>
+						<input id="fname" type="text" name="fname" />
+					</header>
+					<main>
+						<h1>This is a test</h1>
+						<p>The input needs a label.</p>
+					</main>
+				</body>
+			</html>
+	`);
+
 	} else {
-        res.writeHead(200, { 'Content-Type': 'text/html' });
-        res.end(`
+		res.writeHead(200, { 'Content-Type': 'text/html' });
+		res.end(`
 			<!doctype html>
 			<html lang="en">
 				<head>

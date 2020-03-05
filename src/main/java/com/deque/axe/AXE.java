@@ -321,8 +321,8 @@ public class AXE {
 				String includesJoined = "['" + StringUtils.join(includes, "'],['") + "']";
 				String excludesJoined = excludes.size() == 0 ? "" : "['" + StringUtils.join(excludes, "'],['") + "']";
 
-				axeContext = "document";
-				axeOptions = String.format("{ include: [%s], exclude: [%s] }", includesJoined, excludesJoined);
+				axeContext = String.format("{ include: [%s], exclude: [%s] }", includesJoined, excludesJoined);
+				axeOptions = options;
 			} else if (includes.size() == 1) {
 				axeContext = String.format("'%s'", this.includes.get(0).replace("'", ""));
 				axeOptions = options;
