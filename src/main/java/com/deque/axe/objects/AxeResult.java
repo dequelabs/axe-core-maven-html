@@ -1,8 +1,4 @@
-/*
- * Copyright 2020 (C) Magenic, All rights Reserved
- */
-
-package com.magenic.jmaqs.accessibility.objects;
+package com.deque.axe.objects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.OffsetDateTime;

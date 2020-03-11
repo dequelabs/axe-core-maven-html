@@ -1,8 +1,4 @@
-/*
- * Copyright 2020 (C) Magenic, All rights Reserved
- */
-
-package com.magenic.jmaqs.accessibility.downloaders;
+package com.deque.axe.downloaders;
 
 import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;

@@ -1,15 +1,11 @@
-/*
- * Copyright 2020 (C) Magenic, All rights Reserved
- */
-
-package com.magenic.jmaqs.accessibility.providers;
+package com.deque.axe.providers;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import javax.naming.OperationNotSupportedException;
 
 /**
- * An accessiblity script provider.
+ * An accessibility script provider.
  */
 public class FileAxeScriptProvider implements IAxeScriptProvider {
   private String filePath;

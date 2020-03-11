@@ -1,0 +1,8 @@
+{
+  "name": "geckodriver",
+  "platform": "windows",
+  "bit": "64",
+  "version": "0.26.0",
+  "url": "https://github.com/mozilla/geckodriver/releases/download/v0.26.0/geckodriver-v0.26.0-win64.zip",
+  "customFileName": "geckodriver"
+}

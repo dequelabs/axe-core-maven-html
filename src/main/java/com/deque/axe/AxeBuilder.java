@@ -1,17 +1,13 @@
-/*
- * Copyright 2020 (C) Magenic, All rights Reserved
- */
+package com.deque.axe;
 
-package com.magenic.jmaqs.accessibility;
-
-import com.magenic.jmaqs.accessibility.extensions.WebDriverInjectorExtensions;
-import com.magenic.jmaqs.accessibility.jsonobjects.AxeRuleOptions;
-import com.magenic.jmaqs.accessibility.jsonobjects.AxeRunContext;
-import com.magenic.jmaqs.accessibility.jsonobjects.AxeRunOnlyOptions;
-import com.magenic.jmaqs.accessibility.jsonobjects.AxeRunOptions;
-import com.magenic.jmaqs.accessibility.objects.AxeResult;
-import com.magenic.jmaqs.accessibility.providers.EmbeddedResourceAxeProvider;
-import com.magenic.jmaqs.accessibility.providers.EmbeddedResourceProvider;
+import com.deque.axe.extensions.WebDriverInjectorExtensions;
+import com.deque.axe.jsonobjects.AxeRuleOptions;
+import com.deque.axe.jsonobjects.AxeRunContext;
+import com.deque.axe.jsonobjects.AxeRunOnlyOptions;
+import com.deque.axe.jsonobjects.AxeRunOptions;
+import com.deque.axe.objects.AxeResult;
+import com.deque.axe.providers.EmbeddedResourceAxeProvider;
+import com.deque.axe.providers.EmbeddedResourceProvider;
 import java.io.BufferedWriter;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -23,6 +19,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.naming.OperationNotSupportedException;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.annotation.Obsolete;
 import org.json.JSONObject;
 import org.openqa.selenium.InvalidArgumentException;
@@ -210,7 +209,7 @@ public class AxeBuilder {
     validateParameters(selectors);
     this.runContext.setInclude(selectors);
 
-    if (!this.runContext.getInclude().isEmpty() && this.runContext.getInclude().isEmpty()) {
+    if (this.runContext.getInclude().isEmpty()) {
       this.runContext.setInclude(new ArrayList<>());
     }
     this.runContext.addToInclude(selectors);
@@ -261,7 +260,7 @@ public class AxeBuilder {
    */
   public AxeResult analyze() throws IOException {
     boolean runContextHasData = this.runContext.getInclude() == null || this.runContext.getExclude() == null;
-    String rawContext = runContextHasData ? AxeDriver.serialize(runContext) : null;
+    String rawContext = runContextHasData ? serialize(runContext) : null;
     return analyzeRawContext(rawContext);
   }
 
@@ -277,7 +276,7 @@ public class AxeBuilder {
       rawContextArg = null;
     }
 
-    String rawOptionsArg = getOptions().equals("{}") ? AxeDriver.serialize(runOptions) : getOptions();
+    String rawOptionsArg = getOptions().equals("{}") ? serialize(runOptions) : getOptions();
     String scanJsContent = EmbeddedResourceProvider.readEmbeddedFile("src/test/resources/files/scan.js");
     Object[] rawArgs = new Object[] { rawContextArg, rawOptionsArg };
 
@@ -292,7 +291,7 @@ public class AxeBuilder {
     }
 
     if (outputFilePath != null && jsonObject.get("results").getClass() == JSONObject.class) {
-      writeResults(jsonObject);
+      writeResultsToTextFile(jsonObject);
     }
     return new AxeResult(jsonObject);
   }
@@ -334,11 +333,49 @@ public class AxeBuilder {
    * @param output Object to write. Most useful if you pass in either
    *     the Builder.analyze() response or the violations array it contains.
    */
-  public void writeResults(final Object output) {
+  public void writeResultsToTextFile(final Object output) {
     try (Writer writer = new BufferedWriter(
         new OutputStreamWriter(new FileOutputStream(this.outputFilePath + ".txt"), StandardCharsets.UTF_8))) {
-      writer.write(AxeDriver.serialize(output));
+      writer.write(serialize(output));
     } catch (IOException ignored) {
     }
+  }
+
+  /**
+   * Writes a raw object out to a JSON file with the specified name.
+   * @param name Desired filename, sans extension
+   * @param output Object to write. Most useful if you pass in either the Builder.analyze() response or the
+   *               violations array it contains.
+   */
+  public static void writeResults(final String name, final Object output) {
+
+    try (Writer writer = new BufferedWriter(
+        new OutputStreamWriter(new FileOutputStream(name + ".json"), StandardCharsets.UTF_8))) {
+      writer.write(output.toString());
+    } catch (IOException ignored) {
+    }
+  }
+
+  /**
+   * serialize the object to a string.
+   * @param obj the object to be turned into a string
+   * @return a string value of the object
+   * @throws JsonProcessingException if there is an error serializing the JSON
+   */
+  static <T> String serialize(T obj) throws JsonProcessingException {
+    ObjectMapper mapper = new ObjectMapper();
+    mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+    return mapper.writeValueAsString(obj);
+  }
+
+  /**
+   * deserializes a string into an Axe Run options class object.
+   * @param obj the string to be deserialized
+   * @return the string as an Axe Run Options class object
+   * @throws JsonProcessingException if there is an error serializing the JSON
+   */
+  static AxeRunOptions deserialize(String obj) throws JsonProcessingException {
+    ObjectMapper mapper = new ObjectMapper();
+    return mapper.readValue(obj, AxeRunOptions.class);
   }
 }

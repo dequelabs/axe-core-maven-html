@@ -1,12 +1,8 @@
-/*
- * Copyright 2020 (C) Magenic, All rights Reserved
- */
+package com.deque.axe.extensions;
 
-package com.magenic.jmaqs.accessibility.extensions;
-
-import com.magenic.jmaqs.accessibility.AxeBuilder;
-import com.magenic.jmaqs.accessibility.AxeBuilderOptions;
-import com.magenic.jmaqs.accessibility.objects.AxeResult;
+import  com.deque.axe.AxeBuilder;
+import  com.deque.axe.AxeBuilderOptions;
+import  com.deque.axe.objects.AxeResult;
 import java.io.IOException;
 import javax.naming.OperationNotSupportedException;
 import org.openqa.selenium.WebDriver;

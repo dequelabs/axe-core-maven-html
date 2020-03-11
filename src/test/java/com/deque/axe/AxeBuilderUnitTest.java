@@ -1,17 +1,12 @@
-/*
- * Copyright 2020 (C) Magenic, All rights Reserved
- */
-
-package com.magenic.jmaqs.accessibility;
+package com.deque.axe;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.magenic.jmaqs.accessibility.jsonobjects.AxeRuleOptions;
-import com.magenic.jmaqs.accessibility.jsonobjects.AxeRunContext;
-import com.magenic.jmaqs.accessibility.jsonobjects.AxeRunOnlyOptions;
-import com.magenic.jmaqs.accessibility.jsonobjects.AxeRunOptions;
-import com.magenic.jmaqs.accessibility.objects.AxeResult;
-import com.magenic.jmaqs.accessibility.providers.EmbeddedResourceProvider;
-import com.magenic.jmaqs.utilities.helper.TestCategories;
+import com.deque.axe.jsonobjects.AxeRuleOptions;
+import com.deque.axe.jsonobjects.AxeRunContext;
+import com.deque.axe.jsonobjects.AxeRunOnlyOptions;
+import com.deque.axe.jsonobjects.AxeRunOptions;
+import com.deque.axe.objects.AxeResult;
+import com.deque.axe.providers.EmbeddedResourceProvider;
 import java.io.File;
 import java.io.IOException;
 import java.time.OffsetDateTime;
@@ -54,7 +49,7 @@ public class AxeBuilderUnitTest {
     results.setIncomplete(new JSONArray());
     results.setTimestamp(OffsetDateTime.now());
     results.setUrl("www.test.com");
-    this.testAxeResult = AxeDriver.serialize(results);
+    this.testAxeResult = AxeBuilder.serialize(results);
   }
 
   /**
@@ -92,7 +87,7 @@ public class AxeBuilderUnitTest {
    * @throws IOException if file writing fails
    * @throws OperationNotSupportedException if the operation errors out
    */
-  @Test(groups = TestCategories.ACCESSIBILITY, expectedExceptions = NullPointerException.class)
+  @Test(expectedExceptions = NullPointerException.class)
   public void throwWhenDriverIsNull() throws IOException, OperationNotSupportedException {
     //arrange / act /assert
     AxeBuilder axeBuilder = new AxeBuilder(null);
@@ -104,7 +99,7 @@ public class AxeBuilderUnitTest {
    * @throws IOException if file writing fails
    * @throws OperationNotSupportedException if the operation errors out
    */
-  @Test(groups = TestCategories.ACCESSIBILITY, expectedExceptions = NullPointerException.class)
+  @Test(expectedExceptions = NullPointerException.class)
   public void throwWhenOptionsAreNull() throws OperationNotSupportedException, IOException {
     // act / assert
     AxeBuilder axeBuilder = new AxeBuilder(this.webDriver, null);
@@ -116,7 +111,7 @@ public class AxeBuilderUnitTest {
    * @throws IOException if file writing fails
    * @throws OperationNotSupportedException if the operation errors out
    */
-  @Test(groups = TestCategories.ACCESSIBILITY)
+  @Test()
   public void shouldHandleIfOptionsAndContextNotSet()
       throws IOException, OperationNotSupportedException {
     AxeBuilder builder = new AxeBuilder(this.webDriver);
@@ -129,7 +124,7 @@ public class AxeBuilderUnitTest {
    * @throws IOException if file writing fails
    * @throws OperationNotSupportedException if the operation errors out
    */
-  @Test(groups = TestCategories.ACCESSIBILITY)
+  @Test()
   public void shouldPassContextIfIncludeSet() throws IOException, OperationNotSupportedException {
     AxeRunContext runContext = new AxeRunContext();
     runContext.setInclude(Collections.singletonList("#div1"));
@@ -148,7 +143,7 @@ public class AxeBuilderUnitTest {
    * @throws IOException if file writing fails
    * @throws OperationNotSupportedException if the operation errors out
    */
-  @Test(groups = TestCategories.ACCESSIBILITY)
+  @Test()
   public void shouldPassContextIfExcludeSet() throws IOException, OperationNotSupportedException {
     List<String> exclude = Collections.singletonList("#div1");
     AxeRunContext runContext = new AxeRunContext();
@@ -164,7 +159,7 @@ public class AxeBuilderUnitTest {
    * @throws IOException if file writing fails
    * @throws OperationNotSupportedException if the operation errors out
    */
-  @Test(groups = TestCategories.ACCESSIBILITY)
+  @Test()
   public void shouldPassContextIfIncludeAndExcludeSet()
       throws IOException, OperationNotSupportedException {
     String includeSelector = "#div1";
@@ -186,7 +181,7 @@ public class AxeBuilderUnitTest {
    * @throws IOException if file writing fails
    * @throws OperationNotSupportedException if the operation errors out
    */
-  @Test(groups = TestCategories.ACCESSIBILITY)
+  @Test()
   public void shouldPassRunOptionsIfDeprecatedOptionsSet()
       throws IOException, OperationNotSupportedException {
     String expectedOptions = "deprecated run options";
@@ -203,7 +198,7 @@ public class AxeBuilderUnitTest {
    * @throws IOException if file writing fails
    * @throws OperationNotSupportedException if the operation errors out
    */
-  @Test(groups = TestCategories.ACCESSIBILITY)
+  @Test()
   public void shouldPassRunOptionsIfDeprecatedOptionsSetWithContextElement()
       throws IOException, OperationNotSupportedException {
     String expectedOptions = "deprecated run options";
@@ -222,7 +217,7 @@ public class AxeBuilderUnitTest {
    * @throws IOException if file writing fails
    * @throws OperationNotSupportedException if the operation errors out
    */
-  @Test(groups = TestCategories.ACCESSIBILITY)
+  @Test()
   public void shouldPassRuleConfig() throws IOException, OperationNotSupportedException {
     List<String> expectedRules = Arrays.asList("rule1", "rule2");
     List<String> disableRules = Arrays.asList("excludeRule1", "excludeRule2");
@@ -241,7 +236,7 @@ public class AxeBuilderUnitTest {
     AxeRunOptions runOptions = new AxeRunOptions();
     runOptions.setRunOnly(runOnlyOptions);
     runOptions.setRules(rules);
-    String expectedOptions = AxeDriver.serialize(runOptions);
+    String expectedOptions = AxeBuilder.serialize(runOptions);
     /*
     String expectedOptions = SerializeObject(new AxeRunOptions() {
       AxeRunOnlyOptions = new AxeRunOnlyOptions() {
@@ -266,7 +261,7 @@ public class AxeBuilderUnitTest {
    * @throws IOException if file writing fails
    * @throws OperationNotSupportedException if the operation errors out
    */
-  @Test(groups = TestCategories.ACCESSIBILITY)
+  @Test()
   public void shouldPassRunOptionsWithTagConfig() throws IOException,
       OperationNotSupportedException {
     List<String> expectedTags = Arrays.asList("ul", " li");
@@ -274,7 +269,7 @@ public class AxeBuilderUnitTest {
     runOnly.setType("tag");
     runOnly.setValues(expectedTags);
 
-    String expectedOptions = AxeDriver.serialize(runOnly);
+    String expectedOptions = AxeBuilder.serialize(runOnly);
     /*
     String expectedOptions = SerializeObject(new AxeRunOptions() {
       RunOnly = new AxeRunOnlyOptions() {
@@ -294,7 +289,7 @@ public class AxeBuilderUnitTest {
    * @throws IOException if file writing fails
    * @throws OperationNotSupportedException if the operation errors out
    */
-  @Test(groups = TestCategories.ACCESSIBILITY)
+  @Test()
   public void shouldPassRunOptions() throws IOException, OperationNotSupportedException {
     AxeRuleOptions ruleOptions = new AxeRuleOptions();
     ruleOptions.setEnabled(false);
@@ -316,7 +311,7 @@ public class AxeBuilderUnitTest {
    * @throws IOException if file writing fails
    * @throws OperationNotSupportedException if the operation errors out
    */
-  @Test(groups = TestCategories.ACCESSIBILITY, expectedExceptions = NullPointerException.class)
+  @Test(expectedExceptions = NullPointerException.class)
   public void shouldThrowIfNullParameterPassed() throws OperationNotSupportedException, IOException {
     new AxeBuilder(this.webDriver, null);
     new AxeBuilder(null);
@@ -335,7 +330,7 @@ public class AxeBuilderUnitTest {
    * @throws IOException if file writing fails
    * @throws OperationNotSupportedException if the operation errors out
    */
-  @Test(groups = TestCategories.ACCESSIBILITY, expectedExceptions = IllegalArgumentException.class)
+  @Test(expectedExceptions = IllegalArgumentException.class)
   public void shouldThrowIfEmptyParameterPassed() throws IOException,
       OperationNotSupportedException {
     List<String> values = Arrays.asList("val1", "");
@@ -353,7 +348,7 @@ public class AxeBuilderUnitTest {
    * @throws IOException if file writing fails
    * @throws OperationNotSupportedException if the operation errors out
    */
-  @Test(groups = TestCategories.ACCESSIBILITY, expectedExceptions = InvalidArgumentException.class)
+  @Test(expectedExceptions = InvalidArgumentException.class)
   public void shouldThrowIfDeprecatedOptionsIsUsedWithNewOptionsApis()
       throws IOException, OperationNotSupportedException {
     AxeBuilder builder = new AxeBuilder(this.webDriver);
@@ -373,7 +368,7 @@ public class AxeBuilderUnitTest {
    * @throws IOException if file writing fails
    * @throws OperationNotSupportedException if the operation errors out
    */
-  @Test(groups = TestCategories.ACCESSIBILITY, expectedExceptions = NullPointerException.class)
+  @Test(expectedExceptions = NullPointerException.class)
   public void shouldThrowRunOptionsWithInvalidTag() throws IOException,
       OperationNotSupportedException {
     List<String> expectedTags = Arrays.asList("tag1", "tag2");
@@ -387,7 +382,7 @@ public class AxeBuilderUnitTest {
    * @throws IOException if file writing fails
    * @throws OperationNotSupportedException if the operation errors out
    */
-  @Test(groups = TestCategories.ACCESSIBILITY, expectedExceptions = NullPointerException.class)
+  @Test(expectedExceptions = NullPointerException.class)
   public void shouldThrowInvalidRuleConfig() throws IOException, OperationNotSupportedException {
     List<String> expectedRules = Arrays.asList("rule1", "rule2");
     List<String> disableRules = Arrays.asList("excludeRule1", "excludeRule2");
