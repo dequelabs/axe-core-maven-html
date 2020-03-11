@@ -1,11 +1,6 @@
-/*
- * Copyright 2020 (C) Magenic, All rights Reserved
- */
+package com.deque.axe.providers;
 
-package com.magenic.jmaqs.accessibility.providers;
-
-import com.magenic.jmaqs.accessibility.downloaders.CachedContentDownloader;
-import com.magenic.jmaqs.accessibility.downloaders.ContentDownloader;
+import com.deque.axe.downloaders.ContentDownloader;
 import java.io.IOException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -40,7 +35,7 @@ public class ExternalAxeScriptProvider implements IAxeScriptProvider {
       throw new NullPointerException("the HTTP Uri Request is ");
     }
     scriptUri = newScriptUri;
-    contentDownloader = new CachedContentDownloader(webClient);
+    contentDownloader = new ContentDownloader(webClient);
   }
 
   @Override

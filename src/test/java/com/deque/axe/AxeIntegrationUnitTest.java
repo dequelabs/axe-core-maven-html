@@ -1,14 +1,8 @@
-/*
- * Copyright 2020 (C) Magenic, All rights Reserved
- */
+package com.deque.axe;
 
-package com.magenic.jmaqs.accessibility;
-
-import com.magenic.jmaqs.accessibility.jsonobjects.AxeRunOptions;
-import com.magenic.jmaqs.accessibility.objects.AxeResult;
-import com.magenic.jmaqs.accessibility.objects.AxeResultItem;
-import com.magenic.jmaqs.selenium.accessiblity.constants.BrowserType;
-import com.magenic.jmaqs.utilities.helper.TestCategories;
+import com.deque.axe.jsonobjects.AxeRunOptions;
+import com.deque.axe.objects.AxeResult;
+import com.deque.axe.objects.AxeResultItem;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -19,6 +13,7 @@ import java.util.concurrent.TimeUnit;
 import javax.naming.OperationNotSupportedException;
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.openqa.selenium.By;
 import org.openqa.selenium.UnexpectedAlertBehaviour;
 import org.openqa.selenium.WebDriver;
@@ -40,12 +35,17 @@ public class AxeIntegrationUnitTest {
   private static String integrationTestTargetUrl = integrationTestTargetFile.getAbsolutePath();
   private String mainElementSelector = "main";
 
+
+  @Before
+  public void setup() {
+
+  }
+
   /**
    * closes and shuts down the web driver.
    */
   @After()
   public void teardown() {
-    webDriver.close();
     webDriver.quit();
   }
 
@@ -54,9 +54,9 @@ public class AxeIntegrationUnitTest {
    * @throws IOException if file writing fails
    * @throws OperationNotSupportedException if the operation errors out
    */
-  @Test(groups = TestCategories.ACCESSIBILITY)
+  @Test()
   public void runScanOnPageChrome() throws IOException, OperationNotSupportedException {
-    initDriver(BrowserType.CHROME.name());
+    initDriver("Chrome");
     loadTestPage();
 
     long timeBeforeScan = new Date().getTime();
@@ -87,67 +87,13 @@ public class AxeIntegrationUnitTest {
   }
 
   /**
-   * Runs a scan on a web page in FireFox.
-   * @throws IOException if file writing fails
-   * @throws OperationNotSupportedException if the operation errors out
-   */
-  @Test(groups = TestCategories.ACCESSIBILITY)
-  public void runScanOnPageFireFox() throws IOException, OperationNotSupportedException {
-    initDriver(BrowserType.FIREFOX.name());
-    loadTestPage();
-
-    long timeBeforeScan = new Date().getTime();
-
-    AxeRunOptions runOptions = new AxeRunOptions();
-    runOptions.setXPath(true);
-
-    AxeBuilder builder = new AxeBuilder(webDriver).withOptions(runOptions)
-        .withTags(Arrays.asList("wcag2a", "wcag412"))
-        .disableRules(Collections.singletonList("color-contrast"))
-        .withOutputFile("./raw-axe-results.json");
-
-    AxeResult results = builder.analyze();
-    List<AxeResultItem> violations = results.getViolations();
-
-    Assert.assertNotNull(violations.get(0).getID());
-    Assert.assertNotEquals("color-contrast", violations.get(0).getID());
-    Assert.assertNotNull(results.getViolations().get(0).getTags());
-    Assert.assertTrue(results.getViolations().get(0).getTags().contains("wcag2a"));
-    Assert.assertTrue(results.getViolations().get(0).getTags().contains("wcag412"));
-    Assert.assertEquals(1, violations.size());
-    Assert.assertNotNull(results.getViolations().get(0).getNodes());
-
-    File file = new File("jmaqs-accessibility/raw-axe-results.json");
-    long time = file.lastModified();
-    Assert.assertNotEquals(time, timeBeforeScan);
-    Assert.assertTrue(time < timeBeforeScan);
-  }
-
-  /**
    * Runs a scan on a web element in Chrome.
    * @throws IOException if file writing fails
    * @throws OperationNotSupportedException if the operation errors out
    */
-  @Test(groups = TestCategories.ACCESSIBILITY)
+  @Test()
   public void runScanOnGivenElementChrome() throws IOException, OperationNotSupportedException {
-    initDriver(BrowserType.CHROME.name());
-    loadTestPage();
-
-    WebElement mainElement = wait.until(drv -> drv.findElement(By.tagName("main")));
-    AxeBuilder builder = new AxeBuilder(this.webDriver);
-    AxeResult results = builder.analyze(mainElement);
-
-    Assert.assertEquals(2, results.getViolations().size());
-  }
-
-  /**
-   * Runs a scan on a web element in FireFox.
-   * @throws IOException if file writing fails
-   * @throws OperationNotSupportedException if the operation errors out
-   */
-  @Test(groups = TestCategories.ACCESSIBILITY)
-  public void runScanOnGivenElementFireFox() throws IOException, OperationNotSupportedException {
-    initDriver(BrowserType.FIREFOX.name());
+    initDriver("Chrome");
     loadTestPage();
 
     WebElement mainElement = wait.until(drv -> drv.findElement(By.tagName("main")));

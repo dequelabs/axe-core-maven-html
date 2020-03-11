@@ -1,10 +1,6 @@
-/*
- * Copyright 2020 (C) Magenic, All rights Reserved
- */
+package com.deque.axe.extensions;
 
-package com.magenic.jmaqs.accessibility.extensions;
-
-import com.magenic.jmaqs.accessibility.providers.IAxeScriptProvider;
+import com.deque.axe.providers.IAxeScriptProvider;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;

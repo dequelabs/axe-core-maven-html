@@ -1,10 +1,6 @@
-/*
- * Copyright 2020 (C) Magenic, All rights Reserved
- */
+package com.deque.axe;
 
-package com.magenic.jmaqs.accessibility;
-
-import com.magenic.jmaqs.accessibility.providers.IAxeScriptProvider;
+import com.deque.axe.providers.IAxeScriptProvider;
 
 /**
  * provides axe builder options.

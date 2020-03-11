@@ -1,17 +1,11 @@
-/*
- * Copyright 2020 (C) Magenic, All rights Reserved
- */
+package com.deque.axe;
 
-package com.magenic.jmaqs.accessibility;
-
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.magenic.jmaqs.accessibility.jsonobjects.AxeRuleOptions;
-import com.magenic.jmaqs.accessibility.jsonobjects.AxeRules;
-import com.magenic.jmaqs.accessibility.jsonobjects.AxeRunOnlyOptions;
-import com.magenic.jmaqs.accessibility.jsonobjects.AxeRunOptions;
-import com.magenic.jmaqs.utilities.helper.TestCategories;
+import com.deque.axe.jsonobjects.AxeRuleOptions;
+import com.deque.axe.jsonobjects.AxeRules;
+import com.deque.axe.jsonobjects.AxeRunOnlyOptions;
+import com.deque.axe.jsonobjects.AxeRunOptions;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -28,24 +22,24 @@ public class AxeRunOptionsUnitTest {
    * tests the run only options class objects and JSON.
    * @throws JsonProcessingException if there is an error serializing the JSON
    */
-  @Test(groups = TestCategories.ACCESSIBILITY)
+  @Test()
   public void shouldSerializeRunOnlyOption() throws JsonProcessingException {
     AxeRunOnlyOptions runOnlyOptions = new AxeRunOnlyOptions("tag", Arrays.asList("tag1", "tag2"));
     AxeRunOptions options = new AxeRunOptions();
     options.setRunOnly(runOnlyOptions);
 
-    String serializedObject = AxeDriver.serialize(options);
+    String serializedObject = AxeBuilder.serialize(options);
     String expectedObject = "{\"runOnly\":{\"type\":\"tag\",\"values\":[\"tag1\",\"tag2\"]}}";
 
     Assert.assertEquals(serializedObject, expectedObject);
-    Assert.assertSame(AxeDriver.deserialize(expectedObject).getClass(), options.getClass());
+    Assert.assertSame(AxeBuilder.deserialize(expectedObject).getClass(), options.getClass());
   }
 
   /**
    * Tests the serialization of rule options.
    * @throws JsonProcessingException if there is an error serializing the JSON
    */
-  @Test(groups = TestCategories.ACCESSIBILITY)
+  @Test()
   public void shouldSerializeRuleOptions() throws JsonProcessingException {
     AxeRuleOptions enabledRules = new AxeRuleOptions();
     enabledRules.setEnabled(true);
@@ -66,7 +60,7 @@ public class AxeRunOptionsUnitTest {
     options.setRules(rulesMap);
 
     String expectedObject = "{\"rules\":{\"enabledRule\":{\"enabled\":true},\"rule3WithoutOptionsData\":{},\"disabledRule\":{\"enabled\":false}}}";
-    String serializedObject = AxeDriver.serialize(rules);
+    String serializedObject = AxeBuilder.serialize(rules);
 
     Assert.assertEquals(serializedObject, expectedObject);
     Assert.assertSame(new ObjectMapper().readValue(expectedObject, AxeRules.class).getClass(), rules.getClass());
@@ -76,7 +70,7 @@ public class AxeRunOptionsUnitTest {
    * tests serializing the Literal types.
    * @throws JsonProcessingException if there is an error altering the JSON
    */
-  @Test(groups = TestCategories.ACCESSIBILITY)
+  @Test()
   public void shouldSerializeLiteralTypes() throws JsonProcessingException {
     AxeRunOptions options = new AxeRunOptions();
     options.setIFrames(true);
@@ -85,16 +79,16 @@ public class AxeRunOptionsUnitTest {
     options.setFrameWaitTimeInMilliseconds(10);
 
     String expectedObject = "{\"absolutePaths\":true,\"iframes\":true,\"restoreScroll\":true,\"frameWaitTime\":10}";
-    String serializedObject = AxeDriver.serialize(options);
+    String serializedObject = AxeBuilder.serialize(options);
     Assert.assertEquals(serializedObject, expectedObject);
-    Assert.assertSame(AxeDriver.deserialize(expectedObject).getClass(), options.getClass());
+    Assert.assertSame(AxeBuilder.deserialize(expectedObject).getClass(), options.getClass());
   }
 
   /**
    * tests serializing the result types.
    * @throws JsonProcessingException if there is an error serializing the JSON
    */
-  @Test(groups = TestCategories.ACCESSIBILITY)
+  @Test()
   public void shouldSerializeResultTypes() throws JsonProcessingException {
     List<String> resultTypes = new ArrayList<>();
     resultTypes.add(ResultType.Inapplicable.key);
@@ -105,10 +99,10 @@ public class AxeRunOptionsUnitTest {
     AxeRunOptions options = new AxeRunOptions();
     options.setResultTypes(resultTypes);
 
-    String serializedObject = AxeDriver.serialize(options);
+    String serializedObject = AxeBuilder.serialize(options);
     String expectedObject = "{\"resultTypes\":[\"inapplicable\",\"incomplete\",\"passes\",\"violations\"]}";
 
     Assert.assertEquals(serializedObject, expectedObject);
-    Assert.assertSame(AxeDriver.deserialize(expectedObject).getClass(), options.getClass());
+    Assert.assertSame(AxeBuilder.deserialize(expectedObject).getClass(), options.getClass());
   }
 }
