@@ -11,9 +11,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.naming.OperationNotSupportedException;
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
 import org.openqa.selenium.By;
 import org.openqa.selenium.UnexpectedAlertBehaviour;
 import org.openqa.selenium.WebDriver;
@@ -23,6 +21,8 @@ import org.openqa.selenium.chrome.ChromeDriverService;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.annotations.AfterTest;
+import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 /**
@@ -36,15 +36,17 @@ public class AxeIntegrationUnitTest {
   private String mainElementSelector = "main";
 
 
-  @Before
+  @BeforeTest
   public void setup() {
-
+    initDriver("Chrome");
+    loadTestPage();
+    this.webDriver.get(new File(integrationTestTargetUrl).getAbsolutePath());
   }
 
   /**
    * closes and shuts down the web driver.
    */
-  @After()
+  @AfterTest()
   public void teardown() {
     webDriver.quit();
   }
@@ -56,9 +58,6 @@ public class AxeIntegrationUnitTest {
    */
   @Test()
   public void runScanOnPageChrome() throws IOException, OperationNotSupportedException {
-    initDriver("Chrome");
-    loadTestPage();
-
     long timeBeforeScan = new Date().getTime();
 
     AxeRunOptions runOptions = new AxeRunOptions();
@@ -67,7 +66,7 @@ public class AxeIntegrationUnitTest {
     AxeBuilder builder = new AxeBuilder(webDriver).withOptions(runOptions)
          .withTags(Arrays.asList("wcag2a", "wcag412"))
          .disableRules(Collections.singletonList("color-contrast"))
-         .withOutputFile("./raw-axe-results.json");
+         .withOutputFile("runScanOnPageChrome");
 
     AxeResult results = builder.analyze();
     List<AxeResultItem> violations = results.getViolations();
@@ -93,13 +92,9 @@ public class AxeIntegrationUnitTest {
    */
   @Test()
   public void runScanOnGivenElementChrome() throws IOException, OperationNotSupportedException {
-    initDriver("Chrome");
-    loadTestPage();
-
     WebElement mainElement = wait.until(drv -> drv.findElement(By.tagName("main")));
     AxeBuilder builder = new AxeBuilder(this.webDriver);
     AxeResult results = builder.analyze(mainElement);
-
     Assert.assertEquals(2, results.getViolations().size());
   }
 

@@ -43,7 +43,7 @@ public class AxeRunContext {
    * @param newInclude more of a list to include
    */
   public void addToInclude(List<String> newInclude) {
-    this.include.addAll(new ArrayList<>(newInclude));
+    this.include.addAll(newInclude);
   }
 
   /**

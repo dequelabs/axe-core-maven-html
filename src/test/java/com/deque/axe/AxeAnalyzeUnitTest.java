@@ -48,8 +48,7 @@ public class AxeAnalyzeUnitTest {
    * @throws OperationNotSupportedException if an unaccepted error occurs
    */
   @Test(expectedExceptions = NullPointerException.class)
-  public void shouldThrowWhenWebDriverIsNullAnalyse()
-      throws IOException, OperationNotSupportedException {
+  public void shouldThrowWhenWebDriverIsNullAnalyse() throws IOException, OperationNotSupportedException {
     new AxeBuilder(this.webDriver);
     WebDriverExtensions.analyze(null);
   }
