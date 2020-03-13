@@ -35,6 +35,9 @@ public class AxeExampleUnitTest {
   private WebDriver webDriver;
 
   private static final String htmlPage = "src/test/resources/files/Integration-test-target.html";
+  private static final String shadowErrorPage = "src/test/resources/files/shadow-error.html";
+  private static final String includeExcludePage = "src/test/resources/files/include-exclude.html";
+  private static final String normalPage = "src/test/resources/files/normal.html";
 
   /**
    * Instantiate the WebDriver and navigate to the test site
@@ -44,7 +47,7 @@ public class AxeExampleUnitTest {
     // ChromeDriver needed to test for Shadow DOM testing support
     System.setProperty("webdriver.chrome.driver","src/test/resources/chromedriver.exe");
     webDriver = new ChromeDriver();
-    this.webDriver.get(new File(htmlPage).getAbsolutePath());
+    this.webDriver.get(new File(normalPage).getAbsolutePath());
   }
 
   /**
@@ -107,7 +110,7 @@ public class AxeExampleUnitTest {
   }
 
   @Test
-  public void testCustomTimeout() throws IOException, OperationNotSupportedException {
+  public void testCustomTimeout() {
     String timeoutFilePath = "src/test/resources/files/timeout.js";
     boolean didTimeout = false;
 
@@ -151,9 +154,10 @@ public class AxeExampleUnitTest {
   @Test
   public void testAccessibilityWithIncludesAndExcludes()
       throws IOException, OperationNotSupportedException {
+    webDriver.get(new File(includeExcludePage).getAbsolutePath());
     AxeResult result = new AxeBuilder(webDriver)
         .include(Collections.singletonList("body"))
-        .exclude(Collections.singletonList("h1")).analyze();
+        .exclude(Collections.singletonList("li")).analyze();
     // JSONObject responseJSON = new AXE.Builder(driver, scriptUrl).include("body").exclude("h1").analyze();
 
     List<AxeResultItem> violations = result.getViolations();
@@ -173,17 +177,14 @@ public class AxeExampleUnitTest {
    */
   @Test
   public void testAccessibilityWithWebElement() throws IOException, OperationNotSupportedException {
-    AxeResult result = new AxeBuilder(webDriver).analyze(webDriver.findElement(By.tagName("li")));
+    AxeResult result = new AxeBuilder(webDriver).analyze(webDriver.findElement(By.tagName("p")));
     List<AxeResultItem>  violations = result.getViolations();
 
-    if (violations.isEmpty()) {
-      assertTrue("No violations found", true);
-    } else {
+      assertTrue("No violations found", violations.isEmpty());
       AxeFormatting.writeResultsToJsonFile("testAccessibilityWithWebElement", result.getJson());
       Assert.assertTrue(getReadableAxeResults(ResultType.Violations.key, webDriver, violations));
       AxeFormatting.writeResultsToTextFile(
           "testAccessibilityWithWebElement", AxeFormatting.getAxeResultString());
-    }
   }
 
   /**
@@ -191,20 +192,18 @@ public class AxeExampleUnitTest {
    */
   @Test
   public void testAccessibilityWithShadowElement() throws IOException, OperationNotSupportedException {
+    webDriver.get(new File(shadowErrorPage).getAbsolutePath());
     AxeResult result = new AxeBuilder(webDriver).analyze();
     List<AxeResultItem>  violations = result.getViolations();
     AxeResultItem resultItem = violations.get(0);
     List<AxeResultNode> nodes = resultItem.getNodes();
     List<String> targets = nodes.get(0).getTarget();
 
-    if (violations.isEmpty()) {
-      assertEquals(String.valueOf(targets), "[[\"#upside-down\",\"ul\"]]");
-    } else {
-      AxeFormatting.writeResultsToJsonFile("testAccessibilityWithShadowElement", result.getJson());
-      Assert.assertTrue(getReadableAxeResults(ResultType.Violations.key, webDriver, violations));
-      AxeFormatting.writeResultsToTextFile(
-          "testAccessibilityWithShadowElement", AxeFormatting.getAxeResultString());
-    }
+    assertEquals(String.valueOf(targets), "[[\"#upside-down\",\"ul\"]]");
+    AxeFormatting.writeResultsToJsonFile("testAccessibilityWithShadowElement", result.getJson());
+    Assert.assertTrue(getReadableAxeResults(ResultType.Violations.key, webDriver, violations));
+    AxeFormatting.writeResultsToTextFile(
+        "testAccessibilityWithShadowElement", AxeFormatting.getAxeResultString());
   }
 
   @Test
@@ -229,6 +228,7 @@ public class AxeExampleUnitTest {
    */
   @Test
   public void testAccessibilityWithFewInclude() throws IOException, OperationNotSupportedException {
+    this.webDriver.get(new File(includeExcludePage).getAbsolutePath());
     AxeResult result = new AxeBuilder(webDriver).include(Arrays.asList("div", "p")).analyze();
     //JSONObject responseJSON = new AXE.Builder(driver, scriptUrl).include("div").include("p").analyze();
 
@@ -251,6 +251,7 @@ public class AxeExampleUnitTest {
   @Test
   public void testAccessibilityWithIncludesAndExcludesWithViolation()
       throws IOException, OperationNotSupportedException {
+    this.webDriver.get(new File(includeExcludePage).getAbsolutePath());
     AxeResult result = new AxeBuilder(webDriver)
         .include(Collections.singletonList("body"))
         .exclude(Collections.singletonList("div")).analyze();

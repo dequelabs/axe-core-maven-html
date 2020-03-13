@@ -1,1 +1,3 @@
-"ACCESSIBILITY CHECK\r\nVIOLATIONS check for: file:///C:/Users/jonr/axe-selenium-java/src/test/resources/files/Integration-test-target.html\r\nFound 1 items\r\n\r\n1: ARIA roles used must conform to valid values\r\nDescription: Ensures all elements with a role attribute use a valid value\r\nHelp URL: ARIA roles used must conform to valid values\r\nImpact: critical\r\nTags: cat.aria, wcag2a, wcag412"
+ACCESSIBILITY CHECK
+VIOLATIONS check for: file:///C:/Users/jonr/axe-selenium-java/src/test/resources/files/shadow-error.html
+Found 0 items
