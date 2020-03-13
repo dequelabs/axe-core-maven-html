@@ -83,7 +83,7 @@ public class AxeResultNode {
    * @return the html string
    */
   @JsonProperty("html")
-  public String getHTML() {
+  public String getHtml() {
     return html;
   }
 
@@ -92,7 +92,7 @@ public class AxeResultNode {
    * @param value the html value to be set
    */
   @JsonProperty("html")
-  public void setHTML(String value) {
+  public void setHtml(String value) {
     this.html = value;
   }
 

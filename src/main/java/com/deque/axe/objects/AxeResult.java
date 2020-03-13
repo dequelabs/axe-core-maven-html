@@ -19,16 +19,9 @@ public class AxeResult {
 
   /**
    * sets the scan JSON object to class objects.
-   * @param object the JSON object to be set
+   * @param results the JSON object to be set
    */
-  public AxeResult(JSONObject object) {
-    JSONObject results;
-    if (object.has("results")) {
-      results = object.getJSONObject("results");
-    } else {
-      results = object;
-    }
-
+  public AxeResult(JSONObject results) {
     final JSONArray violationsToken = results.getJSONArray("violations");
     final JSONArray passesToken = results.getJSONArray("passes");
     final JSONArray inapplicableToken = results.getJSONArray("inapplicable");
@@ -48,6 +41,7 @@ public class AxeResult {
     setTimestamp(OffsetDateTime.parse(timestampToken));
     setUrl(urlToken);
     setError(newError);
+    setJson(results);
   }
 
   /**
@@ -82,6 +76,7 @@ public class AxeResult {
   private String url;
   private OffsetDateTime timestamp;
   private String error;
+  private JSONObject json;
 
   /**
    * gets the violation Axe Result Items.
@@ -207,5 +202,21 @@ public class AxeResult {
   @JsonProperty("error")
   public void setError(String newError) {
     this.error = newError;
+  }
+
+  /**
+   * sets the json object for reference.
+   * @param newJson the JSONObject that is set
+   */
+  public void setJson(JSONObject newJson) {
+    this.json = newJson;
+  }
+
+  /**
+   * gets the json object for reference.
+   * @return the JSONObject
+   */
+  public JSONObject getJson() {
+    return this.json;
   }
 }

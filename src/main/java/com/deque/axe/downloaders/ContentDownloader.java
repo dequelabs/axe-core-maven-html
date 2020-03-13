@@ -11,7 +11,7 @@ public class ContentDownloader {
   private HttpClient webClient;
 
   /**
-   * Initialize an instance of com.magenic.jmaqs.accessiblity.downloaders.ContentDownloader.
+   * Initialize an instance of ContentDownloader.
    * @param webClient WebClient instance to use
    */
   public ContentDownloader(HttpClient webClient) {

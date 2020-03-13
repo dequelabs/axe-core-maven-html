@@ -8,20 +8,13 @@ import com.deque.axe.jsonobjects.AxeRunOptions;
 import com.deque.axe.objects.AxeResult;
 import com.deque.axe.providers.EmbeddedResourceAxeProvider;
 import com.deque.axe.providers.EmbeddedResourceProvider;
-import java.io.BufferedWriter;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import javax.naming.OperationNotSupportedException;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.annotation.Obsolete;
 import org.json.JSONObject;
 import org.openqa.selenium.InvalidArgumentException;
@@ -30,7 +23,8 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
 /**
- * Fluent style builder for invoking aXe. Instantiate a new Builder and configure testing with the include(),
+ * Fluent style builder for invoking aXe.
+ * Instantiate a new Builder and configure testing with the include(),
  *   exclude(), and options() methods before calling analyze() to run.
  */
 public class AxeBuilder {
@@ -99,7 +93,7 @@ public class AxeBuilder {
   }
 
   /**
-   * Initialize an instance of "com.magenic.jmaqs.com.magenic.jmaqs.accessibility.AxeBuilder".
+   * Initialize an instance of AxeBuilder.
    * @param newWebDriver Selenium driver to use
    */
   public AxeBuilder(WebDriver newWebDriver) throws IOException, OperationNotSupportedException {
@@ -112,7 +106,7 @@ public class AxeBuilder {
   }
 
   /**
-   * Initialize an instance of "com.magenic.jmaqs.com.magenic.jmaqs.accessibility.AxeBuilder".
+   * Initialize an instance of AxeBuilder.
    * @param newWebDriver Selenium driver to use
    * @param builderOptions Builder options
    */
@@ -166,10 +160,10 @@ public class AxeBuilder {
   public AxeBuilder withRules(List<String> rules) {
     validateParameters(rules);
     throwIfDeprecatedOptionsSet();
-    for (String value : rules) {
-      AxeRunOnlyOptions onlyOptions = new AxeRunOnlyOptions("rule", rules);
-      this.runOptions.setRunOnly(onlyOptions);
-    }
+    AxeRunOnlyOptions onlyOptions = new AxeRunOnlyOptions();
+    onlyOptions.setType("rule");
+    onlyOptions.setValues(rules);
+    this.runOptions.setRunOnly(onlyOptions);
     return this;
   }
 
@@ -201,18 +195,18 @@ public class AxeBuilder {
    * axeBuilder.Include("#parent-iframe1", "#element-inside-iframe"); =>
    * to select #element-inside-iframe under #parent-iframe1
    * axeBuilder.Include("#element-inside-main-frame1");
-   * Invalid usage: axeBuilder.Include("#element-inside-main-frame1", "#element-inside-main-frame2");
+   * Invalid usage: axeBuilder.Include("#element-inside-main-frame1",
+   *      "#element-inside-main-frame2");
    * @param selectors >Any valid CSS selectors
    * @return an Axe Builder
    */
   public AxeBuilder include(List<String> selectors) {
     validateParameters(selectors);
-    this.runContext.setInclude(selectors);
 
     if (this.runContext.getInclude().isEmpty()) {
       this.runContext.setInclude(new ArrayList<>());
     }
-    this.runContext.addToInclude(selectors);
+    this.runContext.setInclude(selectors);
     return this;
   }
 
@@ -229,13 +223,13 @@ public class AxeBuilder {
     if (runContext.getExclude().isEmpty()) {
       runContext.setExclude(new ArrayList<>());
     }
-    runContext.addToExclude(selectors);
+    runContext.setExclude(selectors);
     return this;
   }
 
   /**
    * Causes analyze() to write the axe results as a JSON file,
-   * in addition to returning it in jmaqs.accessibility.jsonObjects.object format as usual.
+   * in addition to returning it in object format as usual.
    * @param path Path to the output file. Will be passed as-is to the System.IO APIs.
    * @return an Axe builder
    */
@@ -255,12 +249,22 @@ public class AxeBuilder {
   }
 
   /**
+   * Run axe against a list of WebElements (including its descendants).
+   * @param context A WebElement to test
+   * @return An axe results document
+   */
+  public AxeResult analyze(List<WebElement> context) throws IOException {
+    return analyzeRawContext(context);
+  }
+
+  /**
    * Run axe against the entire page.
    * @return An axe results document
    */
   public AxeResult analyze() throws IOException {
-    boolean runContextHasData = this.runContext.getInclude() == null || this.runContext.getExclude() == null;
-    String rawContext = runContextHasData ? serialize(runContext) : null;
+    boolean runContextHasData = !this.runContext.getInclude().isEmpty()
+        || !this.runContext.getExclude().isEmpty();
+    String rawContext = runContextHasData ? AxeFormatting.serialize(runContext) : null;
     return analyzeRawContext(rawContext);
   }
 
@@ -268,7 +272,8 @@ public class AxeBuilder {
    * Runs axe via scan.js at a specific context, which will be passed
    * as-is to Selenium for scan.js to interpret, and parses/handles
    * the scan.js output per the current builder options.
-   * @param rawContextArg The value to pass as-is to scan.js to use as the axe.run "context" argument
+   * @param rawContextArg The value to pass as-is to scan.js to
+   *                      use as the axe.run "context" argument
    * @return an Axe Result
    */
   private AxeResult analyzeRawContext(Object... rawContextArg) throws IOException {
@@ -276,9 +281,13 @@ public class AxeBuilder {
       rawContextArg = null;
     }
 
-    String rawOptionsArg = getOptions().equals("{}") ? serialize(runOptions) : getOptions();
-    String scanJsContent = EmbeddedResourceProvider.readEmbeddedFile("src/test/resources/files/scan.js");
+    String rawOptionsArg = getOptions().equals("{}")
+        ? AxeFormatting.serialize(runOptions) : getOptions();
+    String scanJsContent = EmbeddedResourceProvider
+        .readEmbeddedFile("src/test/resources/files/scan.js");
     Object[] rawArgs = new Object[] { rawContextArg, rawOptionsArg };
+
+    this.webDriver.manage().timeouts().setScriptTimeout(1, TimeUnit.SECONDS);
 
     String stringResult = (String) ((JavascriptExecutor) this.getWebDriver())
         .executeAsyncScript(scanJsContent, rawArgs);
@@ -287,13 +296,13 @@ public class AxeBuilder {
 
     // If the error is non-nil, raise a runtime error.
     if (error != null && !error.isEmpty()) {
-      throw new NullPointerException(error);
+      throw new AXE.AxeRuntimeException(error);
     }
 
     if (outputFilePath != null && jsonObject.get("results").getClass() == JSONObject.class) {
-      writeResultsToTextFile(jsonObject);
+      AxeFormatting.writeResultsToJsonFile(outputFilePath, AxeFormatting.serialize(jsonObject));
     }
-    return new AxeResult(jsonObject);
+    return new AxeResult(jsonObject.getJSONObject("results"));
   }
 
   /**
@@ -301,10 +310,12 @@ public class AxeBuilder {
    * @param parameterValue a list of all the parameters in string value
    */
   private static void validateParameters(List<String> parameterValue) {
-    validateNotNullParameter(parameterValue);
+    for (String string : parameterValue) {
+      validateNotNullParameter(string);
 
-    if (parameterValue.isEmpty()) {
-      throw new NullPointerException("There is some items null or empty");
+      if (string.isEmpty()) {
+        throw new IllegalArgumentException("There is some items null or empty");
+      }
     }
   }
 
@@ -326,56 +337,5 @@ public class AxeBuilder {
       throw new InvalidArgumentException("Deprecated Options api shouldn't "
           + "be used with the new apis - WithOptions/WithRules/WithTags or DisableRules");
     }
-  }
-
-  /**
-   * Writes a raw object out to a txt file with the specified name.
-   * @param output Object to write. Most useful if you pass in either
-   *     the Builder.analyze() response or the violations array it contains.
-   */
-  public void writeResultsToTextFile(final Object output) {
-    try (Writer writer = new BufferedWriter(
-        new OutputStreamWriter(new FileOutputStream(this.outputFilePath + ".txt"), StandardCharsets.UTF_8))) {
-      writer.write(serialize(output));
-    } catch (IOException ignored) {
-    }
-  }
-
-  /**
-   * Writes a raw object out to a JSON file with the specified name.
-   * @param name Desired filename, sans extension
-   * @param output Object to write. Most useful if you pass in either the Builder.analyze() response or the
-   *               violations array it contains.
-   */
-  public static void writeResults(final String name, final Object output) {
-
-    try (Writer writer = new BufferedWriter(
-        new OutputStreamWriter(new FileOutputStream(name + ".json"), StandardCharsets.UTF_8))) {
-      writer.write(output.toString());
-    } catch (IOException ignored) {
-    }
-  }
-
-  /**
-   * serialize the object to a string.
-   * @param obj the object to be turned into a string
-   * @return a string value of the object
-   * @throws JsonProcessingException if there is an error serializing the JSON
-   */
-  static <T> String serialize(T obj) throws JsonProcessingException {
-    ObjectMapper mapper = new ObjectMapper();
-    mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-    return mapper.writeValueAsString(obj);
-  }
-
-  /**
-   * deserializes a string into an Axe Run options class object.
-   * @param obj the string to be deserialized
-   * @return the string as an Axe Run Options class object
-   * @throws JsonProcessingException if there is an error serializing the JSON
-   */
-  static AxeRunOptions deserialize(String obj) throws JsonProcessingException {
-    ObjectMapper mapper = new ObjectMapper();
-    return mapper.readValue(obj, AxeRunOptions.class);
   }
 }

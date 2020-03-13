@@ -182,7 +182,7 @@ public class AxeResultItem {
       }
 
       axeResultNode.setAll(value.getJSONObject(i).getJSONArray("all"));
-      axeResultNode.setHTML(value.getJSONObject(i).getString("html"));
+      axeResultNode.setHtml(value.getJSONObject(i).getString("html"));
       axeResultNode.setNone(value.getJSONObject(i).getJSONArray("none"));
       axeResultNode.setAny(value.getJSONObject(i).getJSONArray("any"));
       axeResultNode.setTarget(value.getJSONObject(i).getJSONArray("target"));

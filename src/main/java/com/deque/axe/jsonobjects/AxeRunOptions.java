@@ -150,19 +150,19 @@ public class AxeRunOptions {
   }
 
   /**
-   * gets if there are iframes.
-   * @return if there are iframes
+   * gets if there are iFrames.
+   * @return if there are iFrames
    */
-  @JsonProperty(value = "iframes")
+  @JsonProperty(value = "iFrames")
   public Boolean getIFrames() {
     return this.iframe;
   }
 
   /**
-   * sets if there are iframes.
-   * @param newIFrames the bool to be set if there are iframes
+   * sets if there are iFrames.
+   * @param newIFrames the bool to be set if there are iFrames
    */
-  @JsonProperty(value = "iframes")
+  @JsonProperty(value = "iFrames")
   public void setIFrames(Boolean newIFrames) {
     this.iframe = newIFrames;
   }

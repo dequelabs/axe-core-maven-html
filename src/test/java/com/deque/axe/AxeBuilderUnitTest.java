@@ -49,7 +49,7 @@ public class AxeBuilderUnitTest {
     results.setIncomplete(new JSONArray());
     results.setTimestamp(OffsetDateTime.now());
     results.setUrl("www.test.com");
-    this.testAxeResult = AxeBuilder.serialize(results);
+    this.testAxeResult = AxeFormatting.serialize(results);
   }
 
   /**
@@ -145,7 +145,7 @@ public class AxeBuilderUnitTest {
    */
   @Test()
   public void shouldPassContextIfExcludeSet() throws IOException, OperationNotSupportedException {
-    List<String> exclude = Collections.singletonList("#div1");
+    List<String> exclude = Collections.singletonList("body > main > ul > li");
     AxeRunContext runContext = new AxeRunContext();
     runContext.setExclude(exclude);
 
@@ -236,7 +236,7 @@ public class AxeBuilderUnitTest {
     AxeRunOptions runOptions = new AxeRunOptions();
     runOptions.setRunOnly(runOnlyOptions);
     runOptions.setRules(rules);
-    String expectedOptions = AxeBuilder.serialize(runOptions);
+    String expectedOptions = AxeFormatting.serialize(runOptions);
     /*
     String expectedOptions = SerializeObject(new AxeRunOptions() {
       AxeRunOnlyOptions = new AxeRunOnlyOptions() {
@@ -269,7 +269,7 @@ public class AxeBuilderUnitTest {
     runOnly.setType("tag");
     runOnly.setValues(expectedTags);
 
-    String expectedOptions = AxeBuilder.serialize(runOnly);
+    String expectedOptions = AxeFormatting.serialize(runOnly);
     /*
     String expectedOptions = SerializeObject(new AxeRunOptions() {
       RunOnly = new AxeRunOnlyOptions() {
@@ -368,7 +368,7 @@ public class AxeBuilderUnitTest {
    * @throws IOException if file writing fails
    * @throws OperationNotSupportedException if the operation errors out
    */
-  @Test(expectedExceptions = NullPointerException.class)
+  @Test(expectedExceptions = AXE.AxeRuntimeException.class)
   public void shouldThrowRunOptionsWithInvalidTag() throws IOException,
       OperationNotSupportedException {
     List<String> expectedTags = Arrays.asList("tag1", "tag2");
@@ -382,7 +382,7 @@ public class AxeBuilderUnitTest {
    * @throws IOException if file writing fails
    * @throws OperationNotSupportedException if the operation errors out
    */
-  @Test(expectedExceptions = NullPointerException.class)
+  @Test(expectedExceptions = AXE.AxeRuntimeException.class)
   public void shouldThrowInvalidRuleConfig() throws IOException, OperationNotSupportedException {
     List<String> expectedRules = Arrays.asList("rule1", "rule2");
     List<String> disableRules = Arrays.asList("excludeRule1", "excludeRule2");
@@ -402,8 +402,7 @@ public class AxeBuilderUnitTest {
     runOptions.setRules(rules);
 
     AxeBuilder builder = new AxeBuilder(this.webDriver).disableRules(disableRules).withRules(expectedRules);
-    AxeResult result = builder.analyze();
-    verifyAxeResult(result);
+    builder.analyze();
   }
 
   /**
