@@ -1,1 +1,9 @@
-"ACCESSIBILITY CHECK\r\nVIOLATIONS check for: file:///C:/Users/jonr/axe-selenium-java/src/test/resources/files/Integration-test-target.html\r\nFound 3 items\r\n\r\n1: Page must contain a level-one heading\r\nDescription: Ensure that the page, or at least one of its frames contains a level-one heading\r\nHelp URL: Page must contain a level-one heading\r\nImpact: moderate\r\nTags: cat.semantics, best-practice\r\n\r\n\r\n2: Page must contain a level-one heading\r\nDescription: Ensure that the page, or at least one of its frames contains a level-one heading\r\nHelp URL: Page must contain a level-one heading\r\nImpact: moderate\r\nTags: cat.semantics, best-practice\r\n\r\n\r\n3: Page must contain a level-one heading\r\nDescription: Ensure that the page, or at least one of its frames contains a level-one heading\r\nHelp URL: Page must contain a level-one heading\r\nImpact: moderate\r\nTags: cat.semantics, best-practice"
+ACCESSIBILITY CHECK
+VIOLATIONS check for: file:///C:/Users/jonr/axe-selenium-java/src/test/resources/files/shadow-error.html
+Found 1 items
+
+1: <ul> and <ol> must only directly contain <li>, <script> or <template> elements
+Description: Ensures that lists are structured correctly
+Help URL: <ul> and <ol> must only directly contain <li>, <script> or <template> elements
+Impact: serious
+Tags: cat.structure, wcag2a, wcag131

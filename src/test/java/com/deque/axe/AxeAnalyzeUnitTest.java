@@ -22,6 +22,8 @@ public class AxeAnalyzeUnitTest {
    */
   private WebDriver webDriver;
 
+  private static final String htmlPage = "src/test/resources/files/Integration-test-target.html";
+
   /**
    * sets up the driver before the test.
    */
@@ -30,7 +32,7 @@ public class AxeAnalyzeUnitTest {
     System.setProperty("webdriver.chrome.driver","src/test/resources/chromedriver.exe");
     ChromeDriverService service = ChromeDriverService.createDefaultService();
     this.webDriver = new ChromeDriver(service);
-    this.webDriver.get(new File("src/test/resources/files/Integration-test-target.html").getAbsolutePath());
+    this.webDriver.get(new File(htmlPage).getAbsolutePath());
   }
 
   /**

@@ -264,6 +264,13 @@ public class AxeBuilder {
   public AxeResult analyze() throws IOException {
     boolean runContextHasData = !this.runContext.getInclude().isEmpty()
         || !this.runContext.getExclude().isEmpty();
+
+    if (this.runContext.getInclude().isEmpty()) {
+      this.runContext.setInclude(null);
+    } else if (this.runContext.getExclude().isEmpty()) {
+      this.runContext.setExclude(null);
+    }
+
     String rawContext = runContextHasData ? AxeFormatting.serialize(runContext) : null;
     return analyzeRawContext(rawContext);
   }

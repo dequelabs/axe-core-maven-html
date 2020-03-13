@@ -53,7 +53,7 @@ public class AxeResultRelatedNode {
   public void setTarget(JSONArray value) {
     List<String> list = new ArrayList<>();
     for (int i = 0; i < value.length(); i++) {
-      list.add(value.getString(i));
+      list.add(value.get(i).toString());
     }
     this.target = list;
   }
