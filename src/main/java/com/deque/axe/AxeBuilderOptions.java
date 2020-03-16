@@ -6,7 +6,6 @@ import com.deque.axe.providers.IAxeScriptProvider;
  * provides axe builder options.
  */
 public class AxeBuilderOptions {
-
   /**
    * the axe script provider.
    */

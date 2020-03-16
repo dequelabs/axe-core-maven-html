@@ -41,7 +41,6 @@ public class AxeFormatting {
     try (Writer writer = new BufferedWriter(
         new OutputStreamWriter(new FileOutputStream(outputFilePath + ".txt"),
             StandardCharsets.UTF_8))) {
-
       writer.write(output.toString());
     } catch (IOException ignored) {
     }

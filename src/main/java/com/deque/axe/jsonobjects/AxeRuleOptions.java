@@ -7,13 +7,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class AxeRuleOptions {
   /**
-   * initializer for Axe Rule options.
-   */
-  public AxeRuleOptions() {
-    // left empty to instantiate class.
-  }
-
-  /**
    * Denotes if the rule has to be enabled for scanning.
    */
   private Boolean enabled;

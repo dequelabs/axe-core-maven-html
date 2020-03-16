@@ -10,12 +10,6 @@ import org.json.JSONArray;
  * The Axe Result Item class.
  */
 public class AxeResultItem {
-  /**
-   * Class initializer.
-   */
-  AxeResultItem() {
-  }
-
   private String help;
   private List<AxeResultNode> nodes;
   private String impact;
@@ -188,7 +182,6 @@ public class AxeResultItem {
       axeResultNode.setTarget(value.getJSONObject(i).getJSONArray("target"));
       list.add(axeResultNode);
     }
-
     return list;
   }
 }

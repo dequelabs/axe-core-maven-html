@@ -9,23 +9,21 @@ import java.util.List;
  */
 public class AxeRunContext {
   /**
-   * Class initializer.
+   * list of what to include in the scan.
    */
-  public AxeRunContext() {
-    List<String> list = new ArrayList<>();
-    setInclude(list);
-    setExclude(list);
-  }
+  private List<List<String>> include;
 
-  private List<String> include;
-  private List<String> exclude;
+  /**
+   * list of what to exclude in the scan.
+   */
+  private List<List<String>> exclude;
 
   /**
    * gets a list of included values.
    * @return the included values
    */
   @JsonProperty(value = "include")
-  public List<String> getInclude() {
+  public List<List<String>> getInclude() {
     return this.include;
   }
 
@@ -35,15 +33,10 @@ public class AxeRunContext {
    */
   @JsonProperty(value = "include")
   public void setInclude(List<String> newInclude) {
-    this.include = newInclude;
-  }
-
-  /**
-   * adds more to the include list.
-   * @param newInclude more of a list to include
-   */
-  public void addToInclude(List<String> newInclude) {
-    this.include.addAll(newInclude);
+    if (include == null) {
+      this.include = new ArrayList<>();
+    }
+    this.include.add(newInclude);
   }
 
   /**
@@ -51,7 +44,7 @@ public class AxeRunContext {
    * @return a list of excluded elements
    */
   @JsonProperty(value = "exclude")
-  public List<String> getExclude() {
+  public List<List<String>> getExclude() {
     return this.exclude;
   }
 
@@ -61,14 +54,9 @@ public class AxeRunContext {
    */
   @JsonProperty(value = "exclude")
   public void setExclude(List<String> newExclude) {
-    this.exclude = newExclude;
-  }
-
-  /**
-   * adds a list to the exclude.
-   * @param newExclude a new list to be added
-   */
-  public void addToExclude(List<String> newExclude) {
-    this.exclude.addAll(new ArrayList<>(newExclude));
+    if (exclude == null) {
+      this.exclude = new ArrayList<>();
+    }
+    this.exclude.add(newExclude);
   }
 }
