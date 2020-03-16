@@ -38,8 +38,6 @@ public class AxeBuilderUnitTest {
   private WebDriver.TargetLocator targetLocator;
   private String testAxeResult;
 
-  private static String htmlPage = "src/test/resources/files/Integration-test-target.html";
-
   /**
    * sets a mock/test Axe Result.
    * @throws JsonProcessingException if there is an error serializing the JSON
@@ -70,7 +68,7 @@ public class AxeBuilderUnitTest {
     System.setProperty("webdriver.chrome.driver","src/test/resources/chromedriver.exe");
     ChromeDriverService service = ChromeDriverService.createDefaultService();
     this.webDriver = new ChromeDriver(service);
-    this.webDriver.get(new File(htmlPage).getAbsolutePath());
+    this.webDriver.get(new File("src/test/resources/files/Integration-test-target.html").getAbsolutePath());
     this.javascriptExecutor = (JavascriptExecutor) this.webDriver;
     this.targetLocator = this.webDriver.switchTo();
   }
@@ -164,8 +162,8 @@ public class AxeBuilderUnitTest {
   @Test()
   public void shouldPassContextIfIncludeAndExcludeSet()
       throws IOException, OperationNotSupportedException {
-    String includeSelector = "body > main > ul > li:nth-child(1)";
-    String excludeSelector = "body > main > ul > li:nth-child(2)";
+    String includeSelector = "li:nth-child(1)";
+    String excludeSelector = "li:nth-child(2)";
     List<String> includeList = Collections.singletonList(includeSelector);
     List<String> excludeList = Collections.singletonList(excludeSelector);
 
@@ -238,21 +236,7 @@ public class AxeBuilderUnitTest {
     AxeRunOptions runOptions = new AxeRunOptions();
     runOptions.setRunOnly(runOnlyOptions);
     runOptions.setRules(rules);
-    String expectedOptions = AxeFormatting.serialize(runOptions);
-    /*
-    String expectedOptions = SerializeObject(new AxeRunOptions() {
-      AxeRunOnlyOptions = new AxeRunOnlyOptions() {
-        Type = ,
-            Values = expectedRules
-      },
-      Rules = new Dictionary<string, AxeRuleOptions>()
-      {
-        { "excludeRule1", new AxeRuleOptions(){ setEnabled = false} },
-        { "excludeRule2", new AxeRuleOptions(){ Enabled = false } }
-      }
-    });
-*/
-   //  setupVerifiableScanCall(null, expectedOptions);
+
     AxeBuilder builder = new AxeBuilder(this.webDriver).disableRules(disableRules).withRules(expectedRules);
     AxeResult result = builder.analyze();
     verifyAxeResult(result);
@@ -266,21 +250,14 @@ public class AxeBuilderUnitTest {
   @Test()
   public void shouldPassRunOptionsWithTagConfig() throws IOException,
       OperationNotSupportedException {
-    List<String> expectedTags = Arrays.asList("ul", " li");
+    List<String> expectedTags = Arrays.asList("tag1", "tag2");
     AxeRunOnlyOptions runOnly = new AxeRunOnlyOptions();
     runOnly.setType("tag");
     runOnly.setValues(expectedTags);
 
-    String expectedOptions = AxeFormatting.serialize(runOnly);
-    /*
-    String expectedOptions = SerializeObject(new AxeRunOptions() {
-      RunOnly = new AxeRunOnlyOptions() {
-        Type = "tag",
-            Values = expectedTags
-      },
-    });
-*/
-    //setupVerifiableScanCall(null, expectedOptions);
+    AxeRunOptions runOptions = new AxeRunOptions();
+    runOptions.setRunOnly(runOnly);
+
     AxeBuilder builder = new AxeBuilder(this.webDriver).withTags(expectedTags);
     AxeResult result = builder.analyze();
     verifyAxeResult(result);

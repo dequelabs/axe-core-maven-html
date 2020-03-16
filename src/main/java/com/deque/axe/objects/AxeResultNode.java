@@ -9,12 +9,6 @@ import org.json.JSONArray;
  * The Axe Result Node class.
  */
 public class AxeResultNode {
-  /**
-   * class initializer.
-   */
-  AxeResultNode() {
-  }
-
   private List<Object> all;
   private String failureSummary;
   private String impact;

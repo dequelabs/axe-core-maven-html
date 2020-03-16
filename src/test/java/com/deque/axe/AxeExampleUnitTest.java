@@ -34,7 +34,6 @@ public class AxeExampleUnitTest {
 
   private WebDriver webDriver;
 
-  private static final String htmlPage = "src/test/resources/files/Integration-test-target.html";
   private static final String shadowErrorPage = "src/test/resources/files/shadow-error.html";
   private static final String includeExcludePage = "src/test/resources/files/include-exclude.html";
   private static final String normalPage = "src/test/resources/files/normal.html";
@@ -96,7 +95,8 @@ public class AxeExampleUnitTest {
   @Test
   public void testAccessibilityWithOptions() throws IOException, OperationNotSupportedException {
     AxeBuilder builder = new AxeBuilder(webDriver);
-    builder.setOptions("{ rules: { 'accesskeys': { enabled: false } } }");
+    //builder.setOptions("{ runOnly: { type: rules: { 'accesskeys': { enabled: false } } }");
+    builder.setOptions("{ runOnly :{ type : rules , values :[ rule1 ]}, rules :{ accesskeys :{ enabled :false}}}");
     AxeResult result = builder.analyze();
     List<AxeResultItem> violations = result.getViolations();
 
@@ -179,13 +179,36 @@ public class AxeExampleUnitTest {
   public void testAccessibilityWithWebElement() throws IOException, OperationNotSupportedException {
     AxeResult result = new AxeBuilder(webDriver).analyze(webDriver.findElement(By.tagName("p")));
     List<AxeResultItem>  violations = result.getViolations();
-
-      assertTrue("No violations found", violations.isEmpty());
-      AxeFormatting.writeResultsToJsonFile("testAccessibilityWithWebElement", result.getJson());
-      Assert.assertTrue(getReadableAxeResults(ResultType.Violations.key, webDriver, violations));
-      AxeFormatting.writeResultsToTextFile(
-          "testAccessibilityWithWebElement", AxeFormatting.getAxeResultString());
+    assertTrue("No violations found", violations.isEmpty());
+    AxeFormatting.writeResultsToJsonFile("testAccessibilityWithWebElement", result.getJson());
   }
+
+  /*
+  /**
+   * Test WebElements.
+   *
+  @Test
+  public void testAccessibilityWithWebElements() throws IOException, OperationNotSupportedException {
+    webDriver.get(new File(includeExcludePage).getAbsolutePath());
+    AxeResult result = new AxeBuilder(webDriver).analyze(webDriver.findElement(By.tagName("h1")),
+        webDriver.findElement(By.tagName("h2")));
+
+    List<AxeResultItem>  violations = result.getViolations();
+    List<AxeResultNode> nodes = violations.get(0).getNodes();
+    List<String> target1 = nodes.get(0).getTarget();
+    List<String> target2 = nodes.get(1).getTarget();
+
+    if (violations.size() == 1) {
+      assertEquals("[\"h1 > span\"]", String.valueOf(target1));
+      assertEquals("[\"h2 > span\"]", String.valueOf(target2));
+    } else {
+      //AXE.writeResults(testName.getMethodName(), responseJSON);
+      assertTrue("No violations found", false);
+    }
+    assertTrue("No violations found", violations.isEmpty());
+    AxeFormatting.writeResultsToJsonFile("testAccessibilityWithWebElement", result.getJson());
+  }
+   */
 
   /**
    * Test a page with Shadow DOM violations
@@ -210,6 +233,7 @@ public class AxeExampleUnitTest {
   public void testAxeErrorHandling() throws IOException, OperationNotSupportedException {
     String errorFilePath = "src/test/resources/files/axe-error.js";
     AxeBuilder builder = new AxeBuilder(webDriver);
+    builder.setTimeout(1);
     FileAxeScriptProvider axeScriptProvider = new FileAxeScriptProvider(errorFilePath);
     WebDriverInjectorExtensions.inject(webDriver, axeScriptProvider);
     boolean didError = false;

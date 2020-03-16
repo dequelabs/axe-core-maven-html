@@ -24,7 +24,10 @@ public class AxeRunOptionsUnitTest {
    */
   @Test()
   public void shouldSerializeRunOnlyOption() throws JsonProcessingException {
-    AxeRunOnlyOptions runOnlyOptions = new AxeRunOnlyOptions("tag", Arrays.asList("tag1", "tag2"));
+    AxeRunOnlyOptions runOnlyOptions = new AxeRunOnlyOptions();
+    runOnlyOptions.setType("tag");
+    runOnlyOptions.setValues(Arrays.asList("tag1", "tag2"));
+
     AxeRunOptions options = new AxeRunOptions();
     options.setRunOnly(runOnlyOptions);
 
@@ -78,7 +81,7 @@ public class AxeRunOptionsUnitTest {
     options.setRestoreScroll(true);
     options.setFrameWaitTimeInMilliseconds(10);
 
-    String expectedObject = "{\"absolutePaths\":true,\"iframes\":true,\"restoreScroll\":true,\"frameWaitTime\":10}";
+    String expectedObject = "{\"absolutePaths\":true,\"iFrames\":true,\"restoreScroll\":true,\"frameWaitTime\":10}";
     String serializedObject = AxeFormatting.serialize(options);
     Assert.assertEquals(serializedObject, expectedObject);
     Assert.assertSame(AxeFormatting.deserialize(expectedObject).getClass(), options.getClass());

@@ -9,7 +9,6 @@ import com.deque.axe.objects.AxeResult;
 import com.deque.axe.providers.EmbeddedResourceAxeProvider;
 import com.deque.axe.providers.EmbeddedResourceProvider;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +32,7 @@ public class AxeBuilder {
   private AxeRunOptions runOptions = new AxeRunOptions();
   private String outputFilePath = null;
   private AxeBuilderOptions defaultOptions = setDefaultAxeBuilderOptions();
+  private int timeout = 30;
 
   /**
    * gets the web driver.
@@ -66,6 +66,14 @@ public class AxeBuilder {
     AxeBuilderOptions builderOptions = new AxeBuilderOptions();
     builderOptions.setScriptProvider(new EmbeddedResourceAxeProvider());
     return builderOptions;
+  }
+
+  /**
+   * sets the timeout.
+   * @param newTimeout the int value to be set
+   */
+  public void setTimeout(int newTimeout) {
+    this.timeout = newTimeout;
   }
 
   /**
@@ -202,10 +210,6 @@ public class AxeBuilder {
    */
   public AxeBuilder include(List<String> selectors) {
     validateParameters(selectors);
-
-    if (this.runContext.getInclude().isEmpty()) {
-      this.runContext.setInclude(new ArrayList<>());
-    }
     this.runContext.setInclude(selectors);
     return this;
   }
@@ -219,10 +223,6 @@ public class AxeBuilder {
    */
   public AxeBuilder exclude(List<String> selectors) {
     validateParameters(selectors);
-
-    if (runContext.getExclude().isEmpty()) {
-      runContext.setExclude(new ArrayList<>());
-    }
     runContext.setExclude(selectors);
     return this;
   }
@@ -249,28 +249,12 @@ public class AxeBuilder {
   }
 
   /**
-   * Run axe against a list of WebElements (including its descendants).
-   * @param context A WebElement to test
-   * @return An axe results document
-   */
-  public AxeResult analyze(List<WebElement> context) throws IOException {
-    return analyzeRawContext(context);
-  }
-
-  /**
    * Run axe against the entire page.
    * @return An axe results document
    */
   public AxeResult analyze() throws IOException {
-    boolean runContextHasData = !this.runContext.getInclude().isEmpty()
-        || !this.runContext.getExclude().isEmpty();
-
-    if (this.runContext.getInclude().isEmpty()) {
-      this.runContext.setInclude(null);
-    } else if (this.runContext.getExclude().isEmpty()) {
-      this.runContext.setExclude(null);
-    }
-
+    boolean runContextHasData = this.runContext.getInclude() != null
+        || this.runContext.getExclude() != null;
     String rawContext = runContextHasData ? AxeFormatting.serialize(runContext) : null;
     return analyzeRawContext(rawContext);
   }
@@ -294,11 +278,13 @@ public class AxeBuilder {
         .readEmbeddedFile("src/test/resources/files/scan.js");
     Object[] rawArgs = new Object[] { rawContextArg, rawOptionsArg };
 
-    this.webDriver.manage().timeouts().setScriptTimeout(1, TimeUnit.SECONDS);
+    this.webDriver.manage().timeouts().setScriptTimeout(timeout, TimeUnit.SECONDS);
 
     String stringResult = (String) ((JavascriptExecutor) this.getWebDriver())
         .executeAsyncScript(scanJsContent, rawArgs);
     JSONObject jsonObject = new JSONObject(stringResult);
+
+
     String error = jsonObject.getString("error");
 
     // If the error is non-nil, raise a runtime error.

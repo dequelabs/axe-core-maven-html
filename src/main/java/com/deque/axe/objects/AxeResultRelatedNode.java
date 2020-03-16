@@ -9,12 +9,6 @@ import org.json.JSONArray;
  * the Axe Result Related Node class object.
  */
 public class AxeResultRelatedNode {
-  /**
-   * Class initializer.
-   */
-  AxeResultRelatedNode() {
-  }
-
   private String html;
   private List<String> target;
 

@@ -6,7 +6,6 @@ import java.util.List;
 import org.json.JSONArray;
 
 public class AxeResultCheck {
-
   private String id;
   private Object data;
   private String message;

@@ -7,23 +7,6 @@ import java.util.List;
  * Class object for Axe Run Only Options.
  */
 public class AxeRunOnlyOptions {
-
-  /**
-   * Initializer for axe run only options.
-   */
-  public AxeRunOnlyOptions() {
-  }
-
-  /**
-   * Initializer for axe run only options.
-   * @param type the type to be set.
-   * @param values the list of values to be set.
-   */
-  public AxeRunOnlyOptions(String type, List<String> values) {
-    setType(type);
-    setValues(values);
-  }
-
   /**
    * Specifies the context for run only option. (can be "rule" or "tag").
    */
