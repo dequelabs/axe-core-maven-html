@@ -365,20 +365,8 @@ public class AXE {
 
 			this.driver.manage().timeouts().setScriptTimeout(this.timeout, TimeUnit.SECONDS);
 
-			JSONObject result= new JSONObject();
-
-			if (args.length > 0)
-			    for (Object arg: args) {
-				    Object response = ((JavascriptExecutor) this.driver).executeAsyncScript(command, arg);
-				    JSONObject oneResult = new JSONObject((Map)response);
-				    for (String key : oneResult.keySet()) {
-					    result.accumulate(key, oneResult.get(key));
-				}
-
-			} else {
-				Object response = ((JavascriptExecutor) this.driver).executeAsyncScript(command, args);
-				result = new JSONObject((Map)response);
-			}
+			Object response = ((JavascriptExecutor) this.driver).executeAsyncScript(command, args);
+            JSONObject result = new JSONObject((Map)response);
 
 			String error = result.getString("error");
 
