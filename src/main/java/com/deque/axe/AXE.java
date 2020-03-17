@@ -315,23 +315,19 @@ public class AXE {
 		 */
 		public JSONObject analyze() {
 			String axeContext;
-			String axeOptions;
 
 			if (includes.size() > 1 || excludes.size() > 0) {
 				String includesJoined = "['" + StringUtils.join(includes, "'],['") + "']";
 				String excludesJoined = excludes.size() == 0 ? "" : "['" + StringUtils.join(excludes, "'],['") + "']";
 
-				axeContext = "document";
-				axeOptions = String.format("{ include: [%s], exclude: [%s] }", includesJoined, excludesJoined);
+				axeContext = String.format("{ include: [%s], exclude: [%s] }", includesJoined, excludesJoined);
 			} else if (includes.size() == 1) {
 				axeContext = String.format("'%s'", this.includes.get(0).replace("'", ""));
-				axeOptions = options;
 			} else {
 				axeContext = "document";
-				axeOptions = options;
 			}
 
-			String snippet = getAxeSnippet(axeContext, axeOptions);
+			String snippet = getAxeSnippet(axeContext, options);
 			return execute(snippet);
 		}
 

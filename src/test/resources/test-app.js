@@ -2,8 +2,8 @@
  * Test target application that just serves a simple HTML page
  */
 require('http').createServer(function (req, res) {
-	if(req.url === '/shadow-error.html') {
-		res.writeHead(200, { 'Content-Type': 'text/html' });
+    if (req.url === '/shadow-error.html') {
+        res.writeHead(200, {'Content-Type': 'text/html'});
         res.end(`
 			<!doctype html>
 			<html lang="en">
@@ -23,8 +23,25 @@ require('http').createServer(function (req, res) {
 				</body>
 			</html>
 		`);
-	} else {
-        res.writeHead(200, { 'Content-Type': 'text/html' });
+    } else if (req.url === '/include-exclude.html') {
+        res.writeHead(200, {'Content-Type': 'text/html'});
+        res.end(`
+    			<!doctype html>
+    			<html lang="en">
+    				<head>
+    					<title>Test Page</title>
+    				</head>
+    				<body>
+    				<h1><span style="color: yellow">This is a yellow text</span></h1>
+    					<div role="main" id="host">
+    						<p>This is a test page with violation</p>
+    					</div>
+    					<p>This page is required to verify collaborative operation .include and .exclude</p>
+    				</body>
+    			</html>
+    		`);
+    } else {
+        res.writeHead(200, {'Content-Type': 'text/html'});
         res.end(`
 			<!doctype html>
 			<html lang="en">
@@ -44,6 +61,6 @@ require('http').createServer(function (req, res) {
 				</body>
 			</html>
 	`);
-	}
+    }
 
 }).listen('5005');
