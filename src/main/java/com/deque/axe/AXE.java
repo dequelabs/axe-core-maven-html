@@ -366,7 +366,7 @@ public class AXE {
 			this.driver.manage().timeouts().setScriptTimeout(this.timeout, TimeUnit.SECONDS);
 
 			Object response = ((JavascriptExecutor) this.driver).executeAsyncScript(command, args);
-            JSONObject result = new JSONObject((Map)response);
+			JSONObject result = new JSONObject((Map) response);
 
 			String error = result.getString("error");
 
