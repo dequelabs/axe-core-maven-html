@@ -195,6 +195,31 @@ public class ExampleTest {
 		}
 	}
 
+    /**
+     * Test WebElements
+     */
+    @Test
+    public void testAccessibilityWithFewWebElements() {
+        driver.get("http://localhost:5005/include-exclude.html");
+
+        JSONObject responseJSON = new AXE.Builder(driver, scriptUrl)
+                .analyze(driver.findElement(By.tagName("h1")), driver.findElement(By.tagName("h2")));
+
+        JSONArray violations = responseJSON.getJSONArray("violations");
+
+        JSONArray nodes = ((JSONObject)violations.get(0)).getJSONArray("nodes");
+        JSONArray target1 = ((JSONObject)nodes.get(0)).getJSONArray("target");
+        JSONArray target2 = ((JSONObject)nodes.get(1)).getJSONArray("target");
+
+        if (violations.length() == 1) {
+            assertEquals(String.valueOf(target1), "[\"h1 > span\"]");
+            assertEquals(String.valueOf(target2), "[\"h2 > span\"]");
+        } else {
+            AXE.writeResults(testName.getMethodName(), responseJSON);
+            assertTrue("No violations found", false);
+        }
+    }
+
 	/**
 	 * Test a page with Shadow DOM violations
 	 */
