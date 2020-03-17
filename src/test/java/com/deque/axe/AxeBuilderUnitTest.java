@@ -6,7 +6,6 @@ import com.deque.axe.jsonobjects.AxeRunContext;
 import com.deque.axe.jsonobjects.AxeRunOnlyOptions;
 import com.deque.axe.jsonobjects.AxeRunOptions;
 import com.deque.axe.objects.AxeResult;
-import com.deque.axe.providers.EmbeddedResourceProvider;
 import java.io.File;
 import java.io.IOException;
 import java.time.OffsetDateTime;
@@ -127,9 +126,9 @@ public class AxeBuilderUnitTest {
   @Test()
   public void shouldPassContextIfIncludeSet() throws IOException, OperationNotSupportedException {
     AxeRunContext runContext = new AxeRunContext();
-    runContext.setInclude(Collections.singletonList("#div1"));
+    runContext.setInclude(Collections.singletonList("li:nth-child(1)"));
 
-    AxeBuilder builder = new AxeBuilder(this.webDriver).include(Collections.singletonList("#div1"));
+    AxeBuilder builder = new AxeBuilder(this.webDriver).include(Collections.singletonList("li:nth-child(1)"));
     AxeResult result = builder.analyze();
     verifyAxeResult(result);
 
@@ -145,7 +144,7 @@ public class AxeBuilderUnitTest {
    */
   @Test()
   public void shouldPassContextIfExcludeSet() throws IOException, OperationNotSupportedException {
-    List<String> exclude = Collections.singletonList("body > main > ul > li");
+    List<String> exclude = Collections.singletonList("li:nth-child(1)");
     AxeRunContext runContext = new AxeRunContext();
     runContext.setExclude(exclude);
 
@@ -185,7 +184,6 @@ public class AxeBuilderUnitTest {
   public void shouldPassRunOptionsIfDeprecatedOptionsSet()
       throws IOException, OperationNotSupportedException {
     String expectedOptions = "deprecated run options";
-    //setupVerifiableScanCall(null, expectedOptions);
 
     AxeBuilder builder = new AxeBuilder(this.webDriver);
     builder.setOptions(expectedOptions);
@@ -202,8 +200,7 @@ public class AxeBuilderUnitTest {
   public void shouldPassRunOptionsIfDeprecatedOptionsSetWithContextElement()
       throws IOException, OperationNotSupportedException {
     String expectedOptions = "deprecated run options";
-    WebElement expectedContext = this.webDriver.findElement(By.cssSelector("body > main > ul > li:nth-child(1)"));
-    //setupVerifiableScanElementCall(expectedContext, expectedOptions);
+    WebElement expectedContext = this.webDriver.findElement(By.cssSelector("li:nth-child(1)"));
 
     AxeBuilder builder = new AxeBuilder(this.webDriver);
     builder.setOptions(expectedOptions);
@@ -401,12 +398,13 @@ public class AxeBuilderUnitTest {
     Assert.assertEquals(4, result.getViolations().size());
   }
 
+  /*
   /**
    * sets up a scan for testing.
    * @param serializedContext the serialized contexts to be used
    * @param serializedOptions the serialized optiosn to be used
    * @throws IOException if file writing fails
-   */
+   /
   private void setupVerifiableScanCall(String serializedContext, String serializedOptions)
       throws IOException {
     Object[] rawArgs = new Object[] { serializedContext, serializedOptions };
@@ -415,4 +413,5 @@ public class AxeBuilderUnitTest {
     String object = (String) this.javascriptExecutor.executeAsyncScript(scanJsContent, rawArgs);
     Assert.assertEquals(object, getTestAxeResult());
   }
+  */
 }
