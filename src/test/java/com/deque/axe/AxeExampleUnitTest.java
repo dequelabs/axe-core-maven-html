@@ -115,7 +115,7 @@ public class AxeExampleUnitTest {
     boolean didTimeout = false;
 
     try {
-      AxeBuilder builder = new AxeBuilder(webDriver);
+      AxeBuilder builder = new AxeBuilder(webDriver).setTimeout(1);
       FileAxeScriptProvider axeScriptProvider = new FileAxeScriptProvider(timeoutFilePath);
       WebDriverInjectorExtensions.inject(webDriver, axeScriptProvider);
       builder.analyze();
@@ -126,15 +126,34 @@ public class AxeExampleUnitTest {
       }
       didTimeout = true;
     }
-    Assert.assertTrue(didTimeout,"Did set custom timeout");
+    Assert.assertTrue(didTimeout,"Setting Custom timeout did not work.");
+  }
+
+  /**
+   * Test a specific selector.
+   */
+  @Test
+  public void testAccessibilityWithSelector() throws IOException, OperationNotSupportedException {
+    AxeResult result = new AxeBuilder(webDriver).include(Collections.singletonList("p")).analyze();
+    //JSONObject responseJSON = new AXE.Builder(driver, scriptUrl).include("title").include("p").analyze();
+    List<AxeResultItem> violations = result.getViolations();
+
+    if (violations.isEmpty()) {
+      assertTrue("No violations found", true);
+    } else {
+      AxeFormatting.writeResultsToJsonFile("testAccessibilityWithSelector", result);
+      Assert.assertTrue(getReadableAxeResults(ResultType.Violations.key, webDriver, violations));
+      AxeFormatting.writeResultsToTextFile(
+          "testAccessibilityWithSelector", AxeFormatting.getAxeResultString());
+    }
   }
 
   /**
    * Test a specific selector or selectors
    */
   @Test
-  public void testAccessibilityWithSelector() throws IOException, OperationNotSupportedException {
-    AxeResult result = new AxeBuilder(webDriver).include(Arrays.asList("title", "li")).analyze();
+  public void testAccessibilityWithSelectors() throws IOException, OperationNotSupportedException {
+    AxeResult result = new AxeBuilder(webDriver).include(Arrays.asList("title", "p")).analyze();
     //JSONObject responseJSON = new AXE.Builder(driver, scriptUrl).include("title").include("p").analyze();
     List<AxeResultItem> violations = result.getViolations();
 
@@ -183,10 +202,10 @@ public class AxeExampleUnitTest {
     AxeFormatting.writeResultsToJsonFile("testAccessibilityWithWebElement", result.getJson());
   }
 
-  /*
+
   /**
    * Test WebElements.
-   *
+   */
   @Test
   public void testAccessibilityWithWebElements() throws IOException, OperationNotSupportedException {
     webDriver.get(new File(includeExcludePage).getAbsolutePath());
@@ -208,7 +227,6 @@ public class AxeExampleUnitTest {
     assertTrue("No violations found", violations.isEmpty());
     AxeFormatting.writeResultsToJsonFile("testAccessibilityWithWebElement", result.getJson());
   }
-   */
 
   /**
    * Test a page with Shadow DOM violations
