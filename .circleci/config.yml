@@ -28,6 +28,26 @@ jobs:
           background: true
       - run: sleep 5 # sleep to allow the server some time to boot
       - run: mvn test
+  release:
+    <<: *defaults
+    steps:
+      - checkout
+      - restore_cache:
+          key: v1-mvn-deps-{{ checksum "pom.xml" }}
+      - run: .circleci/publish.sh
+  github_release:
+    docker:
+      - image: circleci/golang:1.8
+    steps:
+      - checkout
+      - run: go get gopkg.in/aktau/github-release.v0
+      - run:
+          name: Download and run GitHub release script
+          command: |
+            curl https://raw.githubusercontent.com/dequelabs/attest-release-scripts/develop/src/java-github-release.sh -s -o ./java-github-release.sh
+            chmod +x ./java-github-release.sh
+            ./java-github-release.sh
+
 
 workflows:
   version: 2
@@ -37,3 +57,13 @@ workflows:
       - tests:
           requires:
             - dependencies
+      - release:
+          requires:
+            - dependencies
+            - tests
+          filters:
+            branches:
+              only: master
+      - github_release:
+          requires:
+            - release
