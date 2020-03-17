@@ -9,6 +9,8 @@ import com.deque.axe.objects.AxeResult;
 import com.deque.axe.providers.EmbeddedResourceAxeProvider;
 import com.deque.axe.providers.EmbeddedResourceProvider;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -72,8 +74,9 @@ public class AxeBuilder {
    * sets the timeout.
    * @param newTimeout the int value to be set
    */
-  public void setTimeout(int newTimeout) {
+  public AxeBuilder setTimeout(int newTimeout) {
     this.timeout = newTimeout;
+    return this;
   }
 
   /**
@@ -249,6 +252,16 @@ public class AxeBuilder {
   }
 
   /**
+   * Run axe against specific WebElements (including its descendants).
+   * @param context The WebElements to test
+   * @return An axe results document
+   */
+  public AxeResult analyze(WebElement... context) throws IOException {
+    List<WebElement> elements = new ArrayList<>(Arrays.asList(context));
+    return analyzeRawContext(elements);
+  }
+
+  /**
    * Run axe against the entire page.
    * @return An axe results document
    */
@@ -283,7 +296,6 @@ public class AxeBuilder {
     String stringResult = (String) ((JavascriptExecutor) this.getWebDriver())
         .executeAsyncScript(scanJsContent, rawArgs);
     JSONObject jsonObject = new JSONObject(stringResult);
-
 
     String error = jsonObject.getString("error");
 
