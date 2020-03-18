@@ -12,7 +12,6 @@ import org.openqa.selenium.WebElement;
  * web driver extension that has extra analyze methods.
  */
 public class WebDriverExtensions {
-
   /**
    * class initializer for web driver extensions.
    */

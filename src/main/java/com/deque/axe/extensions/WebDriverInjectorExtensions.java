@@ -14,7 +14,6 @@ import org.openqa.selenium.WebElement;
  * Holds the Web driver injection extension methods.
  */
 public class WebDriverInjectorExtensions {
-
   /**
    * initializes the WebDriverInjectorExtensions class.
    */

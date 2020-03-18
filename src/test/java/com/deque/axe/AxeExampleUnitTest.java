@@ -95,8 +95,8 @@ public class AxeExampleUnitTest {
   @Test
   public void testAccessibilityWithOptions() throws IOException, OperationNotSupportedException {
     AxeBuilder builder = new AxeBuilder(webDriver);
-    //builder.setOptions("{ runOnly: { type: rules: { 'accesskeys': { enabled: false } } }");
-    builder.setOptions("{ runOnly :{ type : rules , values :[ rule1 ]}, rules :{ accesskeys :{ enabled :false}}}");
+    builder.setOptions("{ rules: { 'accesskeys': { enabled: false } } }");
+    //builder.setOptions("{ runOnly :{ type : rules , values :[ rule1 ]}, rules :{ accesskeys :{ enabled :false}}}");
     AxeResult result = builder.analyze();
     List<AxeResultItem> violations = result.getViolations();
 
@@ -135,7 +135,6 @@ public class AxeExampleUnitTest {
   @Test
   public void testAccessibilityWithSelector() throws IOException, OperationNotSupportedException {
     AxeResult result = new AxeBuilder(webDriver).include(Collections.singletonList("p")).analyze();
-    //JSONObject responseJSON = new AXE.Builder(driver, scriptUrl).include("title").include("p").analyze();
     List<AxeResultItem> violations = result.getViolations();
 
     if (violations.isEmpty()) {
@@ -154,7 +153,6 @@ public class AxeExampleUnitTest {
   @Test
   public void testAccessibilityWithSelectors() throws IOException, OperationNotSupportedException {
     AxeResult result = new AxeBuilder(webDriver).include(Arrays.asList("title", "p")).analyze();
-    //JSONObject responseJSON = new AXE.Builder(driver, scriptUrl).include("title").include("p").analyze();
     List<AxeResultItem> violations = result.getViolations();
 
     if (violations.isEmpty()) {
@@ -177,7 +175,6 @@ public class AxeExampleUnitTest {
     AxeResult result = new AxeBuilder(webDriver)
         .include(Collections.singletonList("body"))
         .exclude(Collections.singletonList("li")).analyze();
-    // JSONObject responseJSON = new AXE.Builder(driver, scriptUrl).include("body").exclude("h1").analyze();
 
     List<AxeResultItem> violations = result.getViolations();
 
@@ -209,8 +206,8 @@ public class AxeExampleUnitTest {
   @Test
   public void testAccessibilityWithWebElements() throws IOException, OperationNotSupportedException {
     webDriver.get(new File(includeExcludePage).getAbsolutePath());
-    AxeResult result = new AxeBuilder(webDriver).analyze(webDriver.findElement(By.tagName("h1")),
-        webDriver.findElement(By.tagName("h2")));
+    AxeResult result = new AxeBuilder(webDriver).analyze(Arrays.asList(
+        webDriver.findElement(By.tagName("h1")), webDriver.findElement(By.tagName("h2"))));
 
     List<AxeResultItem>  violations = result.getViolations();
     List<AxeResultNode> nodes = violations.get(0).getNodes();
@@ -272,9 +269,6 @@ public class AxeExampleUnitTest {
   public void testAccessibilityWithFewInclude() throws IOException, OperationNotSupportedException {
     this.webDriver.get(new File(includeExcludePage).getAbsolutePath());
     AxeResult result = new AxeBuilder(webDriver).include(Arrays.asList("div", "p")).analyze();
-    //JSONObject responseJSON = new AXE.Builder(driver, scriptUrl).include("div").include("p").analyze();
-
-    //JSONArray violations = responseJSON.getJSONArray("violations");
     List<AxeResultItem> violations = result.getViolations();
 
     if (violations.isEmpty()) {
@@ -298,13 +292,7 @@ public class AxeExampleUnitTest {
         .include(Collections.singletonList("body"))
         .exclude(Collections.singletonList("div")).analyze();
 
-    // JSONObject responseJSON = new AXE.Builder(driver, scriptUrl).include("body").exclude("div").analyze();
-
-    //JSONArray violations = responseJSON.getJSONArray("violations");
     List<AxeResultItem> violations = result.getViolations();
-
-    //JSONArray nodes = ((JSONObject)violations.get(0)).getJSONArray("nodes");
-    //JSONArray target = ((JSONObject)nodes.get(0)).getJSONArray("target");
 
     AxeResultItem resultItem = violations.get(0);
     List<AxeResultNode> nodes = resultItem.getNodes();
@@ -313,13 +301,12 @@ public class AxeExampleUnitTest {
     if (violations.isEmpty()) {
       assertEquals(String.valueOf(targets), "[\"span\"]");
     } else {
-      //AXE.writeResults(testName.getMethodName(), result);
       AxeFormatting.writeResultsToJsonFile(
           "testAccessibilityWithIncludesAndExcludesWithViolation", result.getJson());
       Assert.assertTrue(getReadableAxeResults(ResultType.Violations.key, webDriver, violations));
       AxeFormatting.writeResultsToTextFile(
           "testAccessibilityWithIncludesAndExcludesWithViolation", AxeFormatting.getAxeResultString());
-      Assert.assertEquals(violations.size(), 0,"No violations found");
+      Assert.assertEquals(violations.size(), 1,"No violations found");
     }
   }
 }
