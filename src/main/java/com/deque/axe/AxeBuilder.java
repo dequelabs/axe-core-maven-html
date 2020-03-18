@@ -9,8 +9,6 @@ import com.deque.axe.objects.AxeResult;
 import com.deque.axe.providers.EmbeddedResourceAxeProvider;
 import com.deque.axe.providers.EmbeddedResourceProvider;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -256,9 +254,8 @@ public class AxeBuilder {
    * @param context The WebElements to test
    * @return An axe results document
    */
-  public AxeResult analyze(WebElement... context) throws IOException {
-    List<WebElement> elements = new ArrayList<>(Arrays.asList(context));
-    return analyzeRawContext(elements);
+  public AxeResult analyze(List<WebElement> context) throws IOException {
+    return analyzeRawContext(context);
   }
 
   /**
@@ -276,15 +273,10 @@ public class AxeBuilder {
    * Runs axe via scan.js at a specific context, which will be passed
    * as-is to Selenium for scan.js to interpret, and parses/handles
    * the scan.js output per the current builder options.
-   * @param rawContextArg The value to pass as-is to scan.js to
-   *                      use as the axe.run "context" argument
+   * @param rawContextArg The value to pass as-is to scan.js to use as the axe.run "context" argument
    * @return an Axe Result
    */
-  private AxeResult analyzeRawContext(Object... rawContextArg) throws IOException {
-    if (rawContextArg[0] == null) {
-      rawContextArg = null;
-    }
-
+  private AxeResult analyzeRawContext(Object rawContextArg) throws IOException {
     String rawOptionsArg = getOptions().equals("{}")
         ? AxeFormatting.serialize(runOptions) : getOptions();
     String scanJsContent = EmbeddedResourceProvider

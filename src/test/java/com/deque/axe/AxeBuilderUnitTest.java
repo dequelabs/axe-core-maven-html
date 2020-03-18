@@ -1,5 +1,6 @@
 package com.deque.axe;
 
+import com.deque.axe.providers.EmbeddedResourceProvider;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.deque.axe.jsonobjects.AxeRuleOptions;
 import com.deque.axe.jsonobjects.AxeRunContext;
@@ -115,7 +116,12 @@ public class AxeBuilderUnitTest {
       throws IOException, OperationNotSupportedException {
     AxeBuilder builder = new AxeBuilder(this.webDriver);
     AxeResult result = builder.analyze();
-    verifyAxeResult(result);
+    verifyAxeResultsNotNull(result);
+    Assert.assertEquals(42, result.getInapplicable().size());
+    Assert.assertEquals(0, result.getIncomplete().size());
+    Assert.assertEquals(22, result.getPasses().size());
+    Assert.assertEquals(4, result.getViolations().size());
+    verifyDriversNotNull();
   }
 
   /**
@@ -130,11 +136,15 @@ public class AxeBuilderUnitTest {
 
     AxeBuilder builder = new AxeBuilder(this.webDriver).include(Collections.singletonList("li:nth-child(1)"));
     AxeResult result = builder.analyze();
-    verifyAxeResult(result);
 
-    Assert.assertNotNull(this.webDriver);
-    Assert.assertNotNull(this.targetLocator);
-    Assert.assertNotNull(this.javascriptExecutor);
+    verifyAxeResultsNotNull(result);
+
+    Assert.assertEquals(56, result.getInapplicable().size());
+    Assert.assertEquals(0, result.getIncomplete().size());
+    Assert.assertEquals(6, result.getPasses().size());
+    Assert.assertEquals(1, result.getViolations().size());
+
+    verifyDriversNotNull();
   }
 
   /**
@@ -150,7 +160,9 @@ public class AxeBuilderUnitTest {
 
     AxeBuilder builder = new AxeBuilder(this.webDriver).exclude(exclude);
     AxeResult result = builder.analyze();
+    verifyAxeResultsNotNull(result);
     verifyAxeResult(result);
+    verifyDriversNotNull();
   }
 
   /**
@@ -172,7 +184,14 @@ public class AxeBuilderUnitTest {
 
     AxeBuilder builder = new AxeBuilder(this.webDriver).include(includeList).exclude(excludeList);
     AxeResult result = builder.analyze();
-    verifyAxeResult(result);
+    verifyAxeResultsNotNull(result);
+
+    Assert.assertEquals(56, result.getInapplicable().size());
+    Assert.assertEquals(0, result.getIncomplete().size());
+    Assert.assertEquals(6, result.getPasses().size());
+    Assert.assertEquals(1, result.getViolations().size());
+
+    verifyDriversNotNull();
   }
 
   /**
@@ -188,7 +207,9 @@ public class AxeBuilderUnitTest {
     AxeBuilder builder = new AxeBuilder(this.webDriver);
     builder.setOptions(expectedOptions);
     AxeResult result = builder.analyze();
+    verifyAxeResultsNotNull(result);
     verifyAxeResult(result);
+    verifyDriversNotNull();
   }
 
   /**
@@ -206,7 +227,9 @@ public class AxeBuilderUnitTest {
     builder.setOptions(expectedOptions);
 
     AxeResult result = builder.analyze(expectedContext);
+    verifyAxeResultsNotNull(result);
     verifyAxeResult(result);
+    verifyDriversNotNull();
   }
 
   /**
@@ -236,7 +259,9 @@ public class AxeBuilderUnitTest {
 
     AxeBuilder builder = new AxeBuilder(this.webDriver).disableRules(disableRules).withRules(expectedRules);
     AxeResult result = builder.analyze();
+    verifyAxeResultsNotNull(result);
     verifyAxeResult(result);
+    verifyDriversNotNull();
   }
 
   /**
@@ -247,7 +272,7 @@ public class AxeBuilderUnitTest {
   @Test()
   public void shouldPassRunOptionsWithTagConfig() throws IOException,
       OperationNotSupportedException {
-    List<String> expectedTags = Arrays.asList("tag1", "tag2");
+    List<String> expectedTags = Arrays.asList("h1", "p");
     AxeRunOnlyOptions runOnly = new AxeRunOnlyOptions();
     runOnly.setType("tag");
     runOnly.setValues(expectedTags);
@@ -257,7 +282,9 @@ public class AxeBuilderUnitTest {
 
     AxeBuilder builder = new AxeBuilder(this.webDriver).withTags(expectedTags);
     AxeResult result = builder.analyze();
+    verifyAxeResultsNotNull(result);
     verifyAxeResult(result);
+    verifyDriversNotNull();
   }
 
   /**
@@ -279,7 +306,9 @@ public class AxeBuilderUnitTest {
 
     AxeBuilder builder = new AxeBuilder(this.webDriver).withOptions(runOptions);
     AxeResult result = builder.analyze();
+    verifyAxeResultsNotNull(result);
     verifyAxeResult(result);
+    verifyDriversNotNull();
   }
 
   /**
@@ -386,25 +415,39 @@ public class AxeBuilderUnitTest {
    * @param result the Axe Result to be compared
    */
   private void verifyAxeResult(AxeResult result) {
+    Assert.assertEquals(42, result.getInapplicable().size());
+    Assert.assertEquals(0, result.getIncomplete().size());
+    Assert.assertEquals(22, result.getPasses().size());
+    Assert.assertEquals(3, result.getViolations().size());
+  }
+
+  /**
+   * Makes sure the Result properties are not null.
+   * @param result the Axe Result to be compared
+   */
+  private void verifyAxeResultsNotNull(AxeResult result) {
     Assert.assertNotNull(result);
     Assert.assertNotNull(result.getInapplicable());
     Assert.assertNotNull(result.getIncomplete());
     Assert.assertNotNull(result.getPasses());
     Assert.assertNotNull(result.getViolations());
-
-    Assert.assertEquals(42, result.getInapplicable().size());
-    Assert.assertEquals(0, result.getIncomplete().size());
-    Assert.assertEquals(22, result.getPasses().size());
-    Assert.assertEquals(4, result.getViolations().size());
   }
 
-  /*
+  /**
+   * makes sure the web driver, the target locator and js executor are not null.
+   */
+  private void verifyDriversNotNull() {
+    Assert.assertNotNull(this.webDriver);
+    Assert.assertNotNull(this.targetLocator);
+    Assert.assertNotNull(this.javascriptExecutor);
+  }
+
   /**
    * sets up a scan for testing.
    * @param serializedContext the serialized contexts to be used
-   * @param serializedOptions the serialized optiosn to be used
+   * @param serializedOptions the serialized options to be used
    * @throws IOException if file writing fails
-   /
+   */
   private void setupVerifiableScanCall(String serializedContext, String serializedOptions)
       throws IOException {
     Object[] rawArgs = new Object[] { serializedContext, serializedOptions };
@@ -413,5 +456,5 @@ public class AxeBuilderUnitTest {
     String object = (String) this.javascriptExecutor.executeAsyncScript(scanJsContent, rawArgs);
     Assert.assertEquals(object, getTestAxeResult());
   }
-  */
+
 }
