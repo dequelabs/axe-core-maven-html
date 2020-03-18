@@ -355,9 +355,9 @@ public class AXE {
 		 * @param context A WebElement to test
 		 * @return An aXe results document
 		 */
-		public JSONObject analyze(final WebElement context) {
+		public JSONObject analyze(final WebElement... context) {
 			String snippet = getAxeSnippet("arguments[0]", options);
-			return execute(snippet, context);
+			return execute(snippet, (Object) context);
 		}
 
 		private JSONObject execute(final String command, final Object... args) {
