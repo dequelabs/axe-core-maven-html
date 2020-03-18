@@ -367,7 +367,6 @@ public class AXE {
 
 			Object response = ((JavascriptExecutor) this.driver).executeAsyncScript(command, args);
 			JSONObject result = new JSONObject((Map) response);
-
 			String error = result.getString("error");
 
 			// If the error is non-nil, raise a runtime error.
