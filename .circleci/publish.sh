@@ -17,21 +17,23 @@ echo "  <offline/>" >> ~/.m2/settings.xml
 echo "  <pluginGroups/>" >> ~/.m2/settings.xml
 echo "  <servers>" >> ~/.m2/settings.xml
 echo "    <server>" >> ~/.m2/settings.xml
-echo "      <id>deque</id>" >> ~/.m2/settings.xml
-echo "      <username>$MVN_USERNAME</username>" >> ~/.m2/settings.xml
-echo "      <password>$MVN_PASSWORD</password>" >> ~/.m2/settings.xml
-echo "    </server>" >> ~/.m2/settings.xml
-echo "    <server>" >> ~/.m2/settings.xml
-echo "      <id>attest-java-releases</id>" >> ~/.m2/settings.xml
-echo "      <username>$MVN_USERNAME</username>" >> ~/.m2/settings.xml
-echo "      <password>$MVN_PASSWORD</password>" >> ~/.m2/settings.xml
-echo "    </server>" >> ~/.m2/settings.xml
-echo "    <server>" >> ~/.m2/settings.xml
-echo "      <id>attest-java-snapshots</id>" >> ~/.m2/settings.xml
-echo "      <username>$MVN_USERNAME</username>" >> ~/.m2/settings.xml
-echo "      <password>$MVN_PASSWORD</password>" >> ~/.m2/settings.xml
+echo "      <id>ossrh</id>" >> ~/.m2/settings.xml
+echo "      <username>$OSSRH_USERNAME</username>" >> ~/.m2/settings.xml
+echo "      <password>$OSSRH_PASSWORD</password>" >> ~/.m2/settings.xml
 echo "    </server>" >> ~/.m2/settings.xml
 echo "  </servers>" >> ~/.m2/settings.xml
+echo "  <profiles>" >> ~/.m2/settings.xml
+echo "    <profile>" >> ~/.m2/settings.xml
+echo "      <id>ossrh</id>" >> ~/.m2/settings.xml
+echo "      <activation>" >> ~/.m2/settings.xml
+echo "        <activeByDefault>true</activeByDefault>" >> ~/.m2/settings.xml
+echo "      </activation>" >> ~/.m2/settings.xml
+echo "      <properties>" >> ~/.m2/settings.xml
+echo "        <gpg.executable>gpg2</gpg.executable>" >> ~/.m2/settings.xml
+echo "        <gpg.passphrase>$GPG_PASSPHRASE</gpg.passphrase>" >> ~/.m2/settings.xml
+echo "      </properties>" >> ~/.m2/settings.xml
+echo "    </profile>" >> ~/.m2/settings.xml
+echo "  </profiles>" >> ~/.m2/settings.xml
 echo "  <mirrors/>" >> ~/.m2/settings.xml
 echo "  <proxies/>" >> ~/.m2/settings.xml
 echo "  <activeProfiles/>" >> ~/.m2/settings.xml
@@ -39,4 +41,4 @@ echo "</settings>" >> ~/.m2/settings.xml
 
 chmod 0600 ~/.m2/settings.xml
 
-mvn deploy -DskipTests
+mvn clean deploy -DskipTests
