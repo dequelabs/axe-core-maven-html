@@ -53,7 +53,7 @@ The `Builder` class allows tests to chain configuration and analyze pages. The c
 - `include` adds to the list of included selectors. If you do not call `include` at all, aXe will run against the entire document.
 - `exclude` adds to the list of excluded selectors. Exclusions allow you to focus scope exactly where you need it, ignoring child elements you don't want to test.
 - `skipFrames` prevents aXe to be recursively injected into all iframes.
-- `analyze` executes aXe with any configuration you have previously defined. If you want to test `WebElements`, you may pass them into `analyze` instead of using `include` and `exclude`.
+- `analyze` executes aXe with any configuration you have previously defined. If you want to test one or more `WebElement`s, you may pass them into `analyze` instead of using `include` and `exclude`.
 
 The aXe documentation should be consulted for more details on customizing and analyzing calls to `axe.run`.
 
