@@ -11,13 +11,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import javax.naming.OperationNotSupportedException;
-
-import org.junit.After;
-import org.junit.Before;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeDriverService;
 import org.testng.Assert;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;
@@ -45,8 +41,6 @@ public class AxeExampleUnitTest {
     // ChromeDriver needed to test for Shadow DOM testing support
     System.setProperty("webdriver.chrome.driver","src/test/resources/chromedriver.exe");
     webDriver = new ChromeDriver();
-    this.webDriver.get(new File(normalPage).getAbsolutePath());
-
   }
 
   /**
@@ -62,12 +56,13 @@ public class AxeExampleUnitTest {
    */
   @Test
   public void testAccessibility() throws IOException, OperationNotSupportedException {
+    this.webDriver.get(new File(normalPage).getAbsolutePath());
     AxeResult result = new AxeBuilder(webDriver).analyze();
     List<AxeResultItem> violations = result.getViolations();
-
-    Assert.assertTrue(violations.isEmpty());
+    Assert.assertEquals(violations.size(), 0, "No violations found");
     AxeFormatting.writeResultsToJsonFile("testAccessibility", result.getJson());
     Assert.assertFalse(getReadableAxeResults(ResultType.Violations.key, webDriver, violations));
+    AxeFormatting.writeResultsToTextFile("testAccessibility", AxeFormatting.getAxeResultString());
   }
 
   /**
@@ -75,12 +70,12 @@ public class AxeExampleUnitTest {
    */
   @Test
   public void testAccessibilityWithSkipFrames() throws IOException, OperationNotSupportedException {
+    this.webDriver.get(new File(normalPage).getAbsolutePath());
     AxeResult result = new AxeBuilder(webDriver).analyze();
     List<AxeResultItem> violations = result.getViolations();
-
-    Assert.assertFalse(violations.isEmpty());
+    Assert.assertEquals(violations.size(), 0, "No violations found");
     AxeFormatting.writeResultsToJsonFile("testAccessibilityWithSkipFrames", result.getJson());
-    Assert.assertTrue(getReadableAxeResults(ResultType.Violations.key, webDriver, violations));
+    Assert.assertFalse(getReadableAxeResults(ResultType.Violations.key, webDriver, violations));
     AxeFormatting.writeResultsToTextFile(
         "testAccessibilityWithSkipFrames", AxeFormatting.getAxeResultString());
   }
@@ -89,14 +84,14 @@ public class AxeExampleUnitTest {
    * Test with options
    */
   @Test
+  // TODO: figure out why the option is an unexpected token.
   public void testAccessibilityWithOptions() throws IOException, OperationNotSupportedException {
+    this.webDriver.get(new File(normalPage).getAbsolutePath());
     AxeBuilder builder = new AxeBuilder(webDriver);
     builder.setOptions("{ rules: { 'accesskeys': { enabled: false } } }");
-    //builder.setOptions("{ runOnly :{ type : rules , values :[ rule1 ]}, rules :{ accesskeys :{ enabled :false}}}");
-
     AxeResult result = builder.analyze();
     List<AxeResultItem> violations = result.getViolations();
-    Assert.assertTrue(violations.isEmpty());
+    Assert.assertEquals(violations.size(), 0, "No violations found");
     AxeFormatting.writeResultsToJsonFile("testAccessibilityWithOptions", result.getJson());
     Assert.assertTrue(getReadableAxeResults(ResultType.Violations.key, webDriver, violations));
     AxeFormatting.writeResultsToTextFile("testAccessibilityWithOptions", getAxeResultString());
@@ -104,6 +99,7 @@ public class AxeExampleUnitTest {
 
   @Test
   public void testCustomTimeout() {
+    this.webDriver.get(new File(normalPage).getAbsolutePath());
     String timeoutFilePath = "src/test/resources/timeout.js";
     boolean didTimeout = false;
 
@@ -125,11 +121,14 @@ public class AxeExampleUnitTest {
    */
   @Test
   public void testAccessibilityWithSelector() throws IOException, OperationNotSupportedException {
+    this.webDriver.get(new File(normalPage).getAbsolutePath());
     AxeResult result = new AxeBuilder(webDriver).include(Collections.singletonList("p")).analyze();
     List<AxeResultItem> violations = result.getViolations();
-
-    Assert.assertTrue(violations.isEmpty(), "No violations found");
+    Assert.assertEquals(violations.size(), 0, "No violations found");
     AxeFormatting.writeResultsToJsonFile("testAccessibilityWithSelector", result.getJson());
+    Assert.assertFalse(getReadableAxeResults(ResultType.Violations.key, webDriver, violations));
+    AxeFormatting.writeResultsToTextFile(
+        "testAccessibilityWithSelector", AxeFormatting.getAxeResultString());
   }
 
   /**
@@ -137,17 +136,14 @@ public class AxeExampleUnitTest {
    */
   @Test
   public void testAccessibilityWithSelectors() throws IOException, OperationNotSupportedException {
+    this.webDriver.get(new File(normalPage).getAbsolutePath());
     AxeResult result = new AxeBuilder(webDriver).include(Arrays.asList("title", "p")).analyze();
     List<AxeResultItem> violations = result.getViolations();
-
-    if (violations.isEmpty()) {
-      assertTrue("No violations found", true);
-    } else {
-      AxeFormatting.writeResultsToJsonFile("testAccessibilityWithSelector", result.getJson());
-      Assert.assertTrue(getReadableAxeResults(ResultType.Violations.key, webDriver, violations));
-      AxeFormatting.writeResultsToTextFile(
-          "testAccessibilityWithSelector", AxeFormatting.getAxeResultString());
-    }
+    Assert.assertEquals(violations.size(), 0, "No violations found");
+    AxeFormatting.writeResultsToJsonFile("testAccessibilityWithSelectors", result.getJson());
+    Assert.assertFalse(getReadableAxeResults(ResultType.Violations.key, webDriver, violations));
+    AxeFormatting.writeResultsToTextFile(
+        "testAccessibilityWithSelectors", AxeFormatting.getAxeResultString());
   }
 
   /**
@@ -162,7 +158,7 @@ public class AxeExampleUnitTest {
         .exclude(Collections.singletonList("li")).analyze();
 
     List<AxeResultItem> violations = result.getViolations();
-    Assert.assertFalse(violations.isEmpty());
+    Assert.assertNotEquals(violations.size(), 0, "No violations found");
     AxeFormatting.writeResultsToJsonFile("testAccessibilityWithIncludesAndExcludes", result.getJson());
     Assert.assertTrue(getReadableAxeResults(ResultType.Violations.key, webDriver, violations));
     AxeFormatting.writeResultsToTextFile(
@@ -174,15 +170,15 @@ public class AxeExampleUnitTest {
    */
   @Test
   public void testAccessibilityWithWebElement() throws IOException, OperationNotSupportedException {
+    this.webDriver.get(new File(normalPage).getAbsolutePath());
     AxeResult result = new AxeBuilder(webDriver).analyze(webDriver.findElement(By.tagName("p")));
     List<AxeResultItem>  violations = result.getViolations();
-    Assert.assertTrue(violations.isEmpty(), "No violations found");
+    Assert.assertEquals(violations.size(), 0, "No violations found");
     AxeFormatting.writeResultsToJsonFile("testAccessibilityWithWebElement", result.getJson());
-    Assert.assertTrue(getReadableAxeResults(ResultType.Violations.key, webDriver, violations));
+    Assert.assertFalse(getReadableAxeResults(ResultType.Violations.key, webDriver, violations));
     AxeFormatting.writeResultsToTextFile(
         "testAccessibilityWithWebElement", AxeFormatting.getAxeResultString());
   }
-
 
   /**
    * Test WebElements.
@@ -228,6 +224,7 @@ public class AxeExampleUnitTest {
 
   @Test
   public void testAxeErrorHandling() throws IOException, OperationNotSupportedException {
+    this.webDriver.get(new File(normalPage).getAbsolutePath());
     String errorFilePath = "src/test/resources/axe-error.js";
     AxeBuilder builder = new AxeBuilder(webDriver);
     builder.setTimeout(1);
@@ -252,10 +249,9 @@ public class AxeExampleUnitTest {
     this.webDriver.get(new File(includeExcludePage).getAbsolutePath());
     AxeResult result = new AxeBuilder(webDriver).include(Arrays.asList("div", "p")).analyze();
     List<AxeResultItem> violations = result.getViolations();
-
-    Assert.assertTrue(violations.isEmpty(), "No violations found");
+    Assert.assertEquals(violations.size(), 0, "No violations found");
     AxeFormatting.writeResultsToJsonFile("testAccessibilityWithFewInclude", result.getJson());
-    Assert.assertTrue(getReadableAxeResults(ResultType.Violations.key, webDriver, violations));
+    Assert.assertFalse(getReadableAxeResults(ResultType.Violations.key, webDriver, violations));
     AxeFormatting.writeResultsToTextFile(
         "testAccessibilityWithFewInclude", AxeFormatting.getAxeResultString());
   }

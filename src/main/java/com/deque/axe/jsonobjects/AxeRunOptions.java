@@ -9,7 +9,7 @@ import java.util.Map;
 /**
  * Run configuration data that is passed to axe for scanning the web page.
  */
-@JsonPropertyOrder({"absolutePaths","iframes","restoreScroll","frameWaitTime", "runOnly", "rules"})
+@JsonPropertyOrder({"rules","absolutePaths","iframes","restoreScroll","frameWaitTime", "runOnly"})
 @JsonIgnoreProperties(value = "xpath")
 public class AxeRunOptions {
   /**

@@ -104,7 +104,7 @@ public class AxeFormatting {
     message.append("Found ").append(axeRules).append(" items");
     message.append(System.lineSeparator());
 
-    if (axeRules == 0 && getAxeResultString() == null) {
+    if (axeRules == 0) {
       setAxeResultString(message.toString().trim());
       return false;
     }
