@@ -75,7 +75,7 @@ public class AxeIntegrationUnitTest {
     Assert.assertNotEquals("color-contrast", violations.get(0).getID());
     Assert.assertNotNull(results.getViolations().get(0).getTags());
     Assert.assertTrue(results.getViolations().get(0).getTags().contains("wcag2a"));
-    Assert.assertTrue(results.getViolations().get(0).getTags().contains("wcag131"));
+    Assert.assertTrue(results.getViolations().get(0).getTags().contains("wcag412"));
     Assert.assertEquals(2, violations.size());
     Assert.assertNotNull(results.getViolations().get(0).getNodes());
 

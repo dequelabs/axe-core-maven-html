@@ -195,44 +195,6 @@ public class AxeBuilderUnitTest {
   }
 
   /**
-   * tests Run Options if Deprecated options is set.
-   * @throws IOException if file writing fails
-   * @throws OperationNotSupportedException if the operation errors out
-   */
-  @Test()
-  public void shouldPassRunOptionsIfDeprecatedOptionsSet()
-      throws IOException, OperationNotSupportedException {
-    String expectedOptions = "deprecated run options";
-
-    AxeBuilder builder = new AxeBuilder(this.webDriver);
-    builder.setOptions(expectedOptions);
-    AxeResult result = builder.analyze();
-    verifyAxeResultsNotNull(result);
-    verifyAxeResult(result);
-    verifyDriversNotNull();
-  }
-
-  /**
-   * tests Run Options if deprecated options is set with context elements.
-   * @throws IOException if file writing fails
-   * @throws OperationNotSupportedException if the operation errors out
-   */
-  @Test()
-  public void shouldPassRunOptionsIfDeprecatedOptionsSetWithContextElement()
-      throws IOException, OperationNotSupportedException {
-    String expectedOptions = "deprecated run options";
-    WebElement expectedContext = this.webDriver.findElement(By.cssSelector("li:nth-child(1)"));
-
-    AxeBuilder builder = new AxeBuilder(this.webDriver);
-    builder.setOptions(expectedOptions);
-
-    AxeResult result = builder.analyze(expectedContext);
-    verifyAxeResultsNotNull(result);
-    verifyAxeResult(result);
-    verifyDriversNotNull();
-  }
-
-  /**
    * tests the rules config.
    * @throws IOException if file writing fails
    * @throws OperationNotSupportedException if the operation errors out
@@ -272,7 +234,7 @@ public class AxeBuilderUnitTest {
   @Test()
   public void shouldPassRunOptionsWithTagConfig() throws IOException,
       OperationNotSupportedException {
-    List<String> expectedTags = Arrays.asList("h1", "p");
+    List<String> expectedTags = Arrays.asList("title", "li");
     AxeRunOnlyOptions runOnly = new AxeRunOnlyOptions();
     runOnly.setType("tag");
     runOnly.setValues(expectedTags);
