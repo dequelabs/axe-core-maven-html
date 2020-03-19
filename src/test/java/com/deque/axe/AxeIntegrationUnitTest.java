@@ -66,7 +66,7 @@ public class AxeIntegrationUnitTest {
     AxeBuilder builder = new AxeBuilder(webDriver).withOptions(runOptions)
          .withTags(Arrays.asList("wcag2a", "wcag412"))
          .disableRules(Collections.singletonList("color-contrast"))
-         .withOutputFile("runScanOnPageChrome");
+         .withOutputFile("src/test/java/results/runScanOnPageChrome");
 
     AxeResult results = builder.analyze();
     List<AxeResultItem> violations = results.getViolations();

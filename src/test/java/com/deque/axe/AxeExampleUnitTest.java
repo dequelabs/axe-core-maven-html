@@ -60,9 +60,9 @@ public class AxeExampleUnitTest {
     AxeResult result = new AxeBuilder(webDriver).analyze();
     List<AxeResultItem> violations = result.getViolations();
     Assert.assertEquals(violations.size(), 0, "No violations found");
-    AxeFormatting.writeResultsToJsonFile("testAccessibility", result.getJson());
+    AxeFormatting.writeResultsToJsonFile("src/test/java/results/testAccessibility", result.getJson());
     Assert.assertFalse(getReadableAxeResults(ResultType.Violations.key, webDriver, violations));
-    AxeFormatting.writeResultsToTextFile("testAccessibility", AxeFormatting.getAxeResultString());
+    AxeFormatting.writeResultsToTextFile("src/test/java/results/testAccessibility", AxeFormatting.getAxeResultString());
   }
 
   /**
@@ -74,10 +74,10 @@ public class AxeExampleUnitTest {
     AxeResult result = new AxeBuilder(webDriver).analyze();
     List<AxeResultItem> violations = result.getViolations();
     Assert.assertEquals(violations.size(), 0, "No violations found");
-    AxeFormatting.writeResultsToJsonFile("testAccessibilityWithSkipFrames", result.getJson());
+    AxeFormatting.writeResultsToJsonFile("src/test/java/results/testAccessibilityWithSkipFrames", result.getJson());
     Assert.assertFalse(getReadableAxeResults(ResultType.Violations.key, webDriver, violations));
     AxeFormatting.writeResultsToTextFile(
-        "testAccessibilityWithSkipFrames", AxeFormatting.getAxeResultString());
+        "src/test/java/results/testAccessibilityWithSkipFrames", AxeFormatting.getAxeResultString());
   }
 
   /**
@@ -92,9 +92,10 @@ public class AxeExampleUnitTest {
     AxeResult result = builder.analyze();
     List<AxeResultItem> violations = result.getViolations();
     Assert.assertEquals(violations.size(), 0, "No violations found");
-    AxeFormatting.writeResultsToJsonFile("testAccessibilityWithOptions", result.getJson());
+    AxeFormatting.writeResultsToJsonFile("src/test/java/results/testAccessibilityWithOptions", result.getJson());
     Assert.assertTrue(getReadableAxeResults(ResultType.Violations.key, webDriver, violations));
-    AxeFormatting.writeResultsToTextFile("testAccessibilityWithOptions", getAxeResultString());
+    AxeFormatting.writeResultsToTextFile(
+        "src/test/java/results/testAccessibilityWithOptions", getAxeResultString());
   }
 
   @Test
@@ -125,10 +126,10 @@ public class AxeExampleUnitTest {
     AxeResult result = new AxeBuilder(webDriver).include(Collections.singletonList("p")).analyze();
     List<AxeResultItem> violations = result.getViolations();
     Assert.assertEquals(violations.size(), 0, "No violations found");
-    AxeFormatting.writeResultsToJsonFile("testAccessibilityWithSelector", result.getJson());
+    AxeFormatting.writeResultsToJsonFile("src/test/java/results/testAccessibilityWithSelector", result.getJson());
     Assert.assertFalse(getReadableAxeResults(ResultType.Violations.key, webDriver, violations));
     AxeFormatting.writeResultsToTextFile(
-        "testAccessibilityWithSelector", AxeFormatting.getAxeResultString());
+        "src/test/java/results/testAccessibilityWithSelector", AxeFormatting.getAxeResultString());
   }
 
   /**
@@ -140,10 +141,10 @@ public class AxeExampleUnitTest {
     AxeResult result = new AxeBuilder(webDriver).include(Arrays.asList("title", "p")).analyze();
     List<AxeResultItem> violations = result.getViolations();
     Assert.assertEquals(violations.size(), 0, "No violations found");
-    AxeFormatting.writeResultsToJsonFile("testAccessibilityWithSelectors", result.getJson());
+    AxeFormatting.writeResultsToJsonFile("src/test/java/results/testAccessibilityWithSelectors", result.getJson());
     Assert.assertFalse(getReadableAxeResults(ResultType.Violations.key, webDriver, violations));
     AxeFormatting.writeResultsToTextFile(
-        "testAccessibilityWithSelectors", AxeFormatting.getAxeResultString());
+        "src/test/java/results/testAccessibilityWithSelectors", AxeFormatting.getAxeResultString());
   }
 
   /**
@@ -159,10 +160,10 @@ public class AxeExampleUnitTest {
 
     List<AxeResultItem> violations = result.getViolations();
     Assert.assertNotEquals(violations.size(), 0, "No violations found");
-    AxeFormatting.writeResultsToJsonFile("testAccessibilityWithIncludesAndExcludes", result.getJson());
+    AxeFormatting.writeResultsToJsonFile("src/test/java/results/testAccessibilityWithIncludesAndExcludes", result.getJson());
     Assert.assertTrue(getReadableAxeResults(ResultType.Violations.key, webDriver, violations));
     AxeFormatting.writeResultsToTextFile(
-        "testAccessibilityWithIncludesAndExcludes", AxeFormatting.getAxeResultString());
+        "src/test/java/results/testAccessibilityWithIncludesAndExcludes", AxeFormatting.getAxeResultString());
   }
 
   /**
@@ -174,10 +175,10 @@ public class AxeExampleUnitTest {
     AxeResult result = new AxeBuilder(webDriver).analyze(webDriver.findElement(By.tagName("p")));
     List<AxeResultItem>  violations = result.getViolations();
     Assert.assertEquals(violations.size(), 0, "No violations found");
-    AxeFormatting.writeResultsToJsonFile("testAccessibilityWithWebElement", result.getJson());
+    AxeFormatting.writeResultsToJsonFile("src/test/java/results/testAccessibilityWithWebElement", result.getJson());
     Assert.assertFalse(getReadableAxeResults(ResultType.Violations.key, webDriver, violations));
     AxeFormatting.writeResultsToTextFile(
-        "testAccessibilityWithWebElement", AxeFormatting.getAxeResultString());
+        "src/test/java/results/testAccessibilityWithWebElement", AxeFormatting.getAxeResultString());
   }
 
   /**
@@ -197,10 +198,10 @@ public class AxeExampleUnitTest {
     Assert.assertEquals(1, violations.size());
     Assert.assertEquals("[h1 > span]", String.valueOf(target1));
     Assert.assertEquals("[h2 > span]", String.valueOf(target2));
-    AxeFormatting.writeResultsToJsonFile("testAccessibilityWithWebElements", result.getJson());
+    AxeFormatting.writeResultsToJsonFile("src/test/java/results/testAccessibilityWithWebElements", result.getJson());
     Assert.assertTrue(getReadableAxeResults(ResultType.Violations.key, webDriver, violations));
     AxeFormatting.writeResultsToTextFile(
-        "testAccessibilityWithWebElements", AxeFormatting.getAxeResultString());
+        "src/test/java/results/testAccessibilityWithWebElements", AxeFormatting.getAxeResultString());
   }
 
   /**
@@ -216,10 +217,10 @@ public class AxeExampleUnitTest {
     List<String> targets = nodes.get(0).getTarget();
 
     assertEquals("[[\"#upside-down\",\"ul\"]]", String.valueOf(targets));
-    AxeFormatting.writeResultsToJsonFile("testAccessibilityWithShadowElement", result.getJson());
+    AxeFormatting.writeResultsToJsonFile("src/test/java/results/testAccessibilityWithShadowElement", result.getJson());
     Assert.assertTrue(getReadableAxeResults(ResultType.Violations.key, webDriver, violations));
     AxeFormatting.writeResultsToTextFile(
-        "testAccessibilityWithShadowElement", AxeFormatting.getAxeResultString());
+        "src/test/java/results/testAccessibilityWithShadowElement", AxeFormatting.getAxeResultString());
   }
 
   @Test
@@ -250,10 +251,10 @@ public class AxeExampleUnitTest {
     AxeResult result = new AxeBuilder(webDriver).include(Arrays.asList("div", "p")).analyze();
     List<AxeResultItem> violations = result.getViolations();
     Assert.assertEquals(violations.size(), 0, "No violations found");
-    AxeFormatting.writeResultsToJsonFile("testAccessibilityWithFewInclude", result.getJson());
+    AxeFormatting.writeResultsToJsonFile("src/test/java/results/testAccessibilityWithFewInclude", result.getJson());
     Assert.assertFalse(getReadableAxeResults(ResultType.Violations.key, webDriver, violations));
     AxeFormatting.writeResultsToTextFile(
-        "testAccessibilityWithFewInclude", AxeFormatting.getAxeResultString());
+        "src/test/java/results/testAccessibilityWithFewInclude", AxeFormatting.getAxeResultString());
   }
 
   /**
@@ -275,10 +276,10 @@ public class AxeExampleUnitTest {
     Assert.assertFalse(violations.isEmpty());
     Assert.assertEquals("[h1 > span]", String.valueOf(targets));
     AxeFormatting.writeResultsToJsonFile(
-        "testAccessibilityWithIncludesAndExcludesWithViolation", result.getJson());
+        "src/test/java/results/testAccessibilityWithIncludesAndExcludesWithViolation", result.getJson());
     Assert.assertTrue(getReadableAxeResults(ResultType.Violations.key, webDriver, violations));
     AxeFormatting.writeResultsToTextFile(
-        "testAccessibilityWithIncludesAndExcludesWithViolation", AxeFormatting.getAxeResultString());
+        "src/test/java/results/testAccessibilityWithIncludesAndExcludesWithViolation", AxeFormatting.getAxeResultString());
     Assert.assertEquals(violations.size(), 1,"No violations found");
     }
 }
