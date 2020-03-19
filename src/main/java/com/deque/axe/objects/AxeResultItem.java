@@ -155,13 +155,13 @@ public class AxeResultItem {
    */
   private List<AxeResultNode> setupAxeResultNode(JSONArray value) {
     List<AxeResultNode> list = new ArrayList<>();
-    AxeResultNode axeResultNode = new AxeResultNode();
 
     if (value.length() == 0) {
       return Collections.emptyList();
     }
 
     for (int i = 0; i < value.length(); i++) {
+      AxeResultNode axeResultNode = new AxeResultNode();
       if (value.getJSONObject(i).has("failureSummary")) {
         axeResultNode.setFailureSummary(value.getJSONObject(i).getString("failureSummary"));
       }

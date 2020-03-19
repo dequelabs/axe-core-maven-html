@@ -254,7 +254,7 @@ public class AxeBuilder {
    * @param context The WebElements to test
    * @return An axe results document
    */
-  public AxeResult analyze(List<WebElement> context) throws IOException {
+  public AxeResult analyze(WebElement... context) throws IOException {
     return analyzeRawContext(context);
   }
 
