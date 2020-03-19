@@ -51,8 +51,9 @@ public class AxeResult {
    */
   private List<AxeResultItem> setAxeResultItem(JSONArray newObject) {
     List<AxeResultItem> list = new ArrayList<>();
-    AxeResultItem axeResultItem = new AxeResultItem();
+
     for (int i = 0; i < newObject.length(); i++) {
+      AxeResultItem axeResultItem = new AxeResultItem();
       if (newObject.getJSONObject(i).has("impact")
           && !newObject.getJSONObject(i).get("impact").toString().equals("null")) {
         axeResultItem.setImpact(newObject.getJSONObject(i).getString("impact"));

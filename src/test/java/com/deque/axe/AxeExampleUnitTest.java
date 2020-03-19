@@ -11,8 +11,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import javax.naming.OperationNotSupportedException;
-import org.junit.Rule;
-import org.junit.rules.TestName;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -29,9 +27,6 @@ import static org.junit.Assert.assertTrue;
  * The example tests using the updated files.
  */
 public class AxeExampleUnitTest {
-  @Rule
-  public TestName testName = new TestName();
-
   private WebDriver webDriver;
 
   private static final String shadowErrorPage = "src/test/resources/files/shadow-error.html";
@@ -206,8 +201,8 @@ public class AxeExampleUnitTest {
   @Test
   public void testAccessibilityWithWebElements() throws IOException, OperationNotSupportedException {
     webDriver.get(new File(includeExcludePage).getAbsolutePath());
-    AxeResult result = new AxeBuilder(webDriver).analyze(Arrays.asList(
-        webDriver.findElement(By.tagName("h1")), webDriver.findElement(By.tagName("h2"))));
+    AxeResult result = new AxeBuilder(webDriver).analyze(
+        webDriver.findElement(By.tagName("h1")), webDriver.findElement(By.tagName("h2")));
 
     List<AxeResultItem>  violations = result.getViolations();
     List<AxeResultNode> nodes = violations.get(0).getNodes();
@@ -215,14 +210,12 @@ public class AxeExampleUnitTest {
     List<String> target2 = nodes.get(1).getTarget();
 
     if (violations.size() == 1) {
-      assertEquals("[\"h1 > span\"]", String.valueOf(target1));
-      assertEquals("[\"h2 > span\"]", String.valueOf(target2));
+      assertEquals("[h1 > span]", String.valueOf(target1));
+      assertEquals("[h2 > span]", String.valueOf(target2));
     } else {
-      //AXE.writeResults(testName.getMethodName(), responseJSON);
-      assertTrue("No violations found", false);
+      assertTrue("No violations found", violations.isEmpty());
+      AxeFormatting.writeResultsToJsonFile("testAccessibilityWithWebElement", result.getJson());
     }
-    assertTrue("No violations found", violations.isEmpty());
-    AxeFormatting.writeResultsToJsonFile("testAccessibilityWithWebElement", result.getJson());
   }
 
   /**
@@ -237,7 +230,7 @@ public class AxeExampleUnitTest {
     List<AxeResultNode> nodes = resultItem.getNodes();
     List<String> targets = nodes.get(0).getTarget();
 
-    assertEquals(String.valueOf(targets), "[[\"#upside-down\",\"ul\"]]");
+    assertEquals("[[\"#upside-down\",\"ul\"]]", String.valueOf(targets));
     AxeFormatting.writeResultsToJsonFile("testAccessibilityWithShadowElement", result.getJson());
     Assert.assertTrue(getReadableAxeResults(ResultType.Violations.key, webDriver, violations));
     AxeFormatting.writeResultsToTextFile(
@@ -256,7 +249,7 @@ public class AxeExampleUnitTest {
     try {
       builder.analyze();
     } catch (AXE.AxeRuntimeException e) {
-      assertEquals(e.getMessage(), "boom!"); // See axe-error.js
+      assertEquals("boom!", e.getMessage()); // See axe-error.js
       didError = true;
     }
     Assert.assertTrue(didError, "Did raise axe-core error");
@@ -299,7 +292,7 @@ public class AxeExampleUnitTest {
     List<String> targets = nodes.get(0).getTarget();
 
     if (violations.isEmpty()) {
-      assertEquals(String.valueOf(targets), "[\"span\"]");
+      assertEquals("[\"span\"]", String.valueOf(targets));
     } else {
       AxeFormatting.writeResultsToJsonFile(
           "testAccessibilityWithIncludesAndExcludesWithViolation", result.getJson());

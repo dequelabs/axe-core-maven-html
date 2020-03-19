@@ -456,5 +456,4 @@ public class AxeBuilderUnitTest {
     String object = (String) this.javascriptExecutor.executeAsyncScript(scanJsContent, rawArgs);
     Assert.assertEquals(object, getTestAxeResult());
   }
-
 }

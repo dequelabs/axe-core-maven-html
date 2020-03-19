@@ -8,6 +8,19 @@
     <version>3.1</version>
     <packaging>jar</packaging>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>8</source>
+                    <target>8</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
     <name>aXe Selenium Integration</name>
     <description>
 		Tools for using aXe for web accessibility testing with JUnit and Selenium.
