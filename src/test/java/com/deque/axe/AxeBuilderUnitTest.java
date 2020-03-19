@@ -171,6 +171,7 @@ public class AxeBuilderUnitTest {
    * @throws OperationNotSupportedException if the operation errors out
    */
   @Test()
+  // TODO: Figure out rules, error says rules are unknown.
   public void shouldPassRuleConfig() throws IOException, OperationNotSupportedException {
     List<String> expectedRules = Arrays.asList("rule1", "rule2");
     List<String> disableRules = Arrays.asList("excludeRule1", "excludeRule2");
@@ -203,6 +204,7 @@ public class AxeBuilderUnitTest {
    * @throws OperationNotSupportedException if the operation errors out
    */
   @Test()
+  // TODO: figure out why the the tags aren't being found.
   public void shouldPassRunOptionsWithTagConfig() throws IOException,
       OperationNotSupportedException {
     List<String> expectedTags = Arrays.asList("title", "li");
@@ -226,6 +228,7 @@ public class AxeBuilderUnitTest {
    * @throws OperationNotSupportedException if the operation errors out
    */
   @Test()
+  // TODO: Figure out what constitutes as a rule, right now it says unknown rule in error.
   public void shouldPassRunOptions() throws IOException, OperationNotSupportedException {
     AxeRuleOptions ruleOptions = new AxeRuleOptions();
     ruleOptions.setEnabled(false);
