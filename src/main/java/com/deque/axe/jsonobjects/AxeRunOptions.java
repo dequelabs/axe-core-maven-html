@@ -193,6 +193,10 @@ public class AxeRunOptions {
     return this.frameWaitTimeInMilliseconds;
   }
 
+  /**
+   * sets the frame wait time milliseconds.
+   * @param newFrameWaitTime the new frame wait time to be set
+   */
   @JsonProperty(value = "frameWaitTime")
   public void setFrameWaitTimeInMilliseconds(Integer newFrameWaitTime) {
     this.frameWaitTimeInMilliseconds = newFrameWaitTime;

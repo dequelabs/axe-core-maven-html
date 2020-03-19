@@ -78,8 +78,10 @@ public class AxeBuilder {
   }
 
   /**
-   * The run options to be passed to axe. Refer https://github.com/dequelabs/axe-core/blob/develop/doc/API.md#options-parameter
-   * Cannot not be used with WithRules(string[]), WithTags(string[]), & "DisableRules(string[]).
+   * The run options to be passed to axe.
+   * Refer to https://github.com/dequelabs/axe-core/blob/develop/doc/API.md#options-parameter.
+   * Cannot not be used with WithRules(List<String>),
+   * WithTags(List<String>), & "DisableRules(List<String>).
    */
   // TODO: Obsolete("Use WithOptions / WithTags / WithRules / DisableRules apis")]
   @Obsolete()

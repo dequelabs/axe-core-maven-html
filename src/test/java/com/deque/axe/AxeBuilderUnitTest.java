@@ -1,7 +1,5 @@
 package com.deque.axe;
 
-import com.deque.axe.providers.EmbeddedResourceProvider;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.deque.axe.jsonobjects.AxeRuleOptions;
 import com.deque.axe.jsonobjects.AxeRunContext;
 import com.deque.axe.jsonobjects.AxeRunOnlyOptions;
@@ -9,20 +7,16 @@ import com.deque.axe.jsonobjects.AxeRunOptions;
 import com.deque.axe.objects.AxeResult;
 import java.io.File;
 import java.io.IOException;
-import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.naming.OperationNotSupportedException;
-import org.json.JSONArray;
 import org.junit.Assert;
-import org.openqa.selenium.By;
 import org.openqa.selenium.InvalidArgumentException;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeDriverService;
 import org.testng.annotations.AfterTest;
@@ -36,29 +30,6 @@ public class AxeBuilderUnitTest {
   private WebDriver webDriver;
   private JavascriptExecutor javascriptExecutor;
   private WebDriver.TargetLocator targetLocator;
-  private String testAxeResult;
-
-  /**
-   * sets a mock/test Axe Result.
-   * @throws JsonProcessingException if there is an error serializing the JSON
-   */
-  public void setTestAxeResult() throws JsonProcessingException {
-    AxeResult results = new AxeResult();
-    results.setViolations(new JSONArray());
-    results.setInapplicable(new JSONArray());
-    results.setIncomplete(new JSONArray());
-    results.setTimestamp(OffsetDateTime.now());
-    results.setUrl("www.test.com");
-    this.testAxeResult = AxeFormatting.serialize(results);
-  }
-
-  /**
-   * gets the test Axe Result as string value.
-   * @return the result in string value
-   */
-  public String getTestAxeResult(){
-    return this.testAxeResult;
-  }
 
   /**
    * Sets up the chrome driver before each test.
@@ -402,20 +373,5 @@ public class AxeBuilderUnitTest {
     Assert.assertNotNull(this.webDriver);
     Assert.assertNotNull(this.targetLocator);
     Assert.assertNotNull(this.javascriptExecutor);
-  }
-
-  /**
-   * sets up a scan for testing.
-   * @param serializedContext the serialized contexts to be used
-   * @param serializedOptions the serialized options to be used
-   * @throws IOException if file writing fails
-   */
-  private void setupVerifiableScanCall(String serializedContext, String serializedOptions)
-      throws IOException {
-    Object[] rawArgs = new Object[] { serializedContext, serializedOptions };
-    setTestAxeResult();
-    String scanJsContent = EmbeddedResourceProvider.readEmbeddedFile("src/test/resources/files/scan.js");
-    String object = (String) this.javascriptExecutor.executeAsyncScript(scanJsContent, rawArgs);
-    Assert.assertEquals(object, getTestAxeResult());
   }
 }
