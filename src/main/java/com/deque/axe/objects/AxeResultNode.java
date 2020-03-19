@@ -177,8 +177,9 @@ public class AxeResultNode {
    */
   private List<Object> setAxeResultCheck(JSONArray newObject) {
     List<Object> list = new ArrayList<>();
-    AxeResultCheck result = new AxeResultCheck();
+
     for (int i = 0; i < newObject.length(); i++) {
+      AxeResultCheck result = new AxeResultCheck();
 
       if (newObject.getJSONObject(i).has("data")) {
         result.setData(newObject.getJSONObject(i).get("data"));

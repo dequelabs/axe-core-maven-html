@@ -112,8 +112,9 @@ public class AxeResultCheck {
    */
   private List<Object> setAxeResultRelatedNode(JSONArray newObject) {
     List<Object> list = new ArrayList<>();
-    AxeResultRelatedNode result = new AxeResultRelatedNode();
+
     for (int i = 0; i < newObject.length(); i++) {
+      AxeResultRelatedNode result = new AxeResultRelatedNode();
       result.setTarget(newObject.getJSONObject(i).getJSONArray("target"));
       result.setHtml(newObject.getJSONObject(i).getString("html"));
       list.add(result);

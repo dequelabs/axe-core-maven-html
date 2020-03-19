@@ -12,12 +12,6 @@ import org.json.JSONObject;
  */
 public class AxeResult {
   /**
-   * class initializer.
-   */
-  public AxeResult() {
-  }
-
-  /**
    * sets the scan JSON object to class objects.
    * @param results the JSON object to be set
    */
@@ -58,7 +52,6 @@ public class AxeResult {
           && !newObject.getJSONObject(i).get("impact").toString().equals("null")) {
         axeResultItem.setImpact(newObject.getJSONObject(i).getString("impact"));
       }
-
       axeResultItem.setNodes(newObject.getJSONObject(i).getJSONArray("nodes"));
       axeResultItem.setHelp(newObject.getJSONObject(i).getString("help"));
       axeResultItem.setDescription(newObject.getJSONObject(i).getString("description"));
