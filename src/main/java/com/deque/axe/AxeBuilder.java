@@ -243,17 +243,8 @@ public class AxeBuilder {
   }
 
   /**
-   * Run axe against a specific WebElement (including its descendants).
-   * @param context A WebElement to test
-   * @return An axe results document
-   */
-  public AxeResult analyze(WebElement context) throws IOException {
-    return analyzeRawContext(context);
-  }
-
-  /**
-   * Run axe against specific WebElements (including its descendants).
-   * @param context The WebElements to test
+   * Run axe against a specific WebElement or webElements (including its descendants).
+   * @param context WebElement(s) to test
    * @return An axe results document
    */
   public AxeResult analyze(WebElement... context) throws IOException {
