@@ -29,173 +29,173 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import java.net.URL;
 
 public class ExampleTest {
-    @Rule
-    public TestName testName = new TestName();
+	@Rule
+	public TestName testName = new TestName();
 
-    private WebDriver driver;
+	private WebDriver driver;
 
-    private static final URL scriptUrl = ExampleTest.class.getResource("/axe.min.js");
+	private static final URL scriptUrl = ExampleTest.class.getResource("/axe.min.js");
 
-    /**
-     * Instantiate the WebDriver and navigate to the test site
-     */
-    @Before
-    public void setUp() {
-        // ChromeDriver needed to test for Shadow DOM testing support
-        WebDriverManager.chromedriver().setup();
-        driver = new ChromeDriver();
-    }
+	/**
+	 * Instantiate the WebDriver and navigate to the test site
+	 */
+	@Before
+	public void setUp() {
+		// ChromeDriver needed to test for Shadow DOM testing support
+		System.setProperty("webdriver.chrome.driver","src/test/resources/chromedriver.exe");
+		driver = new ChromeDriver();
+	}
 
-    /**
-     * Ensure we close the WebDriver after finishing
-     */
-    @After
-    public void tearDown() {
-        driver.quit();
-    }
+	/**
+	 * Ensure we close the WebDriver after finishing
+	 */
+	@After
+	public void tearDown() {
+		driver.quit();
+	}
 
-    /**
-     * Basic test
-     */
-    @Test
-    public void testAccessibility() {
-        driver.get("http://localhost:5005");
-        JSONObject responseJSON = new AXE.Builder(driver, scriptUrl).analyze();
+	/**
+	 * Basic test
+	 */
+	@Test
+	public void testAccessibility() {
+		driver.get("http://localhost:5005");
+		JSONObject responseJSON = new AXE.Builder(driver, scriptUrl).analyze();
 
-        JSONArray violations = responseJSON.getJSONArray("violations");
+		JSONArray violations = responseJSON.getJSONArray("violations");
 
-        if (violations.length() == 0) {
-            assertTrue("No violations found", true);
-        } else {
-            AXE.writeResults(testName.getMethodName(), responseJSON);
-            fail(AXE.report(violations));
-        }
-    }
+		if (violations.length() == 0) {
+			assertTrue("No violations found", true);
+		} else {
+			AXE.writeResults(testName.getMethodName(), responseJSON);
+			assertTrue(AXE.report(violations), false);
+		}
+	}
 
-    /**
-     * Test with skip frames
-     */
-    @Test
-    public void testAccessibilityWithSkipFrames() {
-        driver.get("http://localhost:5005");
-        JSONObject responseJSON = new AXE.Builder(driver, scriptUrl)
-                .skipFrames()
-                .analyze();
+	/**
+	 * Test with skip frames
+	 */
+	@Test
+	public void testAccessibilityWithSkipFrames() {
+		driver.get("http://localhost:5005");
+		JSONObject responseJSON = new AXE.Builder(driver, scriptUrl)
+				.skipFrames()
+				.analyze();
 
-        JSONArray violations = responseJSON.getJSONArray("violations");
+		JSONArray violations = responseJSON.getJSONArray("violations");
 
-        if (violations.length() == 0) {
-            assertTrue("No violations found", true);
-        } else {
-            AXE.writeResults(testName.getMethodName(), responseJSON);
-            fail(AXE.report(violations));
-        }
-    }
+		if (violations.length() == 0) {
+			assertTrue("No violations found", true);
+		} else {
+			AXE.writeResults(testName.getMethodName(), responseJSON);
+			assertTrue(AXE.report(violations), false);
+		}
+	}
 
-    /**
-     * Test with options
-     */
-    @Test
-    public void testAccessibilityWithOptions() {
-        driver.get("http://localhost:5005");
-        JSONObject responseJSON = new AXE.Builder(driver, scriptUrl)
-                .options("{ rules: { 'accesskeys': { enabled: false } } }")
-                .analyze();
+	/**
+	 * Test with options
+	 */
+	@Test
+	public void testAccessibilityWithOptions() {
+		driver.get("http://localhost:5005");
+		JSONObject responseJSON = new AXE.Builder(driver, scriptUrl)
+				.options("{ rules: { 'accesskeys': { enabled: false } } }")
+				.analyze();
 
-        JSONArray violations = responseJSON.getJSONArray("violations");
+		JSONArray violations = responseJSON.getJSONArray("violations");
 
-        if (violations.length() == 0) {
-            assertTrue("No violations found", true);
-        } else {
-            AXE.writeResults(testName.getMethodName(), responseJSON);
+		if (violations.length() == 0) {
+			assertTrue("No violations found", true);
+		} else {
+			AXE.writeResults(testName.getMethodName(), responseJSON);
 
-            fail(AXE.report(violations));
-        }
-    }
+			assertTrue(AXE.report(violations), false);
+		}
+	}
 
-    @Test
-    public void testCustomTimeout() {
-        driver.get("http://localhost:5005");
+	@Test
+	public void testCustomTimeout() {
+		driver.get("http://localhost:5005");
 
-        boolean didTimeout = false;
-        try {
-            new AXE.Builder(driver, ExampleTest.class.getResource("/timeout.js"))
-                    .setTimeout(1)
-                    .analyze();
-        } catch (Exception e) {
-            String msg = e.getMessage();
-            if (!msg.contains("1 seconds")) {
-                assertTrue("Did not error with timeout message", msg.contains("1 seconds"));
-            }
-            didTimeout = true;
-        }
+		boolean didTimeout = false;
+		try {
+			new AXE.Builder(driver, ExampleTest.class.getResource("/timeout.js"))
+				.setTimeout(1)
+				.analyze();
+		} catch (Exception e) {
+			String msg = e.getMessage();
+			if (msg.indexOf("1 seconds") == -1) {
+				assertTrue("Did not error with timeout message", msg.indexOf("1 seconds") != -1);
+			}
+			didTimeout = true;
+		}
 
-        assertTrue("Did set custom timeout", didTimeout);
-    }
+		assertTrue("Did set custom timeout", didTimeout);
+	}
 
-    /**
-     * Test a specific selector or selectors
-     */
-    @Test
-    public void testAccessibilityWithSelector() {
-        driver.get("http://localhost:5005");
-        JSONObject responseJSON = new AXE.Builder(driver, scriptUrl)
-                .include("title")
-                .include("p")
-                .analyze();
+	/**
+	 * Test a specific selector or selectors
+	 */
+	@Test
+	public void testAccessibilityWithSelector() {
+		driver.get("http://localhost:5005");
+		JSONObject responseJSON = new AXE.Builder(driver, scriptUrl)
+				.include("title")
+				.include("p")
+				.analyze();
 
-        JSONArray violations = responseJSON.getJSONArray("violations");
+		JSONArray violations = responseJSON.getJSONArray("violations");
 
-        if (violations.length() == 0) {
-            assertTrue("No violations found", true);
-        } else {
-            AXE.writeResults(testName.getMethodName(), responseJSON);
+		if (violations.length() == 0) {
+			assertTrue("No violations found", true);
+		} else {
+			AXE.writeResults(testName.getMethodName(), responseJSON);
 
-            fail(AXE.report(violations));
-        }
-    }
+			assertTrue(AXE.report(violations), false);
+		}
+	}
 
-    /**
-     * Test includes and excludes
-     */
-    @Test
-    public void testAccessibilityWithIncludesAndExcludes() {
-        driver.get("http://localhost:5005/include-exclude.html");
-        JSONObject responseJSON = new AXE.Builder(driver, scriptUrl)
-                .include("body")
-                .exclude("h1")
-                .exclude("h2")
-                .analyze();
+	/**
+	 * Test includes and excludes
+	 */
+	@Test
+	public void testAccessibilityWithIncludesAndExcludes() {
+		driver.get("http://localhost:5005/include-exclude.html");
+		JSONObject responseJSON = new AXE.Builder(driver, scriptUrl)
+				.include("body")
+				.exclude("h1")
+				.exclude("h2")
+				.analyze();
 
-        JSONArray violations = responseJSON.getJSONArray("violations");
+		JSONArray violations = responseJSON.getJSONArray("violations");
 
-        if (violations.length() == 1) {
-            assertTrue("1 violation found", true);
-        } else {
-            AXE.writeResults(testName.getMethodName(), responseJSON);
-            fail(AXE.report(violations));
-        }
-    }
+		if (violations.length() == 0) {
+			assertTrue("No violations found", true);
+		} else {
+			AXE.writeResults(testName.getMethodName(), responseJSON);
+			assertTrue(AXE.report(violations), false);
+		}
+	}
 
-    /**
-     * Test a WebElement
-     */
-    @Test
-    public void testAccessibilityWithWebElement() {
-        driver.get("http://localhost:5005");
+	/**
+	 * Test a WebElement
+	 */
+	@Test
+	public void testAccessibilityWithWebElement() {
+		driver.get("http://localhost:5005");
 
-        JSONObject responseJSON = new AXE.Builder(driver, scriptUrl)
-                .analyze(driver.findElement(By.tagName("p")));
+		JSONObject responseJSON = new AXE.Builder(driver, scriptUrl)
+				.analyze(driver.findElement(By.tagName("p")));
 
-        JSONArray violations = responseJSON.getJSONArray("violations");
+		JSONArray violations = responseJSON.getJSONArray("violations");
 
-        if (violations.length() == 0) {
-            assertTrue("No violations found", true);
-        } else {
-            AXE.writeResults(testName.getMethodName(), responseJSON);
-            fail(AXE.report(violations));
-        }
-    }
+		if (violations.length() == 0) {
+			assertTrue("No violations found", true);
+		} else {
+			AXE.writeResults(testName.getMethodName(), responseJSON);
+			assertTrue(AXE.report(violations), false);
+		}
+	}
 
     /**
      * Test WebElements

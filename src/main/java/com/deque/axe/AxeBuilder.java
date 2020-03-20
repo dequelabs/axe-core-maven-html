@@ -267,7 +267,7 @@ public class AxeBuilder {
   public AxeResult analyze() throws IOException {
     boolean runContextHasData = this.runContext.getInclude() != null
         || this.runContext.getExclude() != null;
-    String rawContext = runContextHasData ? AxeFormatting.serialize(runContext) : null;
+    String rawContext = runContextHasData ? AxeReporter.serialize(runContext) : null;
     return analyzeRawContext(rawContext);
   }
 
@@ -280,7 +280,7 @@ public class AxeBuilder {
    */
   private AxeResult analyzeRawContext(Object rawContextArg) throws IOException {
     String rawOptionsArg = getOptions().equals("{}")
-        ? AxeFormatting.serialize(runOptions) : getOptions();
+        ? AxeReporter.serialize(runOptions) : getOptions();
     String scanJsContent = EmbeddedResourceProvider
         .readEmbeddedFile("src/test/resources/files/scan.js");
     Object[] rawArgs = new Object[] { rawContextArg, rawOptionsArg };
@@ -299,7 +299,7 @@ public class AxeBuilder {
     }
 
     if (outputFilePath != null && jsonObject.get("results").getClass() == JSONObject.class) {
-      AxeFormatting.writeResultsToJsonFile(outputFilePath, AxeFormatting.serialize(jsonObject));
+      AxeReporter.writeResultsToJsonFile(outputFilePath, AxeReporter.serialize(jsonObject));
     }
     return new AxeResult(jsonObject.getJSONObject("results"));
   }

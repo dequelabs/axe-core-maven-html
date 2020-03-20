@@ -31,11 +31,11 @@ public class AxeRunOptionsUnitTest {
     AxeRunOptions options = new AxeRunOptions();
     options.setRunOnly(runOnlyOptions);
 
-    String serializedObject = AxeFormatting.serialize(options);
+    String serializedObject = AxeReporter.serialize(options);
     String expectedObject = "{\"runOnly\":{\"type\":\"tag\",\"values\":[\"tag1\",\"tag2\"]}}";
 
     Assert.assertEquals(serializedObject, expectedObject);
-    Assert.assertSame(AxeFormatting.deserialize(expectedObject).getClass(), options.getClass());
+    Assert.assertSame(AxeReporter.deserialize(expectedObject).getClass(), options.getClass());
   }
 
   /**
@@ -63,7 +63,7 @@ public class AxeRunOptionsUnitTest {
     options.setRules(rulesMap);
 
     String expectedObject = "{\"rules\":{\"enabledRule\":{\"enabled\":true},\"rule3WithoutOptionsData\":{},\"disabledRule\":{\"enabled\":false}}}";
-    String serializedObject = AxeFormatting.serialize(rules);
+    String serializedObject = AxeReporter.serialize(rules);
 
     Assert.assertEquals(serializedObject, expectedObject);
     Assert.assertSame(new ObjectMapper().readValue(expectedObject, AxeRules.class).getClass(), rules.getClass());
@@ -82,9 +82,9 @@ public class AxeRunOptionsUnitTest {
     options.setFrameWaitTimeInMilliseconds(10);
 
     String expectedObject = "{\"absolutePaths\":true,\"iFrames\":true,\"restoreScroll\":true,\"frameWaitTime\":10}";
-    String serializedObject = AxeFormatting.serialize(options);
+    String serializedObject = AxeReporter.serialize(options);
     Assert.assertEquals(serializedObject, expectedObject);
-    Assert.assertSame(AxeFormatting.deserialize(expectedObject).getClass(), options.getClass());
+    Assert.assertSame(AxeReporter.deserialize(expectedObject).getClass(), options.getClass());
   }
 
   /**
@@ -102,10 +102,10 @@ public class AxeRunOptionsUnitTest {
     AxeRunOptions options = new AxeRunOptions();
     options.setResultTypes(resultTypes);
 
-    String serializedObject = AxeFormatting.serialize(options);
+    String serializedObject = AxeReporter.serialize(options);
     String expectedObject = "{\"resultTypes\":[\"inapplicable\",\"incomplete\",\"passes\",\"violations\"]}";
 
     Assert.assertEquals(serializedObject, expectedObject);
-    Assert.assertSame(AxeFormatting.deserialize(expectedObject).getClass(), options.getClass());
+    Assert.assertSame(AxeReporter.deserialize(expectedObject).getClass(), options.getClass());
   }
 }
