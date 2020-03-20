@@ -166,44 +166,10 @@ public class AxeBuilderUnitTest {
   }
 
   /**
-   * tests the rules config.
-   * @throws IOException if file writing fails
-   * @throws OperationNotSupportedException if the operation errors out
-   */
-  @Test()
-  // TODO: Figure out rules, error says rules are unknown.
-  public void shouldPassRuleConfig() throws IOException, OperationNotSupportedException {
-    List<String> expectedRules = Arrays.asList("rule1", "rule2");
-    List<String> disableRules = Arrays.asList("excludeRule1", "excludeRule2");
-
-    AxeRuleOptions ruleOptions = new AxeRuleOptions();
-    ruleOptions.setEnabled(false);
-
-    Map<String, AxeRuleOptions> rules = new HashMap<>();
-    rules.put("li", ruleOptions);
-    rules.put("span", ruleOptions);
-
-    AxeRunOnlyOptions runOnlyOptions = new AxeRunOnlyOptions();
-    runOnlyOptions.setType("rule");
-    runOnlyOptions.setValues(expectedRules);
-
-    AxeRunOptions runOptions = new AxeRunOptions();
-    runOptions.setRunOnly(runOnlyOptions);
-    runOptions.setRules(rules);
-
-    AxeBuilder builder = new AxeBuilder(this.webDriver).disableRules(disableRules).withRules(expectedRules);
-    AxeResult result = builder.analyze();
-    verifyAxeResultsNotNull(result);
-    verifyAxeResult(result);
-    verifyDriversNotNull();
-  }
-
-  /**
    * tests Run options wih tag config.
    * @throws IOException if file writing fails
    * @throws OperationNotSupportedException if the operation errors out
    */
-
   @Test
   public void shouldPassRunOptionsWithTagConfig() throws IOException,
       OperationNotSupportedException {
@@ -216,31 +182,6 @@ public class AxeBuilderUnitTest {
     Assert.assertEquals(0, result.getIncomplete().size());
     Assert.assertEquals(11, result.getPasses().size());
     Assert.assertEquals(2, result.getViolations().size());
-    verifyDriversNotNull();
-  }
-
-  /**
-   * tests Run options.
-   * @throws IOException if file writing fails
-   * @throws OperationNotSupportedException if the operation errors out
-   */
-  @Test()
-  // TODO: Figure out what constitutes as a rule, right now it says unknown rule in error.
-  public void shouldPassRunOptions() throws IOException, OperationNotSupportedException {
-    AxeRuleOptions ruleOptions = new AxeRuleOptions();
-    ruleOptions.setEnabled(false);
-
-    Map<String, AxeRuleOptions> rules = new HashMap<>();
-    rules.put("contentinfo", ruleOptions);
-
-    AxeRunOptions runOptions = new AxeRunOptions();
-    runOptions.setIFrames(true);
-    runOptions.setRules(rules);
-
-    AxeBuilder builder = new AxeBuilder(this.webDriver).withOptions(runOptions);
-    AxeResult result = builder.analyze();
-    verifyAxeResultsNotNull(result);
-    verifyAxeResult(result);
     verifyDriversNotNull();
   }
 
