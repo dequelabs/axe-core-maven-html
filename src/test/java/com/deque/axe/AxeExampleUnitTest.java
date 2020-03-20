@@ -84,17 +84,15 @@ public class AxeExampleUnitTest {
    * Test with options
    */
   @Test
-  // TODO: figure out why the option is an unexpected token.
   public void testAccessibilityWithOptions() throws IOException, OperationNotSupportedException {
     this.webDriver.get(new File(normalPage).getAbsolutePath());
     AxeBuilder builder = new AxeBuilder(webDriver);
-    // builder.setOptions("{ rules: { 'accesskeys': { enabled: false } } }");
-    builder.setOptions("{ rules: { 'upside-down': { enabled: false } } }");
+    builder.setOptions("{ \"rules\": { \"accesskeys\": { \"enabled\": false } } }");
     AxeResult result = builder.analyze();
     List<AxeResultItem> violations = result.getViolations();
     Assert.assertEquals(violations.size(), 0, "No violations found");
     AxeReporter.writeResultsToJsonFile("src/test/java/results/testAccessibilityWithOptions", result.getJson());
-    Assert.assertTrue(getReadableAxeResults(ResultType.Violations.key, webDriver, violations));
+    Assert.assertFalse(getReadableAxeResults(ResultType.Violations.key, webDriver, violations));
     AxeReporter.writeResultsToTextFile(
         "src/test/java/results/testAccessibilityWithOptions", getAxeResultString());
   }
