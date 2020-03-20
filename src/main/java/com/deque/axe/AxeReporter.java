@@ -18,9 +18,9 @@ import org.openqa.selenium.WebDriver;
 /**
 * Methods for writing, serializing, and to deserialize the Axe scan results.
  */
-public class AxeFormatting {
+public class AxeReporter {
 
-  private AxeFormatting() { }
+  private AxeReporter() { }
 
   private static String axeResultString;
 

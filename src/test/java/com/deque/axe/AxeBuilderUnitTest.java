@@ -180,8 +180,8 @@ public class AxeBuilderUnitTest {
     ruleOptions.setEnabled(false);
 
     Map<String, AxeRuleOptions> rules = new HashMap<>();
-    rules.put("excludeRule1", ruleOptions);
-    rules.put("excludeRule2", ruleOptions);
+    rules.put("li", ruleOptions);
+    rules.put("span", ruleOptions);
 
     AxeRunOnlyOptions runOnlyOptions = new AxeRunOnlyOptions();
     runOnlyOptions.setType("rule");
@@ -203,22 +203,19 @@ public class AxeBuilderUnitTest {
    * @throws IOException if file writing fails
    * @throws OperationNotSupportedException if the operation errors out
    */
-  @Test()
-  // TODO: figure out why the the tags aren't being found.
+
+  @Test
   public void shouldPassRunOptionsWithTagConfig() throws IOException,
       OperationNotSupportedException {
-    List<String> expectedTags = Arrays.asList("title", "li");
-    AxeRunOnlyOptions runOnly = new AxeRunOnlyOptions();
-    runOnly.setType("tag");
-    runOnly.setValues(expectedTags);
-
-    AxeRunOptions runOptions = new AxeRunOptions();
-    runOptions.setRunOnly(runOnly);
-
+    //List<String> expectedTags = Arrays.asList("title", "li:nth-child(1)");
+    List<String> expectedTags = Arrays.asList("wcag2a", "wcag412");
     AxeBuilder builder = new AxeBuilder(this.webDriver).withTags(expectedTags);
     AxeResult result = builder.analyze();
     verifyAxeResultsNotNull(result);
-    verifyAxeResult(result);
+    Assert.assertEquals(27, result.getInapplicable().size());
+    Assert.assertEquals(0, result.getIncomplete().size());
+    Assert.assertEquals(11, result.getPasses().size());
+    Assert.assertEquals(2, result.getViolations().size());
     verifyDriversNotNull();
   }
 
@@ -234,7 +231,7 @@ public class AxeBuilderUnitTest {
     ruleOptions.setEnabled(false);
 
     Map<String, AxeRuleOptions> rules = new HashMap<>();
-    rules.put("rule1", ruleOptions);
+    rules.put("contentinfo", ruleOptions);
 
     AxeRunOptions runOptions = new AxeRunOptions();
     runOptions.setIFrames(true);

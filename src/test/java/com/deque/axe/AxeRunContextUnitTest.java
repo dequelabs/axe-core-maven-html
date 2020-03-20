@@ -26,7 +26,7 @@ public class AxeRunContextUnitTest {
     context.setExclude(excludeList);
 
     String expectedContent = "{\"include\":[[\"#if1\",\"#idiv1\"]],\"exclude\":[[\"#ef1\",\"#ediv1\"]]}";
-    Assert.assertEquals(AxeFormatting.serialize(context), expectedContent);
+    Assert.assertEquals(AxeReporter.serialize(context), expectedContent);
   }
 
   /**
@@ -37,6 +37,6 @@ public class AxeRunContextUnitTest {
   public void shouldNotIncludeNullPropertiesOnSerializing() throws JsonProcessingException {
     AxeRunContext context = new AxeRunContext();
     String expectedContent = "{}";
-    Assert.assertEquals(AxeFormatting.serialize(context), expectedContent);
+    Assert.assertEquals(AxeReporter.serialize(context), expectedContent);
   }
 }
