@@ -34,7 +34,7 @@ public class AxeAnalyzeUnitTest {
    */
   private WebDriver webDriver;
 
-  private static final String htmlPage = "src/test/resources/files/Integration-test-target.html";
+  private static final String htmlPage = "src/test/resources/html/Integration-test-target.html";
 
   /**
    * sets up the driver before the test.

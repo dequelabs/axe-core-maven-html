@@ -43,7 +43,7 @@ import org.testng.annotations.Test;
 public class AxeIntegrationUnitTest {
   private WebDriver webDriver;
   private WebDriverWait wait;
-  private static File integrationTestTargetFile = new File("src/test/resources/files/Integration-test-target.html");
+  private static File integrationTestTargetFile = new File("src/test/resources/html/Integration-test-target.html");
   private static String integrationTestTargetUrl = integrationTestTargetFile.getAbsolutePath();
   private String mainElementSelector = "main";
 
