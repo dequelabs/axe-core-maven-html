@@ -324,7 +324,7 @@ public class AxeBuilder {
     String rawOptionsArg = getOptions().equals("{}")
         ? AxeReporter.serialize(runOptions) : getOptions();
     String scanJsContent = EmbeddedResourceProvider
-        .readEmbeddedFile("src/test/resources/files/scan.js");
+        .readEmbeddedFile("src/test/resources/js/scan.js");
     Object[] rawArgs = new Object[] {rawContextArg, rawOptionsArg};
 
     this.webDriver.manage().timeouts()

@@ -40,9 +40,9 @@ import static org.junit.Assert.assertEquals;
 public class AxeExampleUnitTest {
   private WebDriver webDriver;
 
-  private static final String shadowErrorPage = "src/test/resources/files/shadow-error.html";
-  private static final String includeExcludePage = "src/test/resources/files/include-exclude.html";
-  private static final String normalPage = "src/test/resources/files/normal.html";
+  private static final String shadowErrorPage = "src/test/resources/html/shadow-error.html";
+  private static final String includeExcludePage = "src/test/resources/html/include-exclude.html";
+  private static final String normalPage = "src/test/resources/html/normal.html";
 
   /**
    * Instantiate the WebDriver and navigate to the test site

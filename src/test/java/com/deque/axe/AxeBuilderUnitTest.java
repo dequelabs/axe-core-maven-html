@@ -51,7 +51,7 @@ public class AxeBuilderUnitTest {
     System.setProperty("webdriver.chrome.driver","src/test/resources/chromedriver.exe");
     ChromeDriverService service = ChromeDriverService.createDefaultService();
     this.webDriver = new ChromeDriver(service);
-    this.webDriver.get(new File("src/test/resources/files/Integration-test-target.html").getAbsolutePath());
+    this.webDriver.get(new File("src/test/resources/html/Integration-test-target.html").getAbsolutePath());
     this.javascriptExecutor = (JavascriptExecutor) this.webDriver;
     this.targetLocator = this.webDriver.switchTo();
   }

@@ -1,5 +1,5 @@
 ACCESSIBILITY CHECK
-VIOLATIONS check for: file:///C:/Users/jonr/axe-selenium-java/src/test/resources/files/include-exclude.html
+VIOLATIONS check for: file:///C:/Users/jonr/axe-selenium-java/src/test/resources/html/include-exclude.html
 Found 1 items
 
 1: Elements must have sufficient color contrast

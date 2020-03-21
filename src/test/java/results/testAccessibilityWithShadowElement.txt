@@ -1,5 +1,5 @@
 ACCESSIBILITY CHECK
-VIOLATIONS check for: file:///C:/Users/jonr/axe-selenium-java/src/test/resources/files/shadow-error.html
+VIOLATIONS check for: file:///C:/Users/jonr/axe-selenium-java/src/test/resources/html/shadow-error.html
 Found 1 items
 
 1: <ul> and <ol> must only directly contain <li>, <script> or <template> elements
