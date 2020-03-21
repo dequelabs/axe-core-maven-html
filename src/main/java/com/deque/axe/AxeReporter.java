@@ -1,3 +1,15 @@
+/*
+ * Copyright (C) 2020 Deque Systems Inc.,
+ *
+ * Your use of this Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * This entire copyright notice must appear in every copy of this file you
+ * distribute or in any file that contains substantial portions of this source
+ * code.
+ */
+
 package com.deque.axe;
 
 import com.deque.axe.jsonobjects.AxeRunOptions;
@@ -18,26 +30,39 @@ import org.openqa.selenium.WebDriver;
 /**
 * Methods for writing, serializing, and to deserialize the Axe scan results.
  */
-public class AxeReporter {
+public final class AxeReporter {
 
   private AxeReporter() { }
 
+  /**
+   * the string format of the results.
+   */
   private static String axeResultString;
 
-  public static void setAxeResultString(String newAxeResult) {
+  /**
+   * sets the axe result string.
+   * @param newAxeResult axe result string to be set
+   */
+  public static void setAxeResultString(final String newAxeResult) {
     axeResultString = newAxeResult;
   }
 
+  /**
+   * gets the results in string format.
+   * @return string of the results
+   */
   public static String getAxeResultString() {
     return axeResultString;
   }
 
   /**
    * Writes a raw object out to a txt file with the specified name.
-   * @param output Object to write. Most useful if you pass in either
+   * @param outputFilePath Object to write. Most useful if you pass in either
    *     the Builder.analyze() response or the violations array it contains.
+   * @param output the object to be written to the text file
    */
-  public static void writeResultsToTextFile(String outputFilePath, final Object output) {
+  public static void writeResultsToTextFile(final String outputFilePath,
+      final Object output) {
     try (Writer writer = new BufferedWriter(
         new OutputStreamWriter(new FileOutputStream(outputFilePath + ".txt"),
             StandardCharsets.UTF_8))) {
@@ -48,13 +73,16 @@ public class AxeReporter {
 
   /**
    * Writes a raw object out to a JSON file with the specified name.
-   * @param name Desired filename, sans extension
-   * @param output Object to write. Most useful if you pass in
-   *               either the Builder.analyze() response or the violations array it contains.
+   * @param outputFilePath Desired filename, sans extension
+   * @param output Object to write. Most useful if you pass in either
+   *              the Builder.analyze() response or
+   *               the violations array it contains.
    */
-  public static void writeResultsToJsonFile(final String name, final Object output) {
+  public static void writeResultsToJsonFile(final String outputFilePath,
+      final Object output) {
+
     try (Writer writer = new BufferedWriter(
-        new OutputStreamWriter(new FileOutputStream(name + ".json"),
+        new OutputStreamWriter(new FileOutputStream(outputFilePath + ".json"),
             StandardCharsets.UTF_8))) {
       writer.write(output.toString());
     } catch (IOException ignored) {
@@ -64,10 +92,12 @@ public class AxeReporter {
   /**
    * serialize the object to a string.
    * @param obj the object to be turned into a string
+   * @param <T> so the method can take in an object
    * @return a string value of the object
    * @throws JsonProcessingException if there is an error serializing the JSON
    */
-  public static <T> String serialize(T obj) throws JsonProcessingException {
+  public static <T> String serialize(final T obj)
+      throws JsonProcessingException {
     ObjectMapper mapper = new ObjectMapper();
     mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
     return mapper.writeValueAsString(obj);
@@ -79,7 +109,8 @@ public class AxeReporter {
    * @return the string as an Axe Run Options class object
    * @throws JsonProcessingException if there is an error serializing the JSON
    */
-  static AxeRunOptions deserialize(String obj) throws JsonProcessingException {
+  static AxeRunOptions deserialize(final String obj)
+      throws JsonProcessingException {
     ObjectMapper mapper = new ObjectMapper();
     return mapper.readValue(obj, AxeRunOptions.class);
   }
@@ -91,8 +122,8 @@ public class AxeReporter {
    * @param scannedResults The scan results
    * @return True if the scan found anything
    */
-  public static boolean getReadableAxeResults(String typeOfScan, WebDriver webDriver,
-      List<AxeResultItem> scannedResults) {
+  public static boolean getReadableAxeResults(final String typeOfScan,
+      final WebDriver webDriver, final List<AxeResultItem> scannedResults) {
     StringBuilder message = new StringBuilder();
     final int axeRules = scannedResults.size();
 

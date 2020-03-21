@@ -1,3 +1,15 @@
+/*
+ * Copyright (C) 2020 Deque Systems Inc.,
+ *
+ * Your use of this Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * This entire copyright notice must appear in every copy of this file you
+ * distribute or in any file that contains substantial portions of this source
+ * code.
+ */
+
 package com.deque.axe.objects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -9,10 +21,29 @@ import org.json.JSONArray;
  * Axe Result check class.
  */
 public class AxeResultCheck {
+  /**
+   * the result ID.
+   */
   private String id;
+
+  /**
+   * the result data.
+   */
   private Object data;
+
+  /**
+   * the result message.
+   */
   private String message;
+
+  /**
+   * the result impact.
+   */
   private String impact;
+
+  /**
+   * the result related nodes.
+   */
   private List<Object> relatedNodes;
 
   /**
@@ -25,11 +56,11 @@ public class AxeResultCheck {
   }
 
   /**
-   * sets the ID
+   * sets the ID.
    * @param value the string value to be set
    */
   @JsonProperty("id")
-  public void setID(String value) {
+  public void setID(final String value) {
     this.id = value;
   }
 
@@ -47,7 +78,7 @@ public class AxeResultCheck {
    * @param value the object value to be set
    */
   @JsonProperty("data")
-  public void setData(Object value) {
+  public void setData(final Object value) {
     this.data = value;
   }
 
@@ -65,7 +96,7 @@ public class AxeResultCheck {
    * @param value the message string to be set
    */
   @JsonProperty("message")
-  public void setMessage(String value) {
+  public void setMessage(final String value) {
     this.message = value;
   }
 
@@ -83,7 +114,7 @@ public class AxeResultCheck {
    * @param value the impact string to be set
    */
   @JsonProperty("impact")
-  public void setImpact(String value) {
+  public void setImpact(final String value) {
     this.impact = value;
   }
 
@@ -101,7 +132,7 @@ public class AxeResultCheck {
    * @param value the JSON Array of nodes to be set.
    */
   @JsonProperty("relatedNodes")
-  public void setRelatedNodes(JSONArray value) {
+  public void setRelatedNodes(final JSONArray value) {
     this.relatedNodes = setAxeResultRelatedNode(value);
   }
 
@@ -110,7 +141,7 @@ public class AxeResultCheck {
    * @param newObject a JSONArray get the list of objects
    * @return a list of Objects
    */
-  private List<Object> setAxeResultRelatedNode(JSONArray newObject) {
+  private List<Object> setAxeResultRelatedNode(final JSONArray newObject) {
     List<Object> list = new ArrayList<>();
 
     for (int i = 0; i < newObject.length(); i++) {

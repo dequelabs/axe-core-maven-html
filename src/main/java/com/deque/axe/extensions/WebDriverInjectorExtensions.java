@@ -1,3 +1,15 @@
+/*
+ * Copyright (C) 2020 Deque Systems Inc.,
+ *
+ * Your use of this Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * This entire copyright notice must appear in every copy of this file you
+ * distribute or in any file that contains substantial portions of this source
+ * code.
+ */
+
 package com.deque.axe.extensions;
 
 import com.deque.axe.providers.IAxeScriptProvider;
@@ -13,7 +25,7 @@ import org.openqa.selenium.WebElement;
 /**
  * Holds the Web driver injection extension methods.
  */
-public class WebDriverInjectorExtensions {
+public final class WebDriverInjectorExtensions {
   /**
    * initializes the WebDriverInjectorExtensions class.
    */
@@ -26,7 +38,8 @@ public class WebDriverInjectorExtensions {
    * @param scriptProvider Provider that get the aXe script to inject
    * @throws OperationNotSupportedException if the operation errors out
    */
-  public static void inject(WebDriver driver, IAxeScriptProvider scriptProvider)
+  public static void inject(final WebDriver driver,
+      final IAxeScriptProvider scriptProvider)
       throws OperationNotSupportedException, IOException {
     if (scriptProvider == null) {
       throw new NullPointerException("the Script provider is null");
@@ -47,7 +60,8 @@ public class WebDriverInjectorExtensions {
    * @param script Script to inject
    * @param parents A list of all top level frames
    */
-  private static void injectIntoFrames(WebDriver driver, String script, List<WebElement> parents) {
+  private static void injectIntoFrames(final WebDriver driver,
+      final String script, final List<WebElement> parents) {
     JavascriptExecutor js = (JavascriptExecutor) driver;
     List<WebElement> frames = driver.findElements(By.tagName("iframe"));
 
@@ -71,6 +85,8 @@ public class WebDriverInjectorExtensions {
         localParents.addAll(parents);
         localParents.add(frame);
       }
+
+      injectIntoFrames(driver, script, localParents);
     }
   }
 }

@@ -1,3 +1,15 @@
+/*
+ * Copyright (C) 2020 Deque Systems Inc.,
+ *
+ * Your use of this Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * This entire copyright notice must appear in every copy of this file you
+ * distribute or in any file that contains substantial portions of this source
+ * code.
+ */
+
 package com.deque.axe.objects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -10,12 +22,39 @@ import org.json.JSONArray;
  * The Axe Result Item class.
  */
 public class AxeResultItem {
+  /**
+   * the help string.
+   */
   private String help;
+
+  /**
+   * list of the result nodes.
+   */
   private List<AxeResultNode> nodes;
+
+  /**
+   * the impact.
+   */
   private String impact;
+
+  /**
+   * the description.
+   */
   private String description;
+
+  /**
+   * the help url.
+   */
   private String helpUrl;
+
+  /**
+   * the id string.
+   */
   private String id;
+
+  /**
+   * a list of the tags.
+   */
   private List<String> tags;
 
   /**
@@ -32,7 +71,7 @@ public class AxeResultItem {
    * @param value the new help string to be set
    */
   @JsonProperty("help")
-  public void setHelp(String value) {
+  public void setHelp(final String value) {
     this.help = value;
   }
 
@@ -50,7 +89,7 @@ public class AxeResultItem {
    * @param value a JSONArray that sets an Axe Result Node
    */
   @JsonProperty("nodes")
-  public void setNodes(JSONArray value) {
+  public void setNodes(final JSONArray value) {
     this.nodes = setupAxeResultNode(value);
   }
 
@@ -68,7 +107,7 @@ public class AxeResultItem {
    * @param value the new value to be set
    */
   @JsonProperty("impact")
-  public void setImpact(String value) {
+  public void setImpact(final String value) {
     this.impact = value;
   }
 
@@ -86,7 +125,7 @@ public class AxeResultItem {
    * @param value the new string of the description
    */
   @JsonProperty("description")
-  public void setDescription(String value) {
+  public void setDescription(final String value) {
     this.description = value;
   }
 
@@ -104,7 +143,7 @@ public class AxeResultItem {
    * @param value the url to be set
    */
   @JsonProperty("helpUrl")
-  public void setHelpUrl(String value) {
+  public void setHelpUrl(final String value) {
     this.helpUrl = value;
   }
 
@@ -122,7 +161,7 @@ public class AxeResultItem {
    * @param value new id to be set
    */
   @JsonProperty("id")
-  public void setID(String value) {
+  public void setID(final String value) {
     this.id = value;
   }
 
@@ -140,7 +179,7 @@ public class AxeResultItem {
    * @param value JSONArray of values that has the tag strings.
    */
   @JsonProperty("tags")
-  public void setTags(JSONArray value) {
+  public void setTags(final JSONArray value) {
     List<String> list = new ArrayList<>();
     for (int i = 0; i < value.length(); i++) {
       list.add(value.getString(i));
@@ -153,7 +192,7 @@ public class AxeResultItem {
    * @param value the JSONArray that contains the content for an Axe Result Node
    * @return a list of Axe Result nodes
    */
-  private List<AxeResultNode> setupAxeResultNode(JSONArray value) {
+  private List<AxeResultNode> setupAxeResultNode(final JSONArray value) {
     List<AxeResultNode> list = new ArrayList<>();
 
     if (value.length() == 0) {
@@ -163,7 +202,8 @@ public class AxeResultItem {
     for (int i = 0; i < value.length(); i++) {
       AxeResultNode axeResultNode = new AxeResultNode();
       if (value.getJSONObject(i).has("failureSummary")) {
-        axeResultNode.setFailureSummary(value.getJSONObject(i).getString("failureSummary"));
+        axeResultNode.setFailureSummary(
+            value.getJSONObject(i).getString("failureSummary"));
       }
 
       if (value.getJSONObject(i).has("impact")
