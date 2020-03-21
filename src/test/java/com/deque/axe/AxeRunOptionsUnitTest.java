@@ -1,3 +1,15 @@
+/*
+ * Copyright (C) 2020 Deque Systems Inc.,
+ *
+ * Your use of this Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * This entire copyright notice must appear in every copy of this file you
+ * distribute or in any file that contains substantial portions of this source
+ * code.
+ */
+
 package com.deque.axe;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -94,10 +106,10 @@ public class AxeRunOptionsUnitTest {
   @Test()
   public void shouldSerializeResultTypes() throws JsonProcessingException {
     List<String> resultTypes = new ArrayList<>();
-    resultTypes.add(ResultType.Inapplicable.key);
-    resultTypes.add(ResultType.Incomplete.key);
-    resultTypes.add(ResultType.Passes.key);
-    resultTypes.add(ResultType.Violations.key);
+    resultTypes.add(ResultType.Inapplicable.getKey());
+    resultTypes.add(ResultType.Incomplete.getKey());
+    resultTypes.add(ResultType.Passes.getKey());
+    resultTypes.add(ResultType.Violations.getKey());
 
     AxeRunOptions options = new AxeRunOptions();
     options.setResultTypes(resultTypes);

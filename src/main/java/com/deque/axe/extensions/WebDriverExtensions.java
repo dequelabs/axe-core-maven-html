@@ -1,3 +1,15 @@
+/*
+ * Copyright (C) 2020 Deque Systems Inc.,
+ *
+ * Your use of this Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * This entire copyright notice must appear in every copy of this file you
+ * distribute or in any file that contains substantial portions of this source
+ * code.
+ */
+
 package com.deque.axe.extensions;
 
 import  com.deque.axe.AxeBuilder;
@@ -11,7 +23,7 @@ import org.openqa.selenium.WebElement;
 /**
  * web driver extension that has extra analyze methods.
  */
-public class WebDriverExtensions {
+public final class WebDriverExtensions {
   /**
    * class initializer for web driver extensions.
    */
@@ -25,7 +37,7 @@ public class WebDriverExtensions {
    * @throws IOException if analysis of page reaches an error
    * @throws OperationNotSupportedException if an unaccepted error occurs
    */
-  public static AxeResult analyze(WebDriver webDriver)
+  public static AxeResult analyze(final WebDriver webDriver)
       throws IOException, OperationNotSupportedException {
     if (webDriver == null) {
       throw new NullPointerException("the webDriver is null");
@@ -42,7 +54,8 @@ public class WebDriverExtensions {
    * @throws IOException if analysis of page reaches an error
    * @throws OperationNotSupportedException if an unaccepted error occurs
    */
-  public static AxeResult analyze(WebDriver webDriver, AxeBuilderOptions axeBuilderOptions)
+  public static AxeResult analyze(final WebDriver webDriver,
+      final AxeBuilderOptions axeBuilderOptions)
       throws OperationNotSupportedException, IOException {
     if (webDriver == null) {
       throw new NullPointerException("the webDriver is null");
@@ -59,7 +72,8 @@ public class WebDriverExtensions {
    * @throws IOException if analysis of page reaches an error
    * @throws OperationNotSupportedException if an unaccepted error occurs
    */
-  public static AxeResult analyze(WebDriver webDriver, WebElement context)
+  public static AxeResult analyze(final WebDriver webDriver,
+      final WebElement context)
       throws IOException, OperationNotSupportedException {
     if (webDriver == null) {
       throw new NullPointerException("the webDriver is null");
@@ -81,8 +95,9 @@ public class WebDriverExtensions {
    * @throws IOException if analysis of page reaches an error
    * @throws OperationNotSupportedException if an unaccepted error occurs
    */
-  public static AxeResult analyze(WebDriver webDriver, WebElement context,
-      AxeBuilderOptions axeBuilderOptions) throws OperationNotSupportedException, IOException {
+  public static AxeResult analyze(final WebDriver webDriver,
+      final WebElement context, final AxeBuilderOptions axeBuilderOptions)
+      throws OperationNotSupportedException, IOException {
     if (webDriver == null) {
       throw new NullPointerException("the web Driver is null");
     }

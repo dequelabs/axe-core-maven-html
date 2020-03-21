@@ -1,3 +1,15 @@
+/*
+ * Copyright (C) 2020 Deque Systems Inc.,
+ *
+ * Your use of this Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * This entire copyright notice must appear in every copy of this file you
+ * distribute or in any file that contains substantial portions of this source
+ * code.
+ */
+
 package com.deque.axe.jsonobjects;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -9,7 +21,8 @@ import java.util.Map;
 /**
  * Run configuration data that is passed to axe for scanning the web page.
  */
-@JsonPropertyOrder({"rules","absolutePaths","iframes","restoreScroll","frameWaitTime", "runOnly"})
+@JsonPropertyOrder({"rules", "absolutePaths", "iframes",
+    "restoreScroll", "frameWaitTime", "runOnly"})
 @JsonIgnoreProperties(value = "xpath")
 public class AxeRunOptions {
   /**
@@ -24,12 +37,15 @@ public class AxeRunOptions {
 
   /**
    * Limit which result types are processed and aggregated.
-   * An approach you can take to reducing the time is use the resultTypes option.
+   * An approach you can take to reducing
+   * the time is use the resultTypes option.
    * For eg, when set to [ResultTypes.Violations],
    * scan results will only have the full details of the violations array and
    * will only have one instance of each of the inapplicable,
-   * incomplete and pass arrays for each rule that has at least one of those entries.
-   * This will reduce the amount of computation that axe-core does for the unique selectors.
+   * incomplete and pass arrays for each rule
+   * that has at least one of those entries.
+   * This will reduce the amount of computation that
+   * axe-core does for the unique selectors.
    */
   private List<String> resultTypes;
 
@@ -73,7 +89,7 @@ public class AxeRunOptions {
    * @param newRunOnly the new run only to be set
    */
   @JsonProperty(value = "runOnly")
-  public void setRunOnly(AxeRunOnlyOptions newRunOnly) {
+  public void setRunOnly(final AxeRunOnlyOptions newRunOnly) {
     this.runOnly = newRunOnly;
   }
 
@@ -91,7 +107,7 @@ public class AxeRunOptions {
    * @param newRules the new rules to be set
    */
   @JsonProperty(value = "rules")
-  public void setRules(Map<String, AxeRuleOptions> newRules) {
+  public void setRules(final Map<String, AxeRuleOptions> newRules) {
     this.rules =  newRules;
   }
 
@@ -109,7 +125,7 @@ public class AxeRunOptions {
    * @param newResultTypes the new result types to be set
    */
   @JsonProperty(value = "resultTypes")
-  public void setResultTypes(List<String> newResultTypes) {
+  public void setResultTypes(final List<String> newResultTypes) {
     this.resultTypes = newResultTypes;
   }
 
@@ -127,7 +143,7 @@ public class AxeRunOptions {
    * @param newXPath the new xpath to be set
    */
   @JsonProperty(value = "xpath")
-  public void setXPath(Boolean newXPath) {
+  public void setXPath(final Boolean newXPath) {
     this.xpath = newXPath;
   }
 
@@ -145,7 +161,7 @@ public class AxeRunOptions {
    * @param newAbsolutePath the bool to be set if there are absolute paths
    */
   @JsonProperty(value = "absolutePaths")
-  public void setAbsolutePaths(Boolean newAbsolutePath) {
+  public void setAbsolutePaths(final Boolean newAbsolutePath) {
     this.absolutePaths = newAbsolutePath;
   }
 
@@ -163,7 +179,7 @@ public class AxeRunOptions {
    * @param newIFrames the bool to be set if there are iFrames
    */
   @JsonProperty(value = "iFrames")
-  public void setIFrames(Boolean newIFrames) {
+  public void setIFrames(final Boolean newIFrames) {
     this.iframe = newIFrames;
   }
 
@@ -180,7 +196,7 @@ public class AxeRunOptions {
    * @param newRestoreScroll bool if there is a restore scroll
    */
   @JsonProperty(value = "restoreScroll")
-  public void setRestoreScroll(Boolean newRestoreScroll) {
+  public void setRestoreScroll(final Boolean newRestoreScroll) {
     this.restoreScroll = newRestoreScroll;
   }
 
@@ -198,7 +214,7 @@ public class AxeRunOptions {
    * @param newFrameWaitTime the new frame wait time to be set
    */
   @JsonProperty(value = "frameWaitTime")
-  public void setFrameWaitTimeInMilliseconds(Integer newFrameWaitTime) {
+  public void setFrameWaitTimeInMilliseconds(final Integer newFrameWaitTime) {
     this.frameWaitTimeInMilliseconds = newFrameWaitTime;
   }
 }

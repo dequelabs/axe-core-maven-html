@@ -1,3 +1,15 @@
+/*
+ * Copyright (C) 2020 Deque Systems Inc.,
+ *
+ * Your use of this Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * This entire copyright notice must appear in every copy of this file you
+ * distribute or in any file that contains substantial portions of this source
+ * code.
+ */
+
 package com.deque.axe.objects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -15,7 +27,7 @@ public class AxeResult {
    * sets the scan JSON object to class objects.
    * @param results the JSON object to be set
    */
-  public AxeResult(JSONObject results) {
+  public AxeResult(final JSONObject results) {
     final JSONArray violationsToken = results.getJSONArray("violations");
     final JSONArray passesToken = results.getJSONArray("passes");
     final JSONArray inapplicableToken = results.getJSONArray("inapplicable");
@@ -43,18 +55,20 @@ public class AxeResult {
    * @param newObject a JSONArray with all the content to set an Axe Result Item
    * @return a list of Axe Result Item
    */
-  private List<AxeResultItem> setAxeResultItem(JSONArray newObject) {
+  private List<AxeResultItem> setAxeResultItem(final JSONArray newObject) {
     List<AxeResultItem> list = new ArrayList<>();
 
     for (int i = 0; i < newObject.length(); i++) {
       AxeResultItem axeResultItem = new AxeResultItem();
       if (newObject.getJSONObject(i).has("impact")
-          && !newObject.getJSONObject(i).get("impact").toString().equals("null")) {
+          && !newObject.getJSONObject(i)
+          .get("impact").toString().equals("null")) {
         axeResultItem.setImpact(newObject.getJSONObject(i).getString("impact"));
       }
       axeResultItem.setNodes(newObject.getJSONObject(i).getJSONArray("nodes"));
       axeResultItem.setHelp(newObject.getJSONObject(i).getString("help"));
-      axeResultItem.setDescription(newObject.getJSONObject(i).getString("description"));
+      axeResultItem.setDescription(
+          newObject.getJSONObject(i).getString("description"));
       axeResultItem.setHelpUrl(newObject.getJSONObject(i).getString("helpUrl"));
       axeResultItem.setID(newObject.getJSONObject(i).getString("id"));
       axeResultItem.setTags(newObject.getJSONObject(i).getJSONArray("tags"));
@@ -63,13 +77,44 @@ public class AxeResult {
     return list;
   }
 
+  /**
+   * A list of all the Violations.
+   */
   private List<AxeResultItem> violations;
+
+  /**
+   * A list of all the incomplete.
+   */
   private List<AxeResultItem> incomplete;
+
+  /**
+   * A list of all the inapplicable.
+   */
   private List<AxeResultItem> inapplicable;
+
+  /**
+   * A list of all the passes.
+   */
   private List<AxeResultItem> passes;
+
+  /**
+   * The url of the html page being scanned.
+   */
   private String url;
+
+  /**
+   * The time stamp of the scan.
+   */
   private OffsetDateTime timestamp;
+
+  /**
+   * The error if the scan encounters one.
+   */
   private String error;
+
+  /**
+   * the json object for the Axe Reporter.
+   */
   private JSONObject json;
 
   /**
@@ -83,10 +128,11 @@ public class AxeResult {
 
   /**
    * sets the violation items.
-   * @param value the JSONArray that contains the values to be set in an Axe result item
+   * @param value the JSONArray that contains
+   *              the values to be set in an Axe result item
    */
   @JsonProperty("violations")
-  public void setViolations(JSONArray value) {
+  public void setViolations(final JSONArray value) {
     this.violations = setAxeResultItem(value);
   }
 
@@ -101,10 +147,11 @@ public class AxeResult {
 
   /**
    * sets the incomplete items.
-   * @param value the JSONArray that contains the values to be set in an Axe result item
+   * @param value the JSONArray that contains
+   *              the values to be set in an Axe result item
    */
   @JsonProperty("incomplete")
-  public void setIncomplete(JSONArray value) {
+  public void setIncomplete(final JSONArray value) {
     this.incomplete =  setAxeResultItem(value);
   }
 
@@ -119,10 +166,11 @@ public class AxeResult {
 
   /**
    * sets the inapplicable items.
-   * @param value the JSONArray that contains the values to be set in an Axe result item
+   * @param value the JSONArray that contains
+   *              the values to be set in an Axe result item
    */
   @JsonProperty("inapplicable")
-  public void setInapplicable(JSONArray value) {
+  public void setInapplicable(final JSONArray value) {
     this.inapplicable = setAxeResultItem(value);
   }
 
@@ -140,7 +188,7 @@ public class AxeResult {
    * @param value the JSONArray value to be set as an Axe Result Item
    */
   @JsonProperty("passes")
-  public void setPasses(JSONArray value) {
+  public void setPasses(final JSONArray value) {
     this.passes = setAxeResultItem(value);
   }
 
@@ -158,7 +206,7 @@ public class AxeResult {
    * @param value the new url to be set
    */
   @JsonProperty("url")
-  public void setUrl(String value) {
+  public void setUrl(final String value) {
     this.url = value;
   }
 
@@ -176,7 +224,7 @@ public class AxeResult {
    * @param value the new timestamp value to be set
    */
   @JsonProperty("timestamp")
-  public void setTimestamp(OffsetDateTime value) {
+  public void setTimestamp(final OffsetDateTime value) {
     this.timestamp = value;
   }
 
@@ -194,7 +242,7 @@ public class AxeResult {
    * @param newError the error string to be set
    */
   @JsonProperty("error")
-  public void setError(String newError) {
+  public void setError(final String newError) {
     this.error = newError;
   }
 
@@ -202,7 +250,7 @@ public class AxeResult {
    * sets the json object for reference.
    * @param newJson the JSONObject that is set
    */
-  public void setJson(JSONObject newJson) {
+  public void setJson(final JSONObject newJson) {
     this.json = newJson;
   }
 

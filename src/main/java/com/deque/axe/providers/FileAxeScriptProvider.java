@@ -1,3 +1,15 @@
+/*
+ * Copyright (C) 2020 Deque Systems Inc.,
+ *
+ * Your use of this Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * This entire copyright notice must appear in every copy of this file you
+ * distribute or in any file that contains substantial portions of this source
+ * code.
+ */
+
 package com.deque.axe.providers;
 
 import java.io.File;
@@ -9,6 +21,9 @@ import javax.naming.OperationNotSupportedException;
  * An accessibility script provider.
  */
 public class FileAxeScriptProvider implements IAxeScriptProvider {
+  /**
+   * the file path of the script to be run.
+   */
   private String filePath;
 
   /**
@@ -16,7 +31,8 @@ public class FileAxeScriptProvider implements IAxeScriptProvider {
    * @param newFilePath the file path to be set
    * @throws FileNotFoundException if the file is not found
    */
-  public FileAxeScriptProvider(String newFilePath) throws FileNotFoundException {
+  public FileAxeScriptProvider(final String newFilePath)
+      throws FileNotFoundException {
     if (newFilePath.isEmpty()) {
       throw new NullPointerException("File Path is empty or null");
     }
@@ -35,7 +51,8 @@ public class FileAxeScriptProvider implements IAxeScriptProvider {
   public String getScript() throws OperationNotSupportedException, IOException {
     File file = new File(filePath);
     if (!file.exists()) {
-      throw new OperationNotSupportedException("File: " + filePath + " does not exist");
+      throw new OperationNotSupportedException(
+          "File: " + filePath + " does not exist");
     }
     return EmbeddedResourceProvider.readEmbeddedFile(filePath);
   }

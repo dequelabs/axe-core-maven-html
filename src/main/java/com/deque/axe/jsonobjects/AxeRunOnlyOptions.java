@@ -1,3 +1,16 @@
+/*
+ * Copyright (C) 2020 Deque Systems Inc.,
+ *
+ * Your use of this Source Code Form is
+ * subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * This entire copyright notice must appear in every copy of this file you
+ * distribute or in any file that contains substantial portions of this source
+ * code.
+ */
+
 package com.deque.axe.jsonobjects;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -31,7 +44,7 @@ public class AxeRunOnlyOptions {
    * @param newType the new type to be set
    */
   @JsonProperty(value = "type")
-  public void setType(String newType) {
+  public void setType(final String newType) {
     this.type = newType;
   }
 
@@ -49,7 +62,7 @@ public class AxeRunOnlyOptions {
    * @param newValues the new values to be set
    */
   @JsonProperty(value = "values")
-  public void setValues(List<String> newValues) {
+  public void setValues(final List<String> newValues) {
     this.values = newValues;
   }
 }
