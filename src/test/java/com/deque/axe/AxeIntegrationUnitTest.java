@@ -44,13 +44,16 @@ public class AxeIntegrationUnitTest {
   private WebDriver webDriver;
   private WebDriverWait wait;
 
+  private static File integrationTestTargetFile = new File("src/test/resources/html/Integration-test-target.html");
+  private static String integrationTestTargetUrl = integrationTestTargetFile.getAbsolutePath();
+
   /**
    * Sets up the tests and navigates to teh integration test site.
    */
   @BeforeTest
   public void setup() {
     initDriver("Chrome");
-    this.webDriver.get("http://localhost:5005/integration-test-target.html");
+    this.webDriver.get(new File(integrationTestTargetUrl).getAbsolutePath());
     wait.until(drv -> drv.findElement(By.cssSelector("main")));
   }
 

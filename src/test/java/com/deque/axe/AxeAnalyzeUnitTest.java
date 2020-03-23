@@ -34,6 +34,8 @@ public class AxeAnalyzeUnitTest {
    */
   private WebDriver webDriver;
 
+  private static final String htmlPage = "src/test/resources/html/Integration-test-target.html";
+
   /**
    * sets up the driver before the test.
    */
@@ -41,7 +43,7 @@ public class AxeAnalyzeUnitTest {
   public void testInitialize() {
     ChromeDriverService service = ChromeDriverService.createDefaultService();
     this.webDriver = new ChromeDriver(service);
-    this.webDriver.get("http://localhost:5005/integration-test-target.html");
+    this.webDriver.get(new File(htmlPage).getAbsolutePath());
   }
 
   /**

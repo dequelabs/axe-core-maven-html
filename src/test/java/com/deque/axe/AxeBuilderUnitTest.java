@@ -17,6 +17,8 @@ import com.deque.axe.jsonobjects.AxeRunContext;
 import com.deque.axe.jsonobjects.AxeRunOnlyOptions;
 import com.deque.axe.jsonobjects.AxeRunOptions;
 import com.deque.axe.objects.AxeResult;
+
+import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
@@ -49,7 +51,7 @@ public class AxeBuilderUnitTest {
   public void testInitialize() {
     ChromeDriverService service = ChromeDriverService.createDefaultService();
     this.webDriver = new ChromeDriver(service);
-    this.webDriver.get("http://localhost:5005/integration-test-target.html");
+    this.webDriver.get(new File("src/test/resources/html/Integration-test-target.html").getAbsolutePath());
     this.javascriptExecutor = (JavascriptExecutor) this.webDriver;
     this.targetLocator = this.webDriver.switchTo();
   }
