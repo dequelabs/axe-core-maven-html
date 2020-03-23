@@ -128,13 +128,11 @@ public class AxeIntegrationUnitTest {
         ChromeOptions options = new ChromeOptions();
         options.setUnhandledPromptBehaviour(UnexpectedAlertBehaviour.ACCEPT);
         options.addArguments(Arrays.asList("no-sandbox", "--log-level=3", "--silent"));
-        System.setProperty("webdriver.chrome.driver","src/test/resources/chromedriver.exe");
         ChromeDriverService service = ChromeDriverService.createDefaultService();
         webDriver = new ChromeDriver(service, options);
       break;
 
       case "FIREFOX":
-        System.setProperty("webdriver.gecko.driver", "src/test/resources/geckodriver.exe");
         webDriver = new FirefoxDriver();
         break;
 

@@ -50,7 +50,6 @@ public class AxeExampleUnitTest {
   @BeforeTest
   public void setUp() {
     // ChromeDriver needed to test for Shadow DOM testing support
-    System.setProperty("webdriver.chrome.driver","src/test/resources/chromedriver.exe");
     webDriver = new ChromeDriver();
   }
 
