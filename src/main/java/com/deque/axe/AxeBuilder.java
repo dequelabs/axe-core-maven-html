@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import javax.naming.OperationNotSupportedException;
-import org.apache.http.annotation.Obsolete;
 import org.json.JSONObject;
 import org.openqa.selenium.InvalidArgumentException;
 import org.openqa.selenium.JavascriptExecutor;
@@ -119,10 +118,12 @@ public class AxeBuilder {
    * /blob/develop/doc/API.md#options-parameter.
    * Cannot not be used with WithRules(List<String>),
    * WithTags(List<String>), & "DisableRules(List<String>).
+   * @deprecated Obsolete(" Use WithOptions
+   * / WithTags / WithRules / DisableRules apis ")]
    */
   // TODO: Obsolete("Use WithOptions
   //  / WithTags / WithRules / DisableRules apis")]
-  @Obsolete()
+  @Deprecated
   private String options = "{}";
 
   /**

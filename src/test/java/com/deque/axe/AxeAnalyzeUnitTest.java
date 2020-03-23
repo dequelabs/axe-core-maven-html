@@ -16,14 +16,15 @@ import com.deque.axe.extensions.WebDriverExtensions;
 import java.io.File;
 import java.io.IOException;
 import javax.naming.OperationNotSupportedException;
+
+import org.junit.*;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeDriverService;
-import org.testng.annotations.AfterTest;
-import org.testng.annotations.BeforeTest;
-import org.testng.annotations.Test;
 
 /**
  * Unit tests for Analyze methods.
@@ -39,7 +40,7 @@ public class AxeAnalyzeUnitTest {
   /**
    * sets up the driver before the test.
    */
-  @BeforeTest
+  @Before
   public void testInitialize() {
     ChromeDriverService service = ChromeDriverService.createDefaultService();
     this.webDriver = new ChromeDriver(service);
@@ -49,7 +50,7 @@ public class AxeAnalyzeUnitTest {
   /**
    * closes the web driver window.
    */
-  @AfterTest
+  @After
   public void teardown() {
     this.webDriver.close();
     this.webDriver.quit();
@@ -60,7 +61,7 @@ public class AxeAnalyzeUnitTest {
    * @throws IOException if analysis of page reaches an error
    * @throws OperationNotSupportedException if an unaccepted error occurs
    */
-  @Test(expectedExceptions = NullPointerException.class)
+  @Test(expected = NullPointerException.class)
   public void shouldThrowWhenWebDriverIsNullAnalyse() throws IOException, OperationNotSupportedException {
     new AxeBuilder(this.webDriver);
     WebDriverExtensions.analyze(null);
@@ -71,7 +72,7 @@ public class AxeAnalyzeUnitTest {
    * @throws IOException if analysis of page reaches an error
    * @throws OperationNotSupportedException if an unaccepted error occurs
    */
-  @Test(expectedExceptions = NullPointerException.class)
+  @Test(expected = NullPointerException.class)
   public void shouldThrowWhenWebDriverIsNullWithWebElementAnalyse()
       throws IOException, OperationNotSupportedException {
     new AxeBuilder(this.webDriver);
@@ -84,7 +85,7 @@ public class AxeAnalyzeUnitTest {
    * @throws IOException if analysis of page reaches an error
    * @throws OperationNotSupportedException if an unaccepted error occurs
    */
-  @Test(expectedExceptions = NullPointerException.class)
+  @Test(expected = NullPointerException.class)
   public void shouldThrowWhenWebDriverIsNullWithAxeBuilderOptionsAnalyse()
       throws IOException, OperationNotSupportedException {
     AxeBuilder builder = new AxeBuilder(this.webDriver);
@@ -96,7 +97,7 @@ public class AxeAnalyzeUnitTest {
    * @throws IOException if analysis of page reaches an error
    * @throws OperationNotSupportedException if an unaccepted error occurs
    */
-  @Test(expectedExceptions = NullPointerException.class)
+  @Test(expected = NullPointerException.class)
   public void shouldThrowWhenWebDriverIsNullWithAll()
       throws IOException, OperationNotSupportedException {
     AxeBuilder builder = new AxeBuilder(this.webDriver);

@@ -24,6 +24,9 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.naming.OperationNotSupportedException;
 import org.junit.Assert;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.UnexpectedAlertBehaviour;
 import org.openqa.selenium.WebDriver;
@@ -33,9 +36,6 @@ import org.openqa.selenium.chrome.ChromeDriverService;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import org.testng.annotations.AfterTest;
-import org.testng.annotations.BeforeTest;
-import org.testng.annotations.Test;
 
 /**
  * Unit tests for Axe Integration.
@@ -50,7 +50,7 @@ public class AxeIntegrationUnitTest {
   /**
    * Sets up the tests and navigates to teh integration test site.
    */
-  @BeforeTest
+  @Before
   public void setup() {
     initDriver("Chrome");
     this.webDriver.get("file:///" + new File(integrationTestTargetUrl).getAbsolutePath());
@@ -60,7 +60,7 @@ public class AxeIntegrationUnitTest {
   /**
    * closes and shuts down the web driver.
    */
-  @AfterTest()
+  @After
   public void teardown() {
     webDriver.quit();
   }
@@ -97,7 +97,7 @@ public class AxeIntegrationUnitTest {
     long time = file.lastModified();
     Assert.assertNotEquals(time, timeBeforeScan);
     Assert.assertTrue(time < timeBeforeScan);
-    Assert.assertTrue("File was not deleted", file.delete());
+    Assert.assertTrue("File was not deleted", new File("src/test/java/results/runScanOnPageChrome").delete());
   }
 
   /**
