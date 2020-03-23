@@ -73,7 +73,7 @@ public class AxeAnalyzeUnitTest {
   public void shouldThrowWhenWebDriverIsNullWithWebElementAnalyse()
       throws IOException, OperationNotSupportedException {
     new AxeBuilder(this.webDriver);
-    WebElement mainElement = this.webDriver.findElement(By.tagName("main"));
+    WebElement mainElement = this.webDriver.findElement(By.cssSelector("main"));
     WebDriverExtensions.analyze(null, mainElement);
   }
 
@@ -98,7 +98,7 @@ public class AxeAnalyzeUnitTest {
   public void shouldThrowWhenWebDriverIsNullWithAll()
       throws IOException, OperationNotSupportedException {
     AxeBuilder builder = new AxeBuilder(this.webDriver);
-    WebElement mainElement = this.webDriver.findElement(By.tagName("main"));
+    WebElement mainElement = this.webDriver.findElement(By.cssSelector("main"));
     WebDriverExtensions.analyze(null, mainElement, builder.setDefaultAxeBuilderOptions());
   }
 }
