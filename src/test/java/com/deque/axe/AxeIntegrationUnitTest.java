@@ -53,7 +53,7 @@ public class AxeIntegrationUnitTest {
   @BeforeTest
   public void setup() {
     initDriver("Chrome");
-    this.webDriver.get(new File(integrationTestTargetUrl).getAbsolutePath());
+    this.webDriver.get("file:///" + new File(integrationTestTargetUrl).getAbsolutePath());
     wait.until(drv -> drv.findElement(By.cssSelector("main")));
   }
 
