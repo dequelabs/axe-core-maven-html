@@ -80,7 +80,7 @@ public class AxeIntegrationUnitTest {
     AxeBuilder builder = new AxeBuilder(webDriver).withOptions(runOptions)
          .withTags(Arrays.asList("wcag2a", "wcag412"))
          .disableRules(Collections.singletonList("color-contrast"))
-         .withOutputFile("src/test/java/results/runScanOnPageChrome");
+         .withOutputFile("src/test/java/results/raw-axe-results.json");
 
     AxeResult results = builder.analyze();
     List<AxeResultItem> violations = results.getViolations();
@@ -93,11 +93,11 @@ public class AxeIntegrationUnitTest {
     Assert.assertEquals(2, violations.size());
     Assert.assertNotNull(results.getViolations().get(0).getNodes());
 
-    File file = new File("jmaqs-accessibility/raw-axe-results.json");
+    File file = new File("src/test/java/results/raw-axe-results.json");
     long time = file.lastModified();
     Assert.assertNotEquals(time, timeBeforeScan);
     Assert.assertTrue(time < timeBeforeScan);
-    Assert.assertTrue("File was not deleted", new File("src/test/java/results/runScanOnPageChrome").delete());
+    Assert.assertTrue("File was not deleted", file.delete());
   }
 
   /**

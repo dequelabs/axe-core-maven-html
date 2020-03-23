@@ -16,10 +16,9 @@ import com.deque.axe.extensions.WebDriverExtensions;
 import java.io.File;
 import java.io.IOException;
 import javax.naming.OperationNotSupportedException;
-
-import org.junit.*;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
