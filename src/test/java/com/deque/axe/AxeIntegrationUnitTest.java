@@ -51,7 +51,7 @@ public class AxeIntegrationUnitTest {
   public void setup() {
     initDriver("Chrome");
     this.webDriver.get("http://localhost:5005/integration-test-target.html");
-    this.webDriver.findElement(By.tagName("main"));
+    this.webDriver.findElement(By.cssSelector("main"));
   }
 
   /**
