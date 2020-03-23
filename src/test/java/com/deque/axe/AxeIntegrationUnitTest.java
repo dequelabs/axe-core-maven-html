@@ -43,16 +43,16 @@ import org.testng.annotations.Test;
 public class AxeIntegrationUnitTest {
   private WebDriver webDriver;
   private WebDriverWait wait;
-  private static File integrationTestTargetFile = new File("src/test/resources/html/Integration-test-target.html");
-  private static String integrationTestTargetUrl = integrationTestTargetFile.getAbsolutePath();
   private String mainElementSelector = "main";
 
-
+  /**
+   * Sets up the tests and navigates to teh integration test site.
+   */
   @BeforeTest
   public void setup() {
     initDriver("Chrome");
-    loadTestPage();
-    this.webDriver.get(new File(integrationTestTargetUrl).getAbsolutePath());
+    this.webDriver.get("http://localhost:5005/integration-test-target.html");
+    wait.until(drv -> drv.findElement(By.tagName(mainElementSelector)));
   }
 
   /**
@@ -108,14 +108,6 @@ public class AxeIntegrationUnitTest {
     AxeBuilder builder = new AxeBuilder(this.webDriver);
     AxeResult results = builder.analyze(mainElement);
     Assert.assertEquals(2, results.getViolations().size());
-  }
-
-  /**
-   * Loads the web page to be tested.
-   */
-  private void loadTestPage() {
-    webDriver.get(integrationTestTargetUrl);
-    wait.until(drv -> drv.findElement(By.tagName(mainElementSelector)));
   }
 
   /**
