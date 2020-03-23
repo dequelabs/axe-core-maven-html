@@ -43,7 +43,6 @@ import org.testng.annotations.Test;
 public class AxeIntegrationUnitTest {
   private WebDriver webDriver;
   private WebDriverWait wait;
-  private String mainElementSelector = "main";
 
   /**
    * Sets up the tests and navigates to teh integration test site.
@@ -52,7 +51,7 @@ public class AxeIntegrationUnitTest {
   public void setup() {
     initDriver("Chrome");
     this.webDriver.get("http://localhost:5005/integration-test-target.html");
-    wait.until(drv -> drv.findElement(By.tagName(mainElementSelector)));
+    this.webDriver.findElement(By.tagName("main"));
   }
 
   /**
