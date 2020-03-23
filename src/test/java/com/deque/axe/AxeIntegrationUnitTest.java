@@ -97,7 +97,10 @@ public class AxeIntegrationUnitTest {
     long time = file.lastModified();
     Assert.assertNotEquals(time, timeBeforeScan);
     Assert.assertTrue(time < timeBeforeScan);
-    Assert.assertTrue("File was not deleted", file.delete());
+
+    if (file.exists()) {
+      Assert.assertTrue("File was not deleted", file.delete());
+    }
   }
 
   /**
