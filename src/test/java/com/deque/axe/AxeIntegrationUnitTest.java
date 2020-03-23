@@ -51,7 +51,7 @@ public class AxeIntegrationUnitTest {
   public void setup() {
     initDriver("Chrome");
     this.webDriver.get("http://localhost:5005/integration-test-target.html");
-    wait.until(drv -> drv.findElement(By.tagName("main")));
+    wait.until(drv -> drv.findElement(By.cssSelector("main")));
   }
 
   /**
@@ -103,7 +103,7 @@ public class AxeIntegrationUnitTest {
    */
   @Test()
   public void runScanOnGivenElementChrome() throws IOException, OperationNotSupportedException {
-    WebElement mainElement = wait.until(drv -> drv.findElement(By.tagName("main")));
+    WebElement mainElement = wait.until(drv -> drv.findElement(By.cssSelector("main")));
     AxeBuilder builder = new AxeBuilder(this.webDriver);
     AxeResult results = builder.analyze(mainElement);
     Assert.assertEquals(2, results.getViolations().size());
