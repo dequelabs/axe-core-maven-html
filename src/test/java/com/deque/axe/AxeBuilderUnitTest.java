@@ -17,24 +17,20 @@ import com.deque.axe.jsonobjects.AxeRunContext;
 import com.deque.axe.jsonobjects.AxeRunOnlyOptions;
 import com.deque.axe.jsonobjects.AxeRunOptions;
 import com.deque.axe.objects.AxeResult;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import javax.naming.OperationNotSupportedException;
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 import org.openqa.selenium.InvalidArgumentException;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeDriverService;
-import org.testng.annotations.AfterTest;
-import org.testng.annotations.BeforeTest;
-import org.testng.annotations.Test;
+
+import javax.naming.OperationNotSupportedException;
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
 
 /**
  * Unit tests for the Axe Builder.
@@ -47,7 +43,7 @@ public class AxeBuilderUnitTest {
   /**
    * Sets up the chrome driver before each test.
    */
-  @BeforeTest
+  @Before
   public void testInitialize() {
     ChromeDriverService service = ChromeDriverService.createDefaultService();
     this.webDriver = new ChromeDriver(service);
@@ -59,7 +55,7 @@ public class AxeBuilderUnitTest {
   /**
    * closes the web driver.
    */
-  @AfterTest
+  @After
   public void teardown() {
     this.webDriver.close();
     this.webDriver.quit();
@@ -70,7 +66,7 @@ public class AxeBuilderUnitTest {
    * @throws IOException if file writing fails
    * @throws OperationNotSupportedException if the operation errors out
    */
-  @Test(expectedExceptions = NullPointerException.class)
+  @Test(expected = NullPointerException.class)
   public void throwWhenDriverIsNull() throws IOException, OperationNotSupportedException {
     //arrange / act /assert
     AxeBuilder axeBuilder = new AxeBuilder(null);
@@ -82,7 +78,7 @@ public class AxeBuilderUnitTest {
    * @throws IOException if file writing fails
    * @throws OperationNotSupportedException if the operation errors out
    */
-  @Test(expectedExceptions = NullPointerException.class)
+  @Test(expected = NullPointerException.class)
   public void throwWhenOptionsAreNull() throws OperationNotSupportedException, IOException {
     // act / assert
     AxeBuilder axeBuilder = new AxeBuilder(this.webDriver, null);
@@ -202,7 +198,7 @@ public class AxeBuilderUnitTest {
    * @throws IOException if file writing fails
    * @throws OperationNotSupportedException if the operation errors out
    */
-  @Test(expectedExceptions = NullPointerException.class)
+  @Test(expected = NullPointerException.class)
   public void shouldThrowIfNullParameterPassed() throws OperationNotSupportedException, IOException {
     new AxeBuilder(this.webDriver, null);
     new AxeBuilder(null);
@@ -221,7 +217,7 @@ public class AxeBuilderUnitTest {
    * @throws IOException if file writing fails
    * @throws OperationNotSupportedException if the operation errors out
    */
-  @Test(expectedExceptions = IllegalArgumentException.class)
+  @Test(expected = IllegalArgumentException.class)
   public void shouldThrowIfEmptyParameterPassed() throws IOException,
       OperationNotSupportedException {
     List<String> values = Arrays.asList("val1", "");
@@ -239,7 +235,7 @@ public class AxeBuilderUnitTest {
    * @throws IOException if file writing fails
    * @throws OperationNotSupportedException if the operation errors out
    */
-  @Test(expectedExceptions = InvalidArgumentException.class)
+  @Test(expected = InvalidArgumentException.class)
   public void shouldThrowIfDeprecatedOptionsIsUsedWithNewOptionsApis()
       throws IOException, OperationNotSupportedException {
     AxeBuilder builder = new AxeBuilder(this.webDriver);
@@ -259,7 +255,7 @@ public class AxeBuilderUnitTest {
    * @throws IOException if file writing fails
    * @throws OperationNotSupportedException if the operation errors out
    */
-  @Test(expectedExceptions = AXE.AxeRuntimeException.class)
+  @Test(expected = AXE.AxeRuntimeException.class)
   public void shouldThrowRunOptionsWithInvalidTag() throws IOException,
       OperationNotSupportedException {
     List<String> expectedTags = Arrays.asList("tag1", "tag2");
@@ -273,7 +269,7 @@ public class AxeBuilderUnitTest {
    * @throws IOException if file writing fails
    * @throws OperationNotSupportedException if the operation errors out
    */
-  @Test(expectedExceptions = AXE.AxeRuntimeException.class)
+  @Test(expected = AXE.AxeRuntimeException.class)
   public void shouldThrowInvalidRuleConfig() throws IOException, OperationNotSupportedException {
     List<String> expectedRules = Arrays.asList("rule1", "rule2");
     List<String> disableRules = Arrays.asList("excludeRule1", "excludeRule2");

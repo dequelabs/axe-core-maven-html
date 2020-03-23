@@ -12,6 +12,9 @@
 
 package com.deque.axe;
 
+import static com.deque.axe.AxeReporter.getAxeResultString;
+import static com.deque.axe.AxeReporter.getReadableAxeResults;
+
 import com.deque.axe.providers.FileAxeScriptProvider;
 import com.deque.axe.extensions.WebDriverInjectorExtensions;
 import com.deque.axe.objects.AxeResult;
@@ -26,12 +29,11 @@ import javax.naming.OperationNotSupportedException;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.testng.Assert;
-import org.testng.annotations.AfterTest;
-import org.testng.annotations.BeforeTest;
-import org.testng.annotations.Test;
-import static com.deque.axe.AxeReporter.getAxeResultString;
-import static com.deque.axe.AxeReporter.getReadableAxeResults;
+import org.junit.Assert;
+import org.junit.Test;
+import org.junit.After;
+import org.junit.Before;
+
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -47,7 +49,7 @@ public class AxeExampleUnitTest {
   /**
    * Instantiate the WebDriver and navigate to the test site
    */
-  @BeforeTest
+  @Before
   public void setUp() {
     // ChromeDriver needed to test for Shadow DOM testing support
     webDriver = new ChromeDriver();
@@ -56,7 +58,7 @@ public class AxeExampleUnitTest {
   /**
    * Ensure we close the WebDriver after finishing
    */
-  @AfterTest
+  @After
   public void tearDown() {
     webDriver.quit();
   }
@@ -69,15 +71,15 @@ public class AxeExampleUnitTest {
     this.webDriver.get("file:///" + new File(normalPage).getAbsolutePath());
     AxeResult result = new AxeBuilder(webDriver).analyze();
     List<AxeResultItem> violations = result.getViolations();
-    Assert.assertEquals(violations.size(), 0, "No violations found");
+    Assert.assertEquals("No violations found", 0, violations.size());
     AxeReporter.writeResultsToJsonFile("src/test/java/results/testAccessibility", result.getJson());
     Assert.assertFalse(getReadableAxeResults(ResultType.Violations.getKey(), webDriver, violations));
     AxeReporter.writeResultsToTextFile("src/test/java/results/testAccessibility", AxeReporter.getAxeResultString());
 
     File jsonFile = new File("src/test/java/results/testAccessibility.json");
     File txtFile = new File("src/test/java/results/testAccessibility.txt");
-    Assert.assertTrue(jsonFile.delete(), "Json file was not deleted.");
-    Assert.assertTrue(txtFile.delete(), "Txt file was not deleted.");
+    Assert.assertTrue("Json file was not deleted.", jsonFile.delete());
+    Assert.assertTrue("Txt file was not deleted.", txtFile.delete());
   }
 
   /**
@@ -88,7 +90,7 @@ public class AxeExampleUnitTest {
     this.webDriver.get("file:///" + new File(normalPage).getAbsolutePath());
     AxeResult result = new AxeBuilder(webDriver).analyze();
     List<AxeResultItem> violations = result.getViolations();
-    Assert.assertEquals(violations.size(), 0, "No violations found");
+    Assert.assertEquals( "No violations found", 0, violations.size());
     AxeReporter
         .writeResultsToJsonFile("src/test/java/results/testAccessibilityWithSkipFrames", result.getJson());
     Assert.assertFalse(getReadableAxeResults(ResultType.Violations.getKey(), webDriver, violations));
@@ -97,8 +99,8 @@ public class AxeExampleUnitTest {
 
     File jsonFile = new File("src/test/java/results/testAccessibilityWithSkipFrames.json");
     File txtFile = new File("src/test/java/results/testAccessibilityWithSkipFrames.txt");
-    Assert.assertTrue(jsonFile.delete(), "Json file was not deleted.");
-    Assert.assertTrue(txtFile.delete(), "Txt file was not deleted.");
+    Assert.assertTrue("Json file was not deleted.", jsonFile.delete());
+    Assert.assertTrue("Txt file was not deleted.", txtFile.delete());
   }
 
   /**
@@ -111,7 +113,7 @@ public class AxeExampleUnitTest {
     builder.setOptions("{ \"rules\": { \"accesskeys\": { \"enabled\": false } } }");
     AxeResult result = builder.analyze();
     List<AxeResultItem> violations = result.getViolations();
-    Assert.assertEquals(violations.size(), 0, "No violations found");
+    Assert.assertEquals("No violations found", 0, violations.size());
     AxeReporter.writeResultsToJsonFile("src/test/java/results/testAccessibilityWithOptions", result.getJson());
     Assert.assertFalse(getReadableAxeResults(ResultType.Violations.getKey(), webDriver, violations));
     AxeReporter.writeResultsToTextFile(
@@ -119,8 +121,8 @@ public class AxeExampleUnitTest {
 
     File jsonFile = new File("src/test/java/results/testAccessibilityWithOptions.json");
     File txtFile = new File("src/test/java/results/testAccessibilityWithOptions.txt");
-    Assert.assertTrue(jsonFile.delete(), "Json file was not deleted.");
-    Assert.assertTrue(txtFile.delete(), "Txt file was not deleted.");
+    Assert.assertTrue("Json file was not deleted.", jsonFile.delete());
+    Assert.assertTrue("Txt file was not deleted.", txtFile.delete());
   }
 
   @Test
@@ -136,10 +138,10 @@ public class AxeExampleUnitTest {
       builder.analyze();
     } catch (Exception e) {
       String msg = e.getMessage();
-      Assert.assertTrue(msg.contains("1 seconds"), "Did not error with timeout message");
+      Assert.assertTrue("Did not error with timeout message", msg.contains("1 seconds"));
       didTimeout = true;
     }
-    Assert.assertTrue(didTimeout,"Setting Custom timeout did not work.");
+    Assert.assertTrue("Setting Custom timeout did not work.", didTimeout);
   }
 
   /**
@@ -150,7 +152,7 @@ public class AxeExampleUnitTest {
     this.webDriver.get("file:///" + new File(normalPage).getAbsolutePath());
     AxeResult result = new AxeBuilder(webDriver).include(Collections.singletonList("p")).analyze();
     List<AxeResultItem> violations = result.getViolations();
-    Assert.assertEquals(violations.size(), 0, "No violations found");
+    Assert.assertEquals("No violations found", 0, violations.size());
     AxeReporter.writeResultsToJsonFile("src/test/java/results/testAccessibilityWithSelector", result.getJson());
     Assert.assertFalse(getReadableAxeResults(ResultType.Violations.getKey(), webDriver, violations));
     AxeReporter.writeResultsToTextFile(
@@ -158,8 +160,8 @@ public class AxeExampleUnitTest {
 
     File jsonFile = new File("src/test/java/results/testAccessibilityWithSelector.json");
     File txtFile = new File("src/test/java/results/testAccessibilityWithSelector.txt");
-    Assert.assertTrue(jsonFile.delete(), "Json file was not deleted.");
-    Assert.assertTrue(txtFile.delete(), "Txt file was not deleted.");
+    Assert.assertTrue("Json file was not deleted.", jsonFile.delete());
+    Assert.assertTrue("Txt file was not deleted.", txtFile.delete());
   }
 
   /**
@@ -170,7 +172,7 @@ public class AxeExampleUnitTest {
     this.webDriver.get("file:///" + new File(normalPage).getAbsolutePath());
     AxeResult result = new AxeBuilder(webDriver).include(Arrays.asList("title", "p")).analyze();
     List<AxeResultItem> violations = result.getViolations();
-    Assert.assertEquals(violations.size(), 0, "No violations found");
+    Assert.assertEquals("No violations found", 0, violations.size());
     AxeReporter
         .writeResultsToJsonFile("src/test/java/results/testAccessibilityWithSelectors", result.getJson());
     Assert.assertFalse(getReadableAxeResults(ResultType.Violations.getKey(), webDriver, violations));
@@ -179,8 +181,8 @@ public class AxeExampleUnitTest {
 
     File jsonFile = new File("src/test/java/results/testAccessibilityWithSelectors.json");
     File txtFile = new File("src/test/java/results/testAccessibilityWithSelectors.txt");
-    Assert.assertTrue(jsonFile.delete(), "Json file was not deleted.");
-    Assert.assertTrue(txtFile.delete(), "Txt file was not deleted.");
+    Assert.assertTrue("Json file was not deleted.", jsonFile.delete());
+    Assert.assertTrue("Txt file was not deleted.", txtFile.delete());
   }
 
   /**
@@ -195,7 +197,7 @@ public class AxeExampleUnitTest {
         .exclude(Collections.singletonList("li")).analyze();
 
     List<AxeResultItem> violations = result.getViolations();
-    Assert.assertNotEquals(violations.size(), 0, "No violations found");
+    Assert.assertNotEquals("No violations found", 0, violations.size());
     AxeReporter.writeResultsToJsonFile("src/test/java/results/testAccessibilityWithIncludesAndExcludes", result.getJson());
     Assert.assertTrue(getReadableAxeResults(ResultType.Violations.getKey(), webDriver, violations));
     AxeReporter.writeResultsToTextFile(
@@ -203,8 +205,8 @@ public class AxeExampleUnitTest {
 
     File jsonFile = new File("src/test/java/results/testAccessibilityWithIncludesAndExcludes.json");
     File txtFile = new File("src/test/java/results/testAccessibilityWithIncludesAndExcludes.txt");
-    Assert.assertTrue(jsonFile.delete(), "Json file was not deleted.");
-    Assert.assertTrue(txtFile.delete(), "Txt file was not deleted.");
+    Assert.assertTrue("Json file was not deleted.", jsonFile.delete());
+    Assert.assertTrue("Txt file was not deleted.", txtFile.delete());
   }
 
   /**
@@ -215,7 +217,7 @@ public class AxeExampleUnitTest {
     this.webDriver.get("file:///" + new File(normalPage).getAbsolutePath());
     AxeResult result = new AxeBuilder(webDriver).analyze(webDriver.findElement(By.tagName("p")));
     List<AxeResultItem>  violations = result.getViolations();
-    Assert.assertEquals(violations.size(), 0, "No violations found");
+    Assert.assertEquals("No violations found", 0, violations.size());
     AxeReporter
         .writeResultsToJsonFile("src/test/java/results/testAccessibilityWithWebElement", result.getJson());
     Assert.assertFalse(getReadableAxeResults(ResultType.Violations.getKey(), webDriver, violations));
@@ -224,8 +226,8 @@ public class AxeExampleUnitTest {
 
     File jsonFile = new File("src/test/java/results/testAccessibilityWithWebElement.json");
     File txtFile = new File("src/test/java/results/testAccessibilityWithWebElement.txt");
-    Assert.assertTrue(jsonFile.delete(), "Json file was not deleted.");
-    Assert.assertTrue(txtFile.delete(), "Txt file was not deleted.");
+    Assert.assertTrue("Json file was not deleted.", jsonFile.delete());
+    Assert.assertTrue("Txt file was not deleted.", txtFile.delete());
   }
 
   /**
@@ -253,8 +255,8 @@ public class AxeExampleUnitTest {
 
     File jsonFile = new File("src/test/java/results/testAccessibilityWithWebElements.json");
     File txtFile = new File("src/test/java/results/testAccessibilityWithWebElements.txt");
-    Assert.assertTrue(jsonFile.delete(), "Json file was not deleted.");
-    Assert.assertTrue(txtFile.delete(), "Txt file was not deleted.");
+    Assert.assertTrue("Json file was not deleted.", jsonFile.delete());
+    Assert.assertTrue("Txt file was not deleted.", txtFile.delete());
   }
 
   /**
@@ -278,8 +280,8 @@ public class AxeExampleUnitTest {
 
     File jsonFile = new File("src/test/java/results/testAccessibilityWithShadowElement.json");
     File txtFile = new File("src/test/java/results/testAccessibilityWithShadowElement.txt");
-    Assert.assertTrue(jsonFile.delete(), "Json file was not deleted.");
-    Assert.assertTrue(txtFile.delete(), "Txt file was not deleted.");
+    Assert.assertTrue("Json file was not deleted.", jsonFile.delete());
+    Assert.assertTrue("Txt file was not deleted.", txtFile.delete());
   }
 
   @Test
@@ -298,7 +300,7 @@ public class AxeExampleUnitTest {
       Assert.assertEquals("boom!", e.getMessage()); // See axe-error.js
       didError = true;
     }
-    Assert.assertTrue(didError, "Did raise axe-core error");
+    Assert.assertTrue("Did raise axe-core error", didError);
   }
 
   /**
@@ -309,7 +311,7 @@ public class AxeExampleUnitTest {
     this.webDriver.get("file:///" + new File(includeExcludePage).getAbsolutePath());
     AxeResult result = new AxeBuilder(webDriver).include(Arrays.asList("div", "p")).analyze();
     List<AxeResultItem> violations = result.getViolations();
-    Assert.assertEquals(violations.size(), 0, "No violations found");
+    Assert.assertEquals("No violations found", 0, violations.size());
     AxeReporter
         .writeResultsToJsonFile("src/test/java/results/testAccessibilityWithFewInclude", result.getJson());
     Assert.assertFalse(getReadableAxeResults(ResultType.Violations.getKey(), webDriver, violations));
@@ -318,8 +320,8 @@ public class AxeExampleUnitTest {
 
     File jsonFile = new File("src/test/java/results/testAccessibilityWithFewInclude.json");
     File txtFile = new File("src/test/java/results/testAccessibilityWithFewInclude.txt");
-    Assert.assertTrue(jsonFile.delete(), "Json file was not deleted.");
-    Assert.assertTrue(txtFile.delete(), "Txt file was not deleted.");
+    Assert.assertTrue("Json file was not deleted.", jsonFile.delete());
+    Assert.assertTrue("Txt file was not deleted.", txtFile.delete());
   }
 
   /**
@@ -345,11 +347,11 @@ public class AxeExampleUnitTest {
     Assert.assertTrue(getReadableAxeResults(ResultType.Violations.getKey(), webDriver, violations));
     AxeReporter.writeResultsToTextFile(
         "src/test/java/results/testAccessibilityWithIncludesAndExcludesWithViolation", AxeReporter.getAxeResultString());
-    Assert.assertEquals(violations.size(), 1,"No violations found");
+    Assert.assertEquals("No violations found", 1, violations.size());
 
     File jsonFile = new File("src/test/java/results/testAccessibilityWithIncludesAndExcludesWithViolation.json");
     File txtFile = new File("src/test/java/results/testAccessibilityWithIncludesAndExcludesWithViolation.txt");
-    Assert.assertTrue(jsonFile.delete(), "Json file was not deleted.");
-    Assert.assertTrue(txtFile.delete(), "Txt file was not deleted.");
+    Assert.assertTrue("Json file was not deleted.", jsonFile.delete());
+    Assert.assertTrue("Txt file was not deleted.", txtFile.delete());
     }
 }
