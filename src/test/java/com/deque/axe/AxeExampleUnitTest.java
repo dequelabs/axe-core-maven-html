@@ -17,7 +17,6 @@ import com.deque.axe.extensions.WebDriverInjectorExtensions;
 import com.deque.axe.objects.AxeResult;
 import com.deque.axe.objects.AxeResultItem;
 import com.deque.axe.objects.AxeResultNode;
-import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
