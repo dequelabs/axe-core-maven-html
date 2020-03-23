@@ -121,7 +121,7 @@ public class AxeExampleUnitTest {
       builder.analyze();
     } catch (Exception e) {
       String msg = e.getMessage();
-      Assert.assertFalse(msg.contains("1 seconds"), "Did not error with timeout message");
+      Assert.assertTrue(msg.contains("1 seconds"), "Did not error with timeout message");
       didTimeout = true;
     }
     Assert.assertTrue(didTimeout,"Setting Custom timeout did not work.");
