@@ -43,7 +43,7 @@ public class AxeAnalyzeUnitTest {
   public void testInitialize() {
     ChromeDriverService service = ChromeDriverService.createDefaultService();
     this.webDriver = new ChromeDriver(service);
-    this.webDriver.get(new File(htmlPage).getAbsolutePath());
+    this.webDriver.get("file:///" + new File(htmlPage).getAbsolutePath());
   }
 
   /**
