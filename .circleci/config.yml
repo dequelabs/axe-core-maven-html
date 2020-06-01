@@ -28,6 +28,16 @@ jobs:
           background: true
       - run: sleep 5 # sleep to allow the server some time to boot
       - run: mvn test
+
+  snapshot_release:
+    <<: *defaults
+    steps:
+      - checkout
+      - restore_cache:
+          key: v1-mvn-deps-{{ checksum "pom.xml" }}
+      - run: python .circleci/snapshot.py
+      - run: .circleci/publish.sh
+
   release:
     <<: *defaults
     steps:
@@ -35,6 +45,7 @@ jobs:
       - restore_cache:
           key: v1-mvn-deps-{{ checksum "pom.xml" }}
       - run: .circleci/publish.sh
+
   github_release:
     docker:
       - image: circleci/golang:1.10
