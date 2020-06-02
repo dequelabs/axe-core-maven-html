@@ -169,8 +169,8 @@ public class ExampleTest {
 
         JSONArray violations = responseJSON.getJSONArray("violations");
 
-        if (violations.length() == 0) {
-            assertTrue("No violations found", true);
+        if (violations.length() == 1) {
+            assertTrue("1 violation found", true);
         } else {
             AXE.writeResults(testName.getMethodName(), responseJSON);
             fail(AXE.report(violations));
@@ -302,7 +302,7 @@ public class ExampleTest {
         JSONArray nodes = ((JSONObject) violations.get(0)).getJSONArray("nodes");
         JSONArray target = ((JSONObject) nodes.get(0)).getJSONArray("target");
 
-        if (violations.length() == 1) {
+        if (violations.length() == 2) {
             assertEquals(String.valueOf(target), "[\"h1 > span\"]");
         } else {
             AXE.writeResults(testName.getMethodName(), responseJSON);
