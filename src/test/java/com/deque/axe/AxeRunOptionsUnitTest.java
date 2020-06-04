@@ -12,12 +12,15 @@
 
 package com.deque.axe;
 
+import com.deque.html.axecore.axeargs.AxeRuleOptions;
+import com.deque.html.axecore.axeargs.AxeRules;
+import com.deque.html.axecore.axeargs.AxeRunOnlyOptions;
+import com.deque.html.axecore.axeargs.AxeRunOptions;
+import com.deque.html.axecore.selenium.AxeReporter;
+import com.deque.html.axecore.selenium.ResultType;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.deque.axe.jsonobjects.AxeRuleOptions;
-import com.deque.axe.jsonobjects.AxeRules;
-import com.deque.axe.jsonobjects.AxeRunOnlyOptions;
-import com.deque.axe.jsonobjects.AxeRunOptions;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;

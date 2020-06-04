@@ -10,7 +10,7 @@
  * code.
  */
 
-package com.deque.axe;
+package com.deque.html.axecore.selenium;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -310,7 +310,7 @@ public class AXE {
 
 		/**
 		 * Run aXe against the page.
-		 * 
+		 *
 		 * @return An aXe results document
 		 */
 		public JSONObject analyze() {
@@ -333,17 +333,17 @@ public class AXE {
 
 		private String getAxeSnippet(String context, String options) {
 			return String.format(
-				"var callback = arguments[arguments.length - 1];" + 
-				"var context = %s;" + 
-				"var options = %s;" + 
-				"var result = { error: '', results: null };" + 
-				"axe.run(context, options, function (err, res) {" + 
-				"  if (err) {" + 
-				"    result.error = err.message;" + 
+				"var callback = arguments[arguments.length - 1];" +
+				"var context = %s;" +
+				"var options = %s;" +
+				"var result = { error: '', results: null };" +
+				"axe.run(context, options, function (err, res) {" +
+				"  if (err) {" +
+				"    result.error = err.message;" +
 				"  } else {" +
-				"    result.results = res;" + 
-				"  }" + 
-				"  callback(result);" + 
+				"    result.results = res;" +
+				"  }" +
+				"  callback(result);" +
 				"});",
 				context, options
 			);
@@ -351,7 +351,7 @@ public class AXE {
 
 		/**
 		 * Run aXe against a specific WebElement.
-		 * 
+		 *
 		 * @param context A WebElement to test
 		 * @return An aXe results document
 		 */

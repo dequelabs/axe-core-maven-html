@@ -10,7 +10,7 @@
  * code.
  */
 
-package com.deque.axe.providers;
+package com.deque.html.axecore.providers;
 
 import java.io.File;
 import java.io.FileNotFoundException;

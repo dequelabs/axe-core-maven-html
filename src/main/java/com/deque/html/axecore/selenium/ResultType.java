@@ -10,7 +10,7 @@
  * code.
  */
 
-package com.deque.axe;
+package com.deque.html.axecore.selenium;
 
 /**
  * Result Type placement holder.

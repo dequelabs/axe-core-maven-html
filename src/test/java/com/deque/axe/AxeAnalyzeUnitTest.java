@@ -12,7 +12,6 @@
 
 package com.deque.axe;
 
-import com.deque.axe.extensions.WebDriverExtensions;
 import java.io.File;
 import java.io.IOException;
 import javax.naming.OperationNotSupportedException;
@@ -24,6 +23,9 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeDriverService;
+
+import com.deque.html.axecore.extensions.WebDriverExtensions;
+import com.deque.html.axecore.selenium.AxeBuilder;
 
 /**
  * Unit tests for Analyze methods.

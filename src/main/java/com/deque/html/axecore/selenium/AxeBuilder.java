@@ -10,16 +10,8 @@
  * code.
  */
 
-package com.deque.axe;
+package com.deque.html.axecore.selenium;
 
-import com.deque.axe.extensions.WebDriverInjectorExtensions;
-import com.deque.axe.jsonobjects.AxeRuleOptions;
-import com.deque.axe.jsonobjects.AxeRunContext;
-import com.deque.axe.jsonobjects.AxeRunOnlyOptions;
-import com.deque.axe.jsonobjects.AxeRunOptions;
-import com.deque.axe.objects.AxeResult;
-import com.deque.axe.providers.EmbeddedResourceAxeProvider;
-import com.deque.axe.providers.EmbeddedResourceProvider;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -31,6 +23,16 @@ import org.openqa.selenium.InvalidArgumentException;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+
+import com.deque.html.axecore.axeargs.AxeRuleOptions;
+import com.deque.html.axecore.axeargs.AxeRunContext;
+import com.deque.html.axecore.axeargs.AxeRunOnlyOptions;
+import com.deque.html.axecore.axeargs.AxeRunOptions;
+import com.deque.html.axecore.extensions.WebDriverInjectorExtensions;
+import com.deque.html.axecore.providers.EmbeddedResourceAxeProvider;
+import com.deque.html.axecore.providers.EmbeddedResourceProvider;
+
+import results.AxeResult;
 
 /**
  * Fluent style builder for invoking aXe.

@@ -12,9 +12,6 @@
 
 package com.deque.axe;
 
-import com.deque.axe.jsonobjects.AxeRunOptions;
-import com.deque.axe.objects.AxeResult;
-import com.deque.axe.objects.AxeResultItem;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -36,6 +33,12 @@ import org.openqa.selenium.chrome.ChromeDriverService;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
+
+import com.deque.html.axecore.axeargs.AxeRunOptions;
+import com.deque.html.axecore.selenium.AxeBuilder;
+
+import results.AxeResult;
+import results.AxeResultItem;
 
 /**
  * Unit tests for Axe Integration.

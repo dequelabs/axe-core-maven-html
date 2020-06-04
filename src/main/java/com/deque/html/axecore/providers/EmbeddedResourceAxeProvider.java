@@ -10,20 +10,20 @@
  * code.
  */
 
-package com.deque.axe.providers;
+package com.deque.html.axecore.providers;
 
 import java.io.IOException;
-import javax.naming.OperationNotSupportedException;
 
 /**
- * Interface that gets the script for an Accessibility provider.
+ * Class used to access embedded resources for accessibility.
  */
-public interface IAxeScriptProvider {
+public class EmbeddedResourceAxeProvider implements IAxeScriptProvider {
   /**
-   * gets the script.
-   * @return returns the value of the script
-   * @throws OperationNotSupportedException thrown if error is encountered
-   * @throws IOException thrown if error is encountered
+   * Reads the axe.min.js finder.
    */
-  String getScript() throws OperationNotSupportedException, IOException;
+  @Override
+  public String getScript() throws IOException {
+    return EmbeddedResourceProvider
+        .readEmbeddedFile("src/test/resources/axe.min.js");
+  }
 }

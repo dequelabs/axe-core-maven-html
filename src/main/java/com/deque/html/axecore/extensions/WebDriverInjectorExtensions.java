@@ -10,9 +10,8 @@
  * code.
  */
 
-package com.deque.axe.extensions;
+package com.deque.html.axecore.extensions;
 
-import com.deque.axe.providers.IAxeScriptProvider;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +20,8 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+
+import com.deque.html.axecore.providers.IAxeScriptProvider;
 
 /**
  * Holds the Web driver injection extension methods.

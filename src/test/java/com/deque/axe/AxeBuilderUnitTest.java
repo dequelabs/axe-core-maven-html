@@ -12,11 +12,6 @@
 
 package com.deque.axe;
 
-import com.deque.axe.jsonobjects.AxeRuleOptions;
-import com.deque.axe.jsonobjects.AxeRunContext;
-import com.deque.axe.jsonobjects.AxeRunOnlyOptions;
-import com.deque.axe.jsonobjects.AxeRunOptions;
-import com.deque.axe.objects.AxeResult;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -26,6 +21,16 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeDriverService;
+
+import com.deque.html.axecore.axeargs.AxeRuleOptions;
+import com.deque.html.axecore.axeargs.AxeRunContext;
+import com.deque.html.axecore.axeargs.AxeRunOnlyOptions;
+import com.deque.html.axecore.axeargs.AxeRunOptions;
+import com.deque.html.axecore.selenium.AXE;
+import com.deque.html.axecore.selenium.AxeBuilder;
+
+import results.AxeResult;
+
 import javax.naming.OperationNotSupportedException;
 import java.io.File;
 import java.io.IOException;

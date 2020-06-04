@@ -12,14 +12,6 @@
 
 package com.deque.axe;
 
-import static com.deque.axe.AxeReporter.getAxeResultString;
-import static com.deque.axe.AxeReporter.getReadableAxeResults;
-
-import com.deque.axe.providers.FileAxeScriptProvider;
-import com.deque.axe.extensions.WebDriverInjectorExtensions;
-import com.deque.axe.objects.AxeResult;
-import com.deque.axe.objects.AxeResultItem;
-import com.deque.axe.objects.AxeResultNode;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -29,11 +21,25 @@ import javax.naming.OperationNotSupportedException;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+
+import com.deque.html.axecore.extensions.WebDriverInjectorExtensions;
+import com.deque.html.axecore.providers.FileAxeScriptProvider;
+import com.deque.html.axecore.selenium.AXE;
+import com.deque.html.axecore.selenium.AxeBuilder;
+import com.deque.html.axecore.selenium.AxeReporter;
+import com.deque.html.axecore.selenium.ResultType;
+
+import results.AxeResult;
+import results.AxeResultItem;
+import results.AxeResultNode;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.After;
 import org.junit.Before;
 
+import static com.deque.html.axecore.selenium.AxeReporter.getAxeResultString;
+import static com.deque.html.axecore.selenium.AxeReporter.getReadableAxeResults;
 import static org.junit.Assert.assertEquals;
 
 /**

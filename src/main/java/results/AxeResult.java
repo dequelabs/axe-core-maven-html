@@ -10,7 +10,7 @@
  * code.
  */
 
-package com.deque.axe.objects;
+package results;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.OffsetDateTime;

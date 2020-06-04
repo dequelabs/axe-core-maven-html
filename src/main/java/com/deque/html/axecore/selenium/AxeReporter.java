@@ -10,14 +10,16 @@
  * code.
  */
 
-package com.deque.axe;
+package com.deque.html.axecore.selenium;
 
-import com.deque.axe.jsonobjects.AxeRunOptions;
-import com.deque.axe.objects.AxeResultItem;
-import com.deque.axe.objects.AxeResultNode;
+import com.deque.html.axecore.axeargs.AxeRunOptions;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import results.AxeResultItem;
+import results.AxeResultNode;
+
 import java.io.BufferedWriter;
 import java.io.FileOutputStream;
 import java.io.IOException;

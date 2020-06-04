@@ -10,7 +10,7 @@
  * code.
  */
 
-package com.deque.axe.jsonobjects;
+package com.deque.html.axecore.axeargs;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;

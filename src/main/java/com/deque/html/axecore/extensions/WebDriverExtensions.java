@@ -10,15 +10,17 @@
  * code.
  */
 
-package com.deque.axe.extensions;
+package com.deque.html.axecore.extensions;
 
-import  com.deque.axe.AxeBuilder;
-import  com.deque.axe.AxeBuilderOptions;
-import  com.deque.axe.objects.AxeResult;
 import java.io.IOException;
 import javax.naming.OperationNotSupportedException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+
+import com.deque.html.axecore.selenium.AxeBuilder;
+import com.deque.html.axecore.selenium.AxeBuilderOptions;
+
+import results.AxeResult;
 
 /**
  * web driver extension that has extra analyze methods.
