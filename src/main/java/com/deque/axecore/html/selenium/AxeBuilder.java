@@ -77,16 +77,19 @@ public class AxeBuilder {
     "var context = typeof arguments[0] === 'string' ? JSON.parse(arguments[0]) : arguments[0];" +
     "context = context || document;" +
     "var options = JSON.parse(arguments[1]);" +
-    "var result = { error: '', results: null };" +
-    "axe.run(context, options, function (err, res) {" +
-    "    {" +
-    "        if (err) {" +
-    "            result.error = err.message;" +
-    "        } else {" +
-    "            result.results = res;" +
-    "        }" +
-    "        callback(JSON.stringify(result));" +
+    "axe.run(context, options, function (err, results) {" +
+    "  {" +
+    "    if (err) {" +
+    "      results = {" +
+    "        violations: []," +
+    "        passes: []," +
+    "        url: ''," +
+    "        timestamp: new Date().toString()," +
+    "        errorMessage: err.message" +
+    "      }" +
     "    }" +
+    "    callback(JSON.stringify(results));" +
+    "  }" +
     "});";
 
   /**

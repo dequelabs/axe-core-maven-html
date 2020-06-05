@@ -22,6 +22,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.chrome.ChromeDriverService;
 
 import com.deque.axecore.html.extensions.WebDriverExtensions;
@@ -44,7 +45,9 @@ public class AxeAnalyzeUnitTest {
   @Before
   public void testInitialize() {
     ChromeDriverService service = ChromeDriverService.createDefaultService();
-    this.webDriver = new ChromeDriver(service);
+    ChromeOptions options = new ChromeOptions();
+    options.addArguments("--headless", "--disable-gpu", "--window-size=1920,1200","--ignore-certificate-errors");
+    this.webDriver = new ChromeDriver(service, options);
     this.webDriver.get("file:///" + new File(htmlPage).getAbsolutePath());
   }
 

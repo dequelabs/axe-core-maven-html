@@ -25,6 +25,7 @@ import org.junit.rules.TestName;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 
 import com.deque.axecore.html.selenium.AXE;
 
@@ -44,7 +45,9 @@ public class ExampleTest {
 	@Before
 	public void setUp() {
 		// ChromeDriver needed to test for Shadow DOM testing support
-		driver = new ChromeDriver();
+		ChromeOptions options = new ChromeOptions();
+		options.addArguments("--headless", "--disable-gpu", "--window-size=1920,1200","--ignore-certificate-errors");
+		driver = new ChromeDriver(options);
 	}
 
 	/**
@@ -303,11 +306,11 @@ public class ExampleTest {
         JSONArray nodes = ((JSONObject) violations.get(0)).getJSONArray("nodes");
         JSONArray target = ((JSONObject) nodes.get(0)).getJSONArray("target");
 
-        if (violations.length() == 2) {
-            assertEquals(String.valueOf(target), "[\"h1 > span\"]");
-        } else {
-            AXE.writeResults(testName.getMethodName(), responseJSON);
-            fail("No violations found");
-        }
-    }
+		if (violations.length() == 1) {
+			assertEquals(String.valueOf(target), "[\"h1 > span\"]");
+		} else {
+			AXE.writeResults(testName.getMethodName(), responseJSON);
+			assertTrue("No violations found", false);
+		}
+	}
 }

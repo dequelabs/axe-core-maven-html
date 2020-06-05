@@ -29,13 +29,14 @@ import org.openqa.selenium.UnexpectedAlertBehaviour;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.chrome.ChromeDriverService;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import com.deque.axecore.html.axeargs.AxeRunOptions;
-import com.deque.axecore.html.results.Check;
+import com.deque.axecore.html.results.Rule;
 import com.deque.axecore.html.results.Results;
 import com.deque.axecore.html.selenium.AxeBuilder;
 
@@ -84,11 +85,11 @@ public class AxeIntegrationUnitTest {
          .disableRules(Collections.singletonList("color-contrast"))
          .withOutputFile("src/test/java/results/raw-axe-results.json");
 
-    AxeResult results = builder.analyze();
-    List<AxeResultItem> violations = results.getViolations();
+    Results results = builder.analyze();
+    List<Rule> violations = results.getViolations();
 
-    Assert.assertNotNull(violations.get(0).getID());
-    Assert.assertNotEquals("color-contrast", violations.get(0).getID());
+    Assert.assertNotNull(violations.get(0).getId());
+    Assert.assertNotEquals("color-contrast", violations.get(0).getId());
     Assert.assertNotNull(results.getViolations().get(0).getTags());
     Assert.assertTrue(results.getViolations().get(0).getTags().contains("wcag2a"));
     Assert.assertTrue(results.getViolations().get(0).getTags().contains("wcag412"));
@@ -114,7 +115,7 @@ public class AxeIntegrationUnitTest {
   public void runScanOnGivenElementChrome() throws IOException, OperationNotSupportedException {
     WebElement mainElement = wait.until(drv -> drv.findElement(By.cssSelector("main")));
     AxeBuilder builder = new AxeBuilder(this.webDriver);
-    AxeResult results = builder.analyze(mainElement);
+    Results results = builder.analyze(mainElement);
     Assert.assertEquals(2, results.getViolations().size());
   }
 
@@ -127,7 +128,8 @@ public class AxeIntegrationUnitTest {
       case "CHROME":
         ChromeOptions options = new ChromeOptions();
         options.setUnhandledPromptBehaviour(UnexpectedAlertBehaviour.ACCEPT);
-        options.addArguments(Arrays.asList("no-sandbox", "--log-level=3", "--silent"));
+        options.addArguments("no-sandbox", "--log-level=3", "--silent",
+              "--headless", "--disable-gpu", "--window-size=1920,1200","--ignore-certificate-errors");
         ChromeDriverService service = ChromeDriverService.createDefaultService();
         webDriver = new ChromeDriver(service, options);
       break;

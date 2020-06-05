@@ -20,6 +20,7 @@ import org.openqa.selenium.InvalidArgumentException;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.chrome.ChromeDriverService;
 
 import com.deque.axecore.html.axeargs.AxeRuleOptions;
@@ -53,7 +54,9 @@ public class AxeBuilderUnitTest {
   @Before
   public void testInitialize() {
     ChromeDriverService service = ChromeDriverService.createDefaultService();
-    this.webDriver = new ChromeDriver(service);
+    ChromeOptions options = new ChromeOptions();
+    options.addArguments("--headless", "--disable-gpu", "--window-size=1920,1200","--ignore-certificate-errors");
+    this.webDriver = new ChromeDriver(service, options);
     this.webDriver.get("file:///" + new File("src/test/resources/html/integration-test-target.html").getAbsolutePath());
     this.javascriptExecutor = (JavascriptExecutor) this.webDriver;
     this.targetLocator = this.webDriver.switchTo();
