@@ -10,9 +10,9 @@
  * code.
  */
 
-package com.deque.html.axecore.selenium;
+package com.deque.axecore.html.selenium;
 
-import com.deque.html.axecore.providers.IAxeScriptProvider;
+import com.deque.axecore.html.providers.IAxeScriptProvider;
 
 /**
  * provides axe builder options.

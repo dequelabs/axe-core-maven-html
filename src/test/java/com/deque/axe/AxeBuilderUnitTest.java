@@ -22,14 +22,13 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeDriverService;
 
-import com.deque.html.axecore.axeargs.AxeRuleOptions;
-import com.deque.html.axecore.axeargs.AxeRunContext;
-import com.deque.html.axecore.axeargs.AxeRunOnlyOptions;
-import com.deque.html.axecore.axeargs.AxeRunOptions;
-import com.deque.html.axecore.selenium.AXE;
-import com.deque.html.axecore.selenium.AxeBuilder;
-
-import results.AxeResult;
+import com.deque.axecore.html.axeargs.AxeRuleOptions;
+import com.deque.axecore.html.axeargs.AxeRunContext;
+import com.deque.axecore.html.axeargs.AxeRunOnlyOptions;
+import com.deque.axecore.html.axeargs.AxeRunOptions;
+import com.deque.axecore.html.results.Results;
+import com.deque.axecore.html.selenium.AXE;
+import com.deque.axecore.html.selenium.AxeBuilder;
 
 import javax.naming.OperationNotSupportedException;
 import java.io.File;
@@ -102,7 +101,7 @@ public class AxeBuilderUnitTest {
   public void shouldHandleIfOptionsAndContextNotSet()
       throws IOException, OperationNotSupportedException {
     AxeBuilder builder = new AxeBuilder(this.webDriver);
-    AxeResult result = builder.analyze();
+    Results result = builder.analyze();
     verifyAxeResultsNotNull(result);
     Assert.assertEquals(42, result.getInapplicable().size());
     Assert.assertEquals(0, result.getIncomplete().size());
@@ -122,7 +121,7 @@ public class AxeBuilderUnitTest {
     runContext.setInclude(Collections.singletonList("li:nth-child(1)"));
 
     AxeBuilder builder = new AxeBuilder(this.webDriver).include(Collections.singletonList("li:nth-child(1)"));
-    AxeResult result = builder.analyze();
+    Results result = builder.analyze();
 
     verifyAxeResultsNotNull(result);
 
@@ -146,7 +145,7 @@ public class AxeBuilderUnitTest {
     runContext.setExclude(exclude);
 
     AxeBuilder builder = new AxeBuilder(this.webDriver).exclude(exclude);
-    AxeResult result = builder.analyze();
+    Results result = builder.analyze();
     verifyAxeResultsNotNull(result);
     verifyAxeResult(result);
     verifyDriversNotNull();
@@ -170,7 +169,7 @@ public class AxeBuilderUnitTest {
     runContext.setExclude(excludeList);
 
     AxeBuilder builder = new AxeBuilder(this.webDriver).include(includeList).exclude(excludeList);
-    AxeResult result = builder.analyze();
+    Results result = builder.analyze();
     verifyAxeResultsNotNull(result);
 
     Assert.assertEquals(56, result.getInapplicable().size());
@@ -192,7 +191,7 @@ public class AxeBuilderUnitTest {
     //List<String> expectedTags = Arrays.asList("title", "li:nth-child(1)");
     List<String> expectedTags = Arrays.asList("wcag2a", "wcag412");
     AxeBuilder builder = new AxeBuilder(this.webDriver).withTags(expectedTags);
-    AxeResult result = builder.analyze();
+    Results result = builder.analyze();
     verifyAxeResultsNotNull(result);
     Assert.assertEquals(27, result.getInapplicable().size());
     Assert.assertEquals(0, result.getIncomplete().size());
@@ -304,7 +303,7 @@ public class AxeBuilderUnitTest {
    * compares the results to the expected outcome.
    * @param result the Axe Result to be compared
    */
-  private void verifyAxeResult(AxeResult result) {
+  private void verifyAxeResult(Results result) {
     Assert.assertEquals(42, result.getInapplicable().size());
     Assert.assertEquals(0, result.getIncomplete().size());
     Assert.assertEquals(22, result.getPasses().size());
@@ -315,7 +314,7 @@ public class AxeBuilderUnitTest {
    * Makes sure the Result properties are not null.
    * @param result the Axe Result to be compared
    */
-  private void verifyAxeResultsNotNull(AxeResult result) {
+  private void verifyAxeResultsNotNull(Results result) {
     Assert.assertNotNull(result);
     Assert.assertNotNull(result.getInapplicable());
     Assert.assertNotNull(result.getIncomplete());

@@ -10,7 +10,7 @@
  * code.
  */
 
-package com.deque.html.axecore.axeargs;
+package com.deque.axecore.html.axeargs;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.ArrayList;

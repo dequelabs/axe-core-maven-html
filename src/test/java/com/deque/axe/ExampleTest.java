@@ -26,7 +26,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 
-import com.deque.html.axecore.selenium.AXE;
+import com.deque.axecore.html.selenium.AXE;
 
 import java.net.URL;
 

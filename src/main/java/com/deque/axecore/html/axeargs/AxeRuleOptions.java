@@ -10,35 +10,34 @@
  * code.
  */
 
-package com.deque.html.axecore.axeargs;
+package com.deque.axecore.html.axeargs;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.Map;
 
 /**
- * Axe rules JSON configurator.
+ * Used as part of AxeRunOptions to configure rules.
  */
-public class AxeRules {
+public class AxeRuleOptions {
   /**
    * Denotes if the rule has to be enabled for scanning.
    */
-  private Map<String, AxeRuleOptions> rules;
+  private Boolean enabled;
 
   /**
-   * gets the rules.
-   * @return a map of rule names and Axe rule options
+   * gets the enabled property.
+   * @return if the property is enabled.
    */
-  @JsonProperty("rules")
-  public Map<String, AxeRuleOptions> getRules() {
-    return rules;
+  @JsonProperty(value = "enabled")
+  public Boolean getEnabled() {
+    return this.enabled;
   }
 
   /**
-   * sets the rules.
-   * @param value the new values to bes set
+   * sets the enabled value.
+   * @param newEnabled value to be set
    */
-  @JsonProperty("rules")
-  public void setRules(final Map<String, AxeRuleOptions> value) {
-    this.rules = value;
+  @JsonProperty(value = "enabled")
+  public void setEnabled(final Boolean newEnabled) {
+    this.enabled = newEnabled;
   }
 }

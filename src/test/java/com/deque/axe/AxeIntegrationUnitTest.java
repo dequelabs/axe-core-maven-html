@@ -34,11 +34,10 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import com.deque.html.axecore.axeargs.AxeRunOptions;
-import com.deque.html.axecore.selenium.AxeBuilder;
-
-import results.AxeResult;
-import results.AxeResultItem;
+import com.deque.axecore.html.axeargs.AxeRunOptions;
+import com.deque.axecore.html.results.Check;
+import com.deque.axecore.html.results.Results;
+import com.deque.axecore.html.selenium.AxeBuilder;
 
 /**
  * Unit tests for Axe Integration.

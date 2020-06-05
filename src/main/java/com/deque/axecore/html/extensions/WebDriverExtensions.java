@@ -10,17 +10,16 @@
  * code.
  */
 
-package com.deque.html.axecore.extensions;
+package com.deque.axecore.html.extensions;
 
 import java.io.IOException;
 import javax.naming.OperationNotSupportedException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
-import com.deque.html.axecore.selenium.AxeBuilder;
-import com.deque.html.axecore.selenium.AxeBuilderOptions;
-
-import results.AxeResult;
+import com.deque.axecore.html.results.Results;
+import com.deque.axecore.html.selenium.AxeBuilder;
+import com.deque.axecore.html.selenium.AxeBuilderOptions;
 
 /**
  * web driver extension that has extra analyze methods.
@@ -35,11 +34,11 @@ public final class WebDriverExtensions {
   /**
    * Run axe against the entire page.
    * @param webDriver for the page to be scanned
-   * @return an AxeResult to be formatted
+   * @return an Results to be formatted
    * @throws IOException if analysis of page reaches an error
    * @throws OperationNotSupportedException if an unaccepted error occurs
    */
-  public static AxeResult analyze(final WebDriver webDriver)
+  public static Results analyze(final WebDriver webDriver)
       throws IOException, OperationNotSupportedException {
     if (webDriver == null) {
       throw new NullPointerException("the webDriver is null");
@@ -52,11 +51,11 @@ public final class WebDriverExtensions {
    * Run axe against the entire page.
    * @param webDriver for the page to be scanned
    * @param axeBuilderOptions Builder options
-   * @return an AxeResult to be formatted
+   * @return an Results to be formatted
    * @throws IOException if analysis of page reaches an error
    * @throws OperationNotSupportedException if an unaccepted error occurs
    */
-  public static AxeResult analyze(final WebDriver webDriver,
+  public static Results analyze(final WebDriver webDriver,
       final AxeBuilderOptions axeBuilderOptions)
       throws OperationNotSupportedException, IOException {
     if (webDriver == null) {
@@ -70,11 +69,11 @@ public final class WebDriverExtensions {
    * Run axe against the entire page.
    * @param webDriver for the page to be scanned
    * @param context A WebElement to test
-   * @return an AxeResult to be formatted
+   * @return an Results to be formatted
    * @throws IOException if analysis of page reaches an error
    * @throws OperationNotSupportedException if an unaccepted error occurs
    */
-  public static AxeResult analyze(final WebDriver webDriver,
+  public static Results analyze(final WebDriver webDriver,
       final WebElement context)
       throws IOException, OperationNotSupportedException {
     if (webDriver == null) {
@@ -93,11 +92,11 @@ public final class WebDriverExtensions {
    * @param webDriver for the page to be scanned
    * @param context A WebElement to test
    * @param axeBuilderOptions Builder options
-   * @return an AxeResult to be formatted
+   * @return an Results to be formatted
    * @throws IOException if analysis of page reaches an error
    * @throws OperationNotSupportedException if an unaccepted error occurs
    */
-  public static AxeResult analyze(final WebDriver webDriver,
+  public static Results analyze(final WebDriver webDriver,
       final WebElement context, final AxeBuilderOptions axeBuilderOptions)
       throws OperationNotSupportedException, IOException {
     if (webDriver == null) {

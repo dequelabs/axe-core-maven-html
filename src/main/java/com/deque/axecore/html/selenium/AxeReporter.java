@@ -10,15 +10,15 @@
  * code.
  */
 
-package com.deque.html.axecore.selenium;
+package com.deque.axecore.html.selenium;
 
-import com.deque.html.axecore.axeargs.AxeRunOptions;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import results.AxeResultItem;
-import results.AxeResultNode;
+import com.deque.axecore.html.results.Rule;
+import com.deque.axecore.html.axeargs.AxeRunOptions;
+import com.deque.axecore.html.results.Node;
 
 import java.io.BufferedWriter;
 import java.io.FileOutputStream;
@@ -96,25 +96,25 @@ public final class AxeReporter {
    * @param obj the object to be turned into a string
    * @param <T> so the method can take in an object
    * @return a string value of the object
-   * @throws JsonProcessingException if there is an error serializing the JSON
    */
-  public static <T> String serialize(final T obj)
-      throws JsonProcessingException {
-    ObjectMapper mapper = new ObjectMapper();
-    mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-    return mapper.writeValueAsString(obj);
+  public static <T> String serialize(final T obj) {
+    try {
+      ObjectMapper mapper = new ObjectMapper();
+      mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+      return mapper.writeValueAsString(obj);
+    } catch (JsonProcessingException jpe) {
+      throw new IllegalArgumentException("Cannot serialize object");
+    }
   }
 
   /**
    * deserializes a string into an Axe Run options class object.
    * @param obj the string to deserialize
    * @return the string as an Axe Run Options class object
-   * @throws JsonProcessingException if there is an error serializing the JSON
    */
-  static AxeRunOptions deserialize(final String obj)
-      throws JsonProcessingException {
+  static AxeRunOptions deserialize(final String obj) {
     ObjectMapper mapper = new ObjectMapper();
-    return mapper.readValue(obj, AxeRunOptions.class);
+    return mapper.convertValue(obj, AxeRunOptions.class);
   }
 
   /**
@@ -125,7 +125,7 @@ public final class AxeReporter {
    * @return True if the scan found anything
    */
   public static boolean getReadableAxeResults(final String typeOfScan,
-      final WebDriver webDriver, final List<AxeResultItem> scannedResults) {
+      final WebDriver webDriver, final List<Rule> scannedResults) {
     StringBuilder message = new StringBuilder();
     final int axeRules = scannedResults.size();
 
@@ -145,7 +145,7 @@ public final class AxeReporter {
     message.append(System.getProperty("line.separator"));
     int loops = 1;
 
-    for (AxeResultItem element : scannedResults) {
+    for (Rule element : scannedResults) {
       message.append(loops++).append(": ").append(element.getHelp());
       message.append(System.lineSeparator());
       message.append("Description: ").append(element.getDescription());
@@ -158,11 +158,9 @@ public final class AxeReporter {
       message.append(System.lineSeparator());
 
       if (element.getNodes() != null && element.getNodes().isEmpty()) {
-        for (AxeResultNode item : element.getNodes()) {
+        for (Node item : element.getNodes()) {
           message.append("\\t\\t" + "HTML element: ").append(item.getHtml());
-          for (String target : item.getTarget()) {
-            message.append("\\t\\t" + "Selector: ").append(target);
-          }
+          message.append("\\t\\t" + "Selector: ").append(item.getTarget());
         }
       }
       message.append(System.lineSeparator());

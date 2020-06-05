@@ -12,8 +12,8 @@
 
 package com.deque.axe;
 
-import com.deque.html.axecore.axeargs.AxeRunContext;
-import com.deque.html.axecore.selenium.AxeReporter;
+import com.deque.axecore.html.axeargs.AxeRunContext;
+import com.deque.axecore.html.selenium.AxeReporter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.Arrays;
 import java.util.List;

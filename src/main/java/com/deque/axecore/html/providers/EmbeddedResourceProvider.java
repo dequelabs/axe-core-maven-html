@@ -10,7 +10,7 @@
  * code.
  */
 
-package com.deque.html.axecore.providers;
+package com.deque.axecore.html.providers;
 
 import java.io.File;
 import java.io.IOException;

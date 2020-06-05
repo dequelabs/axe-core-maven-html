@@ -10,7 +10,7 @@
  * code.
  */
 
-package com.deque.html.axecore.selenium;
+package com.deque.axecore.html.selenium;
 
 import org.json.JSONArray;
 import org.json.JSONObject;

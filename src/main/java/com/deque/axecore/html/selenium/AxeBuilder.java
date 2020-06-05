@@ -10,7 +10,7 @@
  * code.
  */
 
-package com.deque.html.axecore.selenium;
+package com.deque.axecore.html.selenium;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -23,16 +23,16 @@ import org.openqa.selenium.InvalidArgumentException;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-
-import com.deque.html.axecore.axeargs.AxeRuleOptions;
-import com.deque.html.axecore.axeargs.AxeRunContext;
-import com.deque.html.axecore.axeargs.AxeRunOnlyOptions;
-import com.deque.html.axecore.axeargs.AxeRunOptions;
-import com.deque.html.axecore.extensions.WebDriverInjectorExtensions;
-import com.deque.html.axecore.providers.EmbeddedResourceAxeProvider;
-import com.deque.html.axecore.providers.EmbeddedResourceProvider;
-
-import results.AxeResult;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.deque.axecore.html.axeargs.AxeRuleOptions;
+import com.deque.axecore.html.axeargs.AxeRunContext;
+import com.deque.axecore.html.axeargs.AxeRunOnlyOptions;
+import com.deque.axecore.html.axeargs.AxeRunOptions;
+import com.deque.axecore.html.extensions.WebDriverInjectorExtensions;
+import com.deque.axecore.html.providers.EmbeddedResourceAxeProvider;
+import com.deque.axecore.html.providers.EmbeddedResourceProvider;
+import com.deque.axecore.html.results.Results;
 
 /**
  * Fluent style builder for invoking aXe.
@@ -69,6 +69,25 @@ public class AxeBuilder {
    * timeout of how the the scan should run until an error occurs.
    */
   private int timeout = 30; // 30 seconds as default.
+
+  private final ObjectMapper objectMapper;
+
+  private final String axeRunScript =
+    "var callback = arguments[arguments.length - 1];" +
+    "var context = typeof arguments[0] === 'string' ? JSON.parse(arguments[0]) : arguments[0];" +
+    "context = context || document;" +
+    "var options = JSON.parse(arguments[1]);" +
+    "var result = { error: '', results: null };" +
+    "axe.run(context, options, function (err, res) {" +
+    "    {" +
+    "        if (err) {" +
+    "            result.error = err.message;" +
+    "        } else {" +
+    "            result.results = res;" +
+    "        }" +
+    "        callback(JSON.stringify(result));" +
+    "    }" +
+    "});";
 
   /**
    * gets the web driver.
@@ -157,6 +176,7 @@ public class AxeBuilder {
     setWebDriver(newWebDriver);
     WebDriverInjectorExtensions.inject(getWebDriver(),
         getDefaultOptions().getScriptProvider());
+    this.objectMapper = new ObjectMapper();
   }
 
   /**
@@ -173,6 +193,26 @@ public class AxeBuilder {
     setWebDriver(newWebDriver);
     WebDriverInjectorExtensions.inject(
         getWebDriver(), builderOptions.getScriptProvider());
+    this.objectMapper = new ObjectMapper();
+  }
+
+  /**
+   * Initialize an instance of AxeBuilder.
+   * @param newWebDriver Selenium driver to use
+   * @param builderOptions Builder options
+   */
+  public AxeBuilder(final WebDriver newWebDriver,
+      final AxeBuilderOptions builderOptions,
+      final ObjectMapper objectMapper)
+      throws OperationNotSupportedException, IOException {
+    validateNotNullParameter(newWebDriver);
+    validateNotNullParameter(builderOptions);
+    validateNotNullParameter(objectMapper);
+
+    setWebDriver(newWebDriver);
+    WebDriverInjectorExtensions.inject(
+        getWebDriver(), builderOptions.getScriptProvider());
+    this.objectMapper = objectMapper;
   }
 
   /**
@@ -298,7 +338,7 @@ public class AxeBuilder {
    * @param context WebElement(s) to test
    * @return An axe results document
    */
-  public AxeResult analyze(final WebElement... context) throws IOException {
+  public Results analyze(final WebElement... context) {
     return analyzeRawContext(context);
   }
 
@@ -306,7 +346,7 @@ public class AxeBuilder {
    * Run axe against the entire page.
    * @return An axe results document
    */
-  public AxeResult analyze() throws IOException {
+  public Results analyze() {
     boolean runContextHasData = this.runContext.getInclude() != null
         || this.runContext.getExclude() != null;
     String rawContext = runContextHasData
@@ -322,34 +362,19 @@ public class AxeBuilder {
    *                      scan.js to use as the axe.run "context" argument
    * @return an Axe Result
    */
-  private AxeResult analyzeRawContext(final Object rawContextArg)
-      throws IOException {
+  private Results analyzeRawContext(final Object rawContextArg) {
     String rawOptionsArg = getOptions().equals("{}")
         ? AxeReporter.serialize(runOptions) : getOptions();
-    String scanJsContent = EmbeddedResourceProvider
-        .readEmbeddedFile("src/test/resources/scan.js");
     Object[] rawArgs = new Object[] {rawContextArg, rawOptionsArg};
 
     this.webDriver.manage().timeouts()
         .setScriptTimeout(timeout, TimeUnit.SECONDS);
 
-    String stringResult = (String) ((JavascriptExecutor) this.getWebDriver())
-        .executeAsyncScript(scanJsContent, rawArgs);
-    JSONObject jsonObject = new JSONObject(stringResult);
+    Object response = ((JavascriptExecutor) this.getWebDriver())
+        .executeAsyncScript(axeRunScript, rawArgs);
 
-    String error = jsonObject.getString("error");
-
-    // If the error is non-nil, raise a runtime error.
-    if (error != null && !error.isEmpty()) {
-      throw new AXE.AxeRuntimeException(error);
-    }
-
-    if (outputFilePath != null && jsonObject.get("results").getClass()
-        == JSONObject.class) {
-      AxeReporter.writeResultsToJsonFile(
-          outputFilePath, AxeReporter.serialize(jsonObject));
-    }
-    return new AxeResult(jsonObject.getJSONObject("results"));
+    Results results = objectMapper.convertValue(response, Results.class);
+    return results;
   }
 
   /**

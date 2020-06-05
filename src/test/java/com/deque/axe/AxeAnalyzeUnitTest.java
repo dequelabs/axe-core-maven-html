@@ -24,8 +24,8 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeDriverService;
 
-import com.deque.html.axecore.extensions.WebDriverExtensions;
-import com.deque.html.axecore.selenium.AxeBuilder;
+import com.deque.axecore.html.extensions.WebDriverExtensions;
+import com.deque.axecore.html.selenium.AxeBuilder;
 
 /**
  * Unit tests for Analyze methods.
