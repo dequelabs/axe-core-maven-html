@@ -10,7 +10,7 @@
  * code.
  */
 
-package com.deque.axe;
+package com.deque.axecore.html.selenium;
 
 import org.junit.After;
 import org.junit.Assert;

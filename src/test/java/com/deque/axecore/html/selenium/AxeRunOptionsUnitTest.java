@@ -10,7 +10,7 @@
  * code.
  */
 
-package com.deque.axe;
+package com.deque.axecore.html.selenium;
 
 import com.deque.axecore.html.axeargs.AxeRuleOptions;
 import com.deque.axecore.html.axeargs.AxeRules;
