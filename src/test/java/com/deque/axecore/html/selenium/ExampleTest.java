@@ -128,7 +128,7 @@ public class ExampleTest {
 				.analyze();
 		} catch (Exception e) {
 			String msg = e.getMessage();
-			if (msg.indexOf("1 seconds") == -1) {
+			if (!msg.contains("1 seconds") && !msg.contains("timeout")) {
 				assertTrue("Did not error with timeout message", msg.indexOf("1 seconds") != -1);
 			}
 			didTimeout = true;

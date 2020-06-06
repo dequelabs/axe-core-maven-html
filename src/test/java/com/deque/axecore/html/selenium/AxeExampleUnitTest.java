@@ -137,13 +137,21 @@ public class AxeExampleUnitTest {
   public void testCustomTimeout() throws IOException, OperationNotSupportedException {
     this.webDriver.get("file:///" + new File(normalPage).getAbsolutePath());
     String timeoutFilePath = "src/test/resources/timeout.js";
+    boolean didTimeout = false;
 
-    AxeBuilder builder = new AxeBuilder(webDriver).setTimeout(1);
-    FileAxeScriptProvider axeScriptProvider = new FileAxeScriptProvider(timeoutFilePath);
-    WebDriverInjectorExtensions.inject(webDriver, axeScriptProvider);
-    Results res = builder.analyze();
-    String msg = res.getErrorMessage();
-    Assert.assertTrue("Did not error with timeout message", msg.contains("1 seconds"));
+    try {
+      AxeBuilder builder = new AxeBuilder(webDriver).setTimeout(1);
+      FileAxeScriptProvider axeScriptProvider = new FileAxeScriptProvider(timeoutFilePath);
+      WebDriverInjectorExtensions.inject(webDriver, axeScriptProvider);
+      builder.analyze();
+    } catch (Exception e) {
+      String msg = e.getMessage();
+      System.out.println("MSG:" + msg);
+      System.err.println("MSG:" + msg);
+      Assert.assertTrue("Did not error with timeout message", msg.contains("1 seconds") || msg.contains("timeout"));
+      didTimeout = true;
+    }
+    Assert.assertTrue("Setting Custom timeout did not work.", didTimeout);
   }
 
   /**
@@ -273,7 +281,7 @@ public class AxeExampleUnitTest {
     List<CheckedNode> nodes = resultItem.getNodes();
     Object targets = nodes.get(0).getTarget();
 
-    assertEquals("[[\"#upside-down\",\"ul\"]]", String.valueOf(targets));
+    assertEquals("[[\"#upside-down\",\"ul\"]]", AxeReporter.serialize(targets));
     AxeReporter
         .writeResultsToJsonFile("src/test/java/results/testAccessibilityWithShadowElement", result);
     Assert.assertTrue(getReadableAxeResults(ResultType.Violations.getKey(), webDriver, violations));
