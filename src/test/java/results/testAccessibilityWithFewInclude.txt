@@ -1,3 +1,0 @@
-ACCESSIBILITY CHECK
-VIOLATIONS check for: file:///C:/Users/jonr/axe-selenium-java/src/test/resources/html/include-exclude.html
-Found 0 items

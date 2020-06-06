@@ -88,7 +88,7 @@ public class AxeBuilder {
     "        errorMessage: err.message" +
     "      }" +
     "    }" +
-    "    callback(JSON.stringify(results));" +
+    "    callback(results);" +
     "  }" +
     "});";
 

@@ -265,13 +265,13 @@ public class AxeBuilderUnitTest {
    * @throws IOException if file writing fails
    * @throws OperationNotSupportedException if the operation errors out
    */
-  @Test(expected = AXE.AxeRuntimeException.class)
   public void shouldThrowRunOptionsWithInvalidTag() throws IOException,
       OperationNotSupportedException {
     List<String> expectedTags = Arrays.asList("tag1", "tag2");
 
     AxeBuilder builder = new AxeBuilder(this.webDriver).withTags(expectedTags);
-    builder.analyze();
+    Results res = builder.analyze();
+    Assert.assertTrue(res.isErrored());
   }
 
   /**
@@ -279,7 +279,6 @@ public class AxeBuilderUnitTest {
    * @throws IOException if file writing fails
    * @throws OperationNotSupportedException if the operation errors out
    */
-  @Test(expected = AXE.AxeRuntimeException.class)
   public void shouldThrowInvalidRuleConfig() throws IOException, OperationNotSupportedException {
     List<String> expectedRules = Arrays.asList("rule1", "rule2");
     List<String> disableRules = Arrays.asList("excludeRule1", "excludeRule2");
@@ -299,7 +298,8 @@ public class AxeBuilderUnitTest {
     runOptions.setRules(rules);
 
     AxeBuilder builder = new AxeBuilder(this.webDriver).disableRules(disableRules).withRules(expectedRules);
-    builder.analyze();
+    Results res = builder.analyze();
+    Assert.assertTrue(res.isErrored());
   }
 
   /**

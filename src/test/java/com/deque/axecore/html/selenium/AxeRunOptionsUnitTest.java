@@ -50,7 +50,6 @@ public class AxeRunOptionsUnitTest {
     String expectedObject = "{\"runOnly\":{\"type\":\"tag\",\"values\":[\"tag1\",\"tag2\"]}}";
 
     Assert.assertEquals(serializedObject, expectedObject);
-    Assert.assertSame(AxeReporter.deserialize(expectedObject).getClass(), options.getClass());
   }
 
   /**
@@ -99,7 +98,6 @@ public class AxeRunOptionsUnitTest {
     String expectedObject = "{\"absolutePaths\":true,\"iFrames\":true,\"restoreScroll\":true,\"frameWaitTime\":10}";
     String serializedObject = AxeReporter.serialize(options);
     Assert.assertEquals(serializedObject, expectedObject);
-    Assert.assertSame(AxeReporter.deserialize(expectedObject).getClass(), options.getClass());
   }
 
   /**
@@ -121,6 +119,5 @@ public class AxeRunOptionsUnitTest {
     String expectedObject = "{\"resultTypes\":[\"inapplicable\",\"incomplete\",\"passes\",\"violations\"]}";
 
     Assert.assertEquals(serializedObject, expectedObject);
-    Assert.assertSame(AxeReporter.deserialize(expectedObject).getClass(), options.getClass());
   }
 }

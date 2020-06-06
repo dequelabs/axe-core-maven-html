@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.deque.axecore.html.results.Rule;
 import com.deque.axecore.html.axeargs.AxeRunOptions;
 import com.deque.axecore.html.results.Node;
+import com.deque.axecore.html.results.Results;
 
 import java.io.BufferedWriter;
 import java.io.FileOutputStream;
@@ -81,12 +82,12 @@ public final class AxeReporter {
    *               the violations array it contains.
    */
   public static void writeResultsToJsonFile(final String outputFilePath,
-      final Object output) {
+      final Results output) {
 
     try (Writer writer = new BufferedWriter(
         new OutputStreamWriter(new FileOutputStream(outputFilePath + ".json"),
             StandardCharsets.UTF_8))) {
-      writer.write(output.toString());
+      writer.write(serialize(output));
     } catch (IOException ignored) {
     }
   }
