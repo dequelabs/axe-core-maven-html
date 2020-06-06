@@ -28,7 +28,7 @@ import com.deque.axecore.html.axeargs.AxeRunContext;
 import com.deque.axecore.html.axeargs.AxeRunOnlyOptions;
 import com.deque.axecore.html.axeargs.AxeRunOptions;
 import com.deque.axecore.html.results.Results;
-import com.deque.axecore.html.selenium.AXE;
+import com.deque.axecore.html.selenium.Axe;
 import com.deque.axecore.html.selenium.AxeBuilder;
 
 import javax.naming.OperationNotSupportedException;

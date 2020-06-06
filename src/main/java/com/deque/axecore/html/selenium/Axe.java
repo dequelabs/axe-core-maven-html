@@ -29,7 +29,7 @@ import java.io.*;
 
 import org.apache.commons.lang3.StringUtils;
 
-public class AXE {
+public class Axe {
 	private static final String lineSeparator = System.getProperty("line.separator");
 
 	/**
@@ -361,7 +361,7 @@ public class AXE {
 		}
 
 		private JSONObject execute(final String command, final Object... args) {
-			AXE.inject(this.driver, this.script, this.skipFrames);
+			Axe.inject(this.driver, this.script, this.skipFrames);
 
 			this.driver.manage().timeouts().setScriptTimeout(this.timeout, TimeUnit.SECONDS);
 

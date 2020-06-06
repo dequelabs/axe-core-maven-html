@@ -28,7 +28,7 @@ import com.deque.axecore.html.providers.FileAxeScriptProvider;
 import com.deque.axecore.html.results.Rule;
 import com.deque.axecore.html.results.CheckedNode;
 import com.deque.axecore.html.results.Results;
-import com.deque.axecore.html.selenium.AXE;
+import com.deque.axecore.html.selenium.Axe;
 import com.deque.axecore.html.selenium.AxeBuilder;
 import com.deque.axecore.html.selenium.AxeReporter;
 import com.deque.axecore.html.selenium.ResultType;
