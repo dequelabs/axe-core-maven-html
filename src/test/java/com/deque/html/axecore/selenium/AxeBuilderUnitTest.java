@@ -91,7 +91,7 @@ public class AxeBuilderUnitTest {
   @Test(expected = NullPointerException.class)
   public void throwWhenOptionsAreNull() throws OperationNotSupportedException, IOException {
     // act / assert
-    AxeBuilder axeBuilder = new AxeBuilder(this.webDriver, null);
+    AxeBuilder axeBuilder = new AxeBuilder(null);
     Assert.assertNotNull(axeBuilder);
   }
 
@@ -103,8 +103,8 @@ public class AxeBuilderUnitTest {
   @Test()
   public void shouldHandleIfOptionsAndContextNotSet()
       throws IOException, OperationNotSupportedException {
-    AxeBuilder builder = new AxeBuilder(this.webDriver);
-    Results result = builder.analyze();
+    AxeBuilder builder = new AxeBuilder();
+    Results result = builder.analyze(this.webDriver);
     verifyAxeResultsNotNull(result);
     Assert.assertEquals(42, result.getInapplicable().size());
     Assert.assertEquals(0, result.getIncomplete().size());
@@ -123,8 +123,8 @@ public class AxeBuilderUnitTest {
     AxeRunContext runContext = new AxeRunContext();
     runContext.setInclude(Collections.singletonList("li:nth-child(1)"));
 
-    AxeBuilder builder = new AxeBuilder(this.webDriver).include(Collections.singletonList("li:nth-child(1)"));
-    Results result = builder.analyze();
+    AxeBuilder builder = new AxeBuilder().include(Collections.singletonList("li:nth-child(1)"));
+    Results result = builder.analyze(this.webDriver);
 
     verifyAxeResultsNotNull(result);
 
@@ -147,8 +147,8 @@ public class AxeBuilderUnitTest {
     AxeRunContext runContext = new AxeRunContext();
     runContext.setExclude(exclude);
 
-    AxeBuilder builder = new AxeBuilder(this.webDriver).exclude(exclude);
-    Results result = builder.analyze();
+    AxeBuilder builder = new AxeBuilder().exclude(exclude);
+    Results result = builder.analyze(this.webDriver);
     verifyAxeResultsNotNull(result);
     verifyAxeResult(result);
     verifyDriversNotNull();
@@ -171,8 +171,8 @@ public class AxeBuilderUnitTest {
     runContext.setInclude(includeList);
     runContext.setExclude(excludeList);
 
-    AxeBuilder builder = new AxeBuilder(this.webDriver).include(includeList).exclude(excludeList);
-    Results result = builder.analyze();
+    AxeBuilder builder = new AxeBuilder().include(includeList).exclude(excludeList);
+    Results result = builder.analyze(this.webDriver);
     verifyAxeResultsNotNull(result);
 
     Assert.assertEquals(56, result.getInapplicable().size());
@@ -193,8 +193,8 @@ public class AxeBuilderUnitTest {
       OperationNotSupportedException {
     //List<String> expectedTags = Arrays.asList("title", "li:nth-child(1)");
     List<String> expectedTags = Arrays.asList("wcag2a", "wcag412");
-    AxeBuilder builder = new AxeBuilder(this.webDriver).withTags(expectedTags);
-    Results result = builder.analyze();
+    AxeBuilder builder = new AxeBuilder().withTags(expectedTags);
+    Results result = builder.analyze(this.webDriver);
     verifyAxeResultsNotNull(result);
     Assert.assertEquals(27, result.getInapplicable().size());
     Assert.assertEquals(0, result.getIncomplete().size());
@@ -210,11 +210,10 @@ public class AxeBuilderUnitTest {
    */
   @Test(expected = NullPointerException.class)
   public void shouldThrowIfNullParameterPassed() throws OperationNotSupportedException, IOException {
-    new AxeBuilder(this.webDriver, null);
     new AxeBuilder(null);
 
-    AxeBuilder builder = new AxeBuilder(this.webDriver);
-    builder.withRules(null);
+    AxeBuilder builder = new AxeBuilder();
+    builder.withOnlyRules(null);
     builder.disableRules(null);
     builder.withTags(null);
     builder.include(null);
@@ -231,9 +230,9 @@ public class AxeBuilderUnitTest {
   public void shouldThrowIfEmptyParameterPassed() throws IOException,
       OperationNotSupportedException {
     List<String> values = Arrays.asList("val1", "");
-    AxeBuilder builder = new AxeBuilder(this.webDriver);
+    AxeBuilder builder = new AxeBuilder();
 
-    builder.withRules(values);
+    builder.withOnlyRules(values);
     builder.disableRules(values);
     builder.withTags(values);
     builder.include(values);
@@ -248,13 +247,13 @@ public class AxeBuilderUnitTest {
   @Test(expected = InvalidArgumentException.class)
   public void shouldThrowIfDeprecatedOptionsIsUsedWithNewOptionsApis()
       throws IOException, OperationNotSupportedException {
-    AxeBuilder builder = new AxeBuilder(this.webDriver);
+    AxeBuilder builder = new AxeBuilder();
     builder.setOptions("{xpath:true}");
 
     AxeRunOptions options = new AxeRunOptions();
     options.setIFrames(true);
 
-    builder.withRules(Collections.singletonList("rule-1"));
+    builder.withOnlyRules(Collections.singletonList("rule-1"));
     builder.disableRules(Collections.singletonList("rule-1"));
     builder.withTags(Collections.singletonList("tag1"));
     builder.withOptions(options);
@@ -269,8 +268,8 @@ public class AxeBuilderUnitTest {
       OperationNotSupportedException {
     List<String> expectedTags = Arrays.asList("tag1", "tag2");
 
-    AxeBuilder builder = new AxeBuilder(this.webDriver).withTags(expectedTags);
-    Results res = builder.analyze();
+    AxeBuilder builder = new AxeBuilder().withTags(expectedTags);
+    Results res = builder.analyze(this.webDriver);
     Assert.assertTrue(res.isErrored());
   }
 
@@ -297,8 +296,8 @@ public class AxeBuilderUnitTest {
     runOptions.setRunOnly(runOnlyOptions);
     runOptions.setRules(rules);
 
-    AxeBuilder builder = new AxeBuilder(this.webDriver).disableRules(disableRules).withRules(expectedRules);
-    Results res = builder.analyze();
+    AxeBuilder builder = new AxeBuilder().disableRules(disableRules).withOnlyRules(expectedRules);
+    Results res = builder.analyze(this.webDriver);
     Assert.assertTrue(res.isErrored());
   }
 

@@ -80,12 +80,12 @@ public class AxeIntegrationUnitTest {
     AxeRunOptions runOptions = new AxeRunOptions();
     runOptions.setXPath(true);
 
-    AxeBuilder builder = new AxeBuilder(webDriver).withOptions(runOptions)
+    AxeBuilder builder = new AxeBuilder().withOptions(runOptions)
          .withTags(Arrays.asList("wcag2a", "wcag412"))
          .disableRules(Collections.singletonList("color-contrast"))
          .withOutputFile("src/test/java/results/raw-axe-results.json");
 
-    Results results = builder.analyze();
+    Results results = builder.analyze(webDriver);
     List<Rule> violations = results.getViolations();
 
     Assert.assertNotNull(violations.get(0).getId());
@@ -114,8 +114,8 @@ public class AxeIntegrationUnitTest {
   @Test()
   public void runScanOnGivenElementChrome() throws IOException, OperationNotSupportedException {
     WebElement mainElement = wait.until(drv -> drv.findElement(By.cssSelector("main")));
-    AxeBuilder builder = new AxeBuilder(this.webDriver);
-    Results results = builder.analyze(mainElement);
+    AxeBuilder builder = new AxeBuilder();
+    Results results = builder.analyze(this.webDriver, mainElement);
     Assert.assertEquals(2, results.getViolations().size());
   }
 

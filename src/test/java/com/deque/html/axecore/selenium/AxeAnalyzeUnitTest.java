@@ -67,7 +67,7 @@ public class AxeAnalyzeUnitTest {
    */
   @Test(expected = NullPointerException.class)
   public void shouldThrowWhenWebDriverIsNullAnalyse() throws IOException, OperationNotSupportedException {
-    new AxeBuilder(this.webDriver);
+    new AxeBuilder();
     WebDriverExtensions.analyze(null);
   }
 
@@ -79,7 +79,7 @@ public class AxeAnalyzeUnitTest {
   @Test(expected = NullPointerException.class)
   public void shouldThrowWhenWebDriverIsNullWithWebElementAnalyse()
       throws IOException, OperationNotSupportedException {
-    new AxeBuilder(this.webDriver);
+    new AxeBuilder();
     WebElement mainElement = this.webDriver.findElement(By.cssSelector("main"));
     WebDriverExtensions.analyze(null, mainElement);
   }
@@ -92,8 +92,8 @@ public class AxeAnalyzeUnitTest {
   @Test(expected = NullPointerException.class)
   public void shouldThrowWhenWebDriverIsNullWithAxeBuilderOptionsAnalyse()
       throws IOException, OperationNotSupportedException {
-    AxeBuilder builder = new AxeBuilder(this.webDriver);
-    WebDriverExtensions.analyze(null, builder.setDefaultAxeBuilderOptions());
+    AxeBuilder builder = new AxeBuilder();
+    WebDriverExtensions.analyze(null, builder.getDefaultAxeBuilderOptions());
   }
 
   /**
@@ -104,8 +104,8 @@ public class AxeAnalyzeUnitTest {
   @Test(expected = NullPointerException.class)
   public void shouldThrowWhenWebDriverIsNullWithAll()
       throws IOException, OperationNotSupportedException {
-    AxeBuilder builder = new AxeBuilder(this.webDriver);
+    AxeBuilder builder = new AxeBuilder();
     WebElement mainElement = this.webDriver.findElement(By.cssSelector("main"));
-    WebDriverExtensions.analyze(null, mainElement, builder.setDefaultAxeBuilderOptions());
+    WebDriverExtensions.analyze(this.webDriver, mainElement, builder.getDefaultAxeBuilderOptions());
   }
 }

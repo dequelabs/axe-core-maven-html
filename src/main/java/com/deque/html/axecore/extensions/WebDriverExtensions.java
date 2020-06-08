@@ -43,8 +43,8 @@ public final class WebDriverExtensions {
     if (webDriver == null) {
       throw new NullPointerException("the webDriver is null");
     }
-    AxeBuilder axeBuilder = new AxeBuilder(webDriver);
-    return axeBuilder.analyze();
+    AxeBuilder axeBuilder = new AxeBuilder();
+    return axeBuilder.analyze(webDriver);
   }
 
   /**
@@ -61,8 +61,8 @@ public final class WebDriverExtensions {
     if (webDriver == null) {
       throw new NullPointerException("the webDriver is null");
     }
-    AxeBuilder axeBuilder = new AxeBuilder(webDriver, axeBuilderOptions);
-    return axeBuilder.analyze();
+    AxeBuilder axeBuilder = new AxeBuilder(axeBuilderOptions);
+    return axeBuilder.analyze(webDriver);
   }
 
   /**
@@ -83,8 +83,8 @@ public final class WebDriverExtensions {
     if (context == null) {
       throw new NullPointerException("the webDriver is null");
     }
-    AxeBuilder axeBuilder = new AxeBuilder(webDriver);
-    return axeBuilder.analyze(context);
+    AxeBuilder axeBuilder = new AxeBuilder();
+    return axeBuilder.analyze(webDriver, context);
   }
 
   /**
@@ -106,7 +106,7 @@ public final class WebDriverExtensions {
     if (context == null) {
       throw new NullPointerException("the web Element is null");
     }
-    AxeBuilder axeBuilder = new AxeBuilder(webDriver, axeBuilderOptions);
-    return axeBuilder.analyze(context);
+    AxeBuilder axeBuilder = new AxeBuilder(axeBuilderOptions);
+    return axeBuilder.analyze(webDriver, context);
   }
 }

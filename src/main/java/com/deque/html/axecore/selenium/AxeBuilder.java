@@ -30,6 +30,7 @@ import com.deque.html.axecore.axeargs.AxeRunContext;
 import com.deque.html.axecore.axeargs.AxeRunOnlyOptions;
 import com.deque.html.axecore.axeargs.AxeRunOptions;
 import com.deque.html.axecore.extensions.WebDriverInjectorExtensions;
+import com.deque.html.axecore.providers.IAxeScriptProvider;
 import com.deque.html.axecore.providers.EmbeddedResourceAxeProvider;
 import com.deque.html.axecore.providers.EmbeddedResourceProvider;
 import com.deque.html.axecore.results.Results;
@@ -40,10 +41,6 @@ import com.deque.html.axecore.results.Results;
  *   exclude(), and options() methods before calling analyze() to run.
  */
 public class AxeBuilder {
-  /**
-   * the web driver.
-   */
-  private WebDriver webDriver;
 
   /**
    * Stores the axe run context.
@@ -63,7 +60,7 @@ public class AxeBuilder {
   /**
    * default axe builder options.
    */
-  private AxeBuilderOptions defaultOptions = setDefaultAxeBuilderOptions();
+  private AxeBuilderOptions builderOptions = getDefaultAxeBuilderOptions();
 
   /**
    * timeout of how the the scan should run until an error occurs.
@@ -72,7 +69,7 @@ public class AxeBuilder {
 
   private final ObjectMapper objectMapper;
 
-  private final String axeRunScript =
+  public final String axeRunScript =
     "var callback = arguments[arguments.length - 1];" +
     "var context = typeof arguments[0] === 'string' ? JSON.parse(arguments[0]) : arguments[0];" +
     "context = context || document;" +
@@ -93,37 +90,23 @@ public class AxeBuilder {
     "});";
 
   /**
-   * gets the web driver.
-   * @return the web driver
-   */
-  private WebDriver getWebDriver() {
-    return this.webDriver;
-  }
-
-  /**
-   * sets the web driver.
-   * @param newWebDriver the web driver to be set
-   */
-  private void setWebDriver(final WebDriver newWebDriver) {
-    this.webDriver = newWebDriver;
-  }
-
-  /**
-   * gets the default options.
-   * @return the default options
-   */
-  private AxeBuilderOptions getDefaultOptions() {
-    return this.defaultOptions;
-  }
-
-  /**
-   * sets the default axe builder options.
+   * get the default axe builder options.
    * @return the Axe Builder Options
    */
-  public AxeBuilderOptions setDefaultAxeBuilderOptions() {
+  public AxeBuilderOptions getDefaultAxeBuilderOptions() {
     AxeBuilderOptions builderOptions = new AxeBuilderOptions();
     builderOptions.setScriptProvider(new EmbeddedResourceAxeProvider());
     return builderOptions;
+  }
+
+  /**
+   * sets the where we get the axe script from.
+   * @param axeProvider the source of the axe script
+   * @return an Axe Builder object
+   */
+  public AxeBuilder setAxeScriptProvider(IAxeScriptProvider axeProvider) {
+    builderOptions.setScriptProvider(axeProvider);
+    return this;
   }
 
   /**
@@ -168,34 +151,20 @@ public class AxeBuilder {
 
   /**
    * Initialize an instance of AxeBuilder.
-   * @param newWebDriver Selenium driver to use
    */
-  public AxeBuilder(final WebDriver newWebDriver)
-      throws IOException, OperationNotSupportedException {
-    setDefaultAxeBuilderOptions();
-    validateNotNullParameter(newWebDriver);
-    validateNotNullParameter(getDefaultOptions());
+  public AxeBuilder() {
+    this.builderOptions = getDefaultAxeBuilderOptions();
 
-    setWebDriver(newWebDriver);
-    WebDriverInjectorExtensions.inject(getWebDriver(),
-        getDefaultOptions().getScriptProvider());
     this.objectMapper = new ObjectMapper();
   }
 
   /**
    * Initialize an instance of AxeBuilder.
-   * @param newWebDriver Selenium driver to use
    * @param builderOptions Builder options
    */
-  public AxeBuilder(final WebDriver newWebDriver,
-      final AxeBuilderOptions builderOptions)
-      throws OperationNotSupportedException, IOException {
-    validateNotNullParameter(newWebDriver);
+  public AxeBuilder(final AxeBuilderOptions builderOptions) {
     validateNotNullParameter(builderOptions);
-
-    setWebDriver(newWebDriver);
-    WebDriverInjectorExtensions.inject(
-        getWebDriver(), builderOptions.getScriptProvider());
+    this.builderOptions = builderOptions;
     this.objectMapper = new ObjectMapper();
   }
 
@@ -204,17 +173,10 @@ public class AxeBuilder {
    * @param newWebDriver Selenium driver to use
    * @param builderOptions Builder options
    */
-  public AxeBuilder(final WebDriver newWebDriver,
-      final AxeBuilderOptions builderOptions,
-      final ObjectMapper objectMapper)
-      throws OperationNotSupportedException, IOException {
-    validateNotNullParameter(newWebDriver);
+  public AxeBuilder(final AxeBuilderOptions builderOptions, final ObjectMapper objectMapper) {
     validateNotNullParameter(builderOptions);
     validateNotNullParameter(objectMapper);
 
-    setWebDriver(newWebDriver);
-    WebDriverInjectorExtensions.inject(
-        getWebDriver(), builderOptions.getScriptProvider());
     this.objectMapper = objectMapper;
   }
 
@@ -244,6 +206,9 @@ public class AxeBuilder {
   public AxeBuilder withTags(final List<String> tags) {
     validateParameters(tags);
     throwIfDeprecatedOptionsSet();
+    if (tags.isEmpty()) {
+      return this;
+    }
     AxeRunOnlyOptions runOnlyOptions = new AxeRunOnlyOptions();
     runOnlyOptions.setType("tag");
     runOnlyOptions.setValues(tags);
@@ -259,13 +224,40 @@ public class AxeBuilder {
    * @param rules rule IDs to be used for scanning
    * @return an Axe Builder
    */
-  public AxeBuilder withRules(final List<String> rules) {
+  public AxeBuilder withOnlyRules(final List<String> rules) {
     validateParameters(rules);
     throwIfDeprecatedOptionsSet();
+    if (rules.isEmpty()) {
+      return this;
+    }
     AxeRunOnlyOptions onlyOptions = new AxeRunOnlyOptions();
     onlyOptions.setType("rule");
     onlyOptions.setValues(rules);
     this.runOptions.setRunOnly(onlyOptions);
+    return this;
+  }
+
+  /**
+   * Limit analysis to only the specified rules.
+   * Refer https://dequeuniversity.com/rules/axe/
+   * to get the complete listing of available rule IDs.
+   * Cannot be used with WithTags(List<String>) & Options/>
+   * @param rules rule IDs to be used for scanning
+   * @return an Axe Builder
+   */
+  public AxeBuilder withRules(final List<String> rules) {
+    validateParameters(rules);
+    throwIfDeprecatedOptionsSet();
+    if (rules.isEmpty()) {
+      return this;
+    }
+    Map<String, AxeRuleOptions> rulesMap = new HashMap<>();
+    for (String rule : rules) {
+      AxeRuleOptions ruleOptions = new AxeRuleOptions();
+      ruleOptions.setEnabled(true);
+      rulesMap.put(rule, ruleOptions);
+    }
+    this.runOptions.setRules(rulesMap);
     return this;
   }
 
@@ -280,8 +272,10 @@ public class AxeBuilder {
   public AxeBuilder disableRules(final List<String> rules) {
     validateParameters(rules);
     throwIfDeprecatedOptionsSet();
+    if (rules.isEmpty()) {
+      return this;
+    }
     Map<String, AxeRuleOptions> rulesMap = new HashMap<>();
-
     for (String rule : rules) {
       AxeRuleOptions ruleOptions = new AxeRuleOptions();
       ruleOptions.setEnabled(false);
@@ -305,6 +299,9 @@ public class AxeBuilder {
    */
   public AxeBuilder include(final List<String> selectors) {
     validateParameters(selectors);
+    if (selectors.isEmpty()) {
+      return this;
+    }
     this.runContext.setInclude(selectors);
     return this;
   }
@@ -318,6 +315,9 @@ public class AxeBuilder {
    */
   public AxeBuilder exclude(final List<String> selectors) {
     validateParameters(selectors);
+    if (selectors.isEmpty()) {
+      return this;
+    }
     runContext.setExclude(selectors);
     return this;
   }
@@ -341,39 +341,63 @@ public class AxeBuilder {
    * @param context WebElement(s) to test
    * @return An axe results document
    */
-  public Results analyze(final WebElement... context) {
-    return analyzeRawContext(context);
+  public Results analyze(final WebDriver webDriver, final WebElement... context) {
+    return analyzeRawContext(webDriver, context, true);
   }
 
   /**
    * Run axe against the entire page.
    * @return An axe results document
    */
-  public Results analyze() {
+  public Results analyze(final WebDriver webDriver) {
     boolean runContextHasData = this.runContext.getInclude() != null
         || this.runContext.getExclude() != null;
     String rawContext = runContextHasData
         ? AxeReporter.serialize(runContext) : null;
-    return analyzeRawContext(rawContext);
+    return analyzeRawContext(webDriver, rawContext, true);
   }
 
   /**
-   * Runs axe via scan.js at a specific context, which will be passed
+   * Run axe against the entire page.
+   * @return An axe results document
+   */
+  public Results analyze(final WebDriver webDriver, boolean injectAxe) {
+    boolean runContextHasData = this.runContext.getInclude() != null
+        || this.runContext.getExclude() != null;
+    String rawContext = runContextHasData
+        ? AxeReporter.serialize(runContext) : null;
+    return analyzeRawContext(webDriver, rawContext, injectAxe);
+  }
+
+
+  /**
+   * Runs axe via axeRunScript at a specific context, which will be passed
    * as-is to Selenium for scan.js to interpret, and parses/handles
    * the scan.js output per the current builder options.
    * @param rawContextArg The value to pass as-is to
    *                      scan.js to use as the axe.run "context" argument
    * @return an Axe Result
    */
-  private Results analyzeRawContext(final Object rawContextArg) {
+  private Results analyzeRawContext(final WebDriver webDriver, final Object rawContextArg, boolean injectAxe) {
+    validateNotNullParameter(webDriver);
     String rawOptionsArg = getOptions().equals("{}")
         ? AxeReporter.serialize(runOptions) : getOptions();
     Object[] rawArgs = new Object[] {rawContextArg, rawOptionsArg};
 
-    this.webDriver.manage().timeouts()
+    if (injectAxe) {
+      try {
+        WebDriverInjectorExtensions.inject(
+            webDriver, builderOptions.getScriptProvider());
+      } catch (IOException e) {
+          throw new RuntimeException("Unable to inject axe script", e);
+      } catch (OperationNotSupportedException e) {
+          throw new RuntimeException("Unable to inject axe script", e);
+      }
+    }
+    webDriver.manage().timeouts()
         .setScriptTimeout(timeout, TimeUnit.SECONDS);
 
-    Object response = ((JavascriptExecutor) this.getWebDriver())
+    Object response = ((JavascriptExecutor) webDriver)
         .executeAsyncScript(axeRunScript, rawArgs);
 
     Results results = objectMapper.convertValue(response, Results.class);

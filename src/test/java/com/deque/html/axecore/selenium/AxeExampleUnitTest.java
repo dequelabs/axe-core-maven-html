@@ -77,7 +77,7 @@ public class AxeExampleUnitTest {
   @Test
   public void testAccessibility() throws IOException, OperationNotSupportedException {
     this.webDriver.get("file:///" + new File(normalPage).getAbsolutePath());
-    Results result = new AxeBuilder(webDriver).analyze();
+    Results result = new AxeBuilder().analyze(webDriver);
     List<Rule> violations = result.getViolations();
     Assert.assertEquals("No violations found", 0, violations.size());
     AxeReporter.writeResultsToJsonFile("src/test/java/results/testAccessibility", result);
@@ -96,7 +96,7 @@ public class AxeExampleUnitTest {
   @Test
   public void testAccessibilityWithSkipFrames() throws IOException, OperationNotSupportedException {
     this.webDriver.get("file:///" + new File(normalPage).getAbsolutePath());
-    Results result = new AxeBuilder(webDriver).analyze();
+    Results result = new AxeBuilder().analyze(webDriver);
     List<Rule> violations = result.getViolations();
     Assert.assertEquals( "No violations found", 0, violations.size());
     AxeReporter
@@ -117,9 +117,9 @@ public class AxeExampleUnitTest {
   @Test
   public void testAccessibilityWithOptions() throws IOException, OperationNotSupportedException {
     this.webDriver.get("file:///" + new File(normalPage).getAbsolutePath());
-    AxeBuilder builder = new AxeBuilder(webDriver);
+    AxeBuilder builder = new AxeBuilder();
     builder.setOptions("{ \"rules\": { \"accesskeys\": { \"enabled\": false } } }");
-    Results result = builder.analyze();
+    Results result = builder.analyze(webDriver);
     List<Rule> violations = result.getViolations();
     Assert.assertEquals("No violations found", 0, violations.size());
     AxeReporter.writeResultsToJsonFile("src/test/java/results/testAccessibilityWithOptions", result);
@@ -140,10 +140,10 @@ public class AxeExampleUnitTest {
     boolean didTimeout = false;
 
     try {
-      AxeBuilder builder = new AxeBuilder(webDriver).setTimeout(1);
+      AxeBuilder builder = new AxeBuilder().setTimeout(1);
       FileAxeScriptProvider axeScriptProvider = new FileAxeScriptProvider(timeoutFilePath);
       WebDriverInjectorExtensions.inject(webDriver, axeScriptProvider);
-      builder.analyze();
+      builder.analyze(webDriver);
     } catch (Exception e) {
       String msg = e.getMessage();
       System.out.println("MSG:" + msg);
@@ -160,7 +160,7 @@ public class AxeExampleUnitTest {
   @Test
   public void testAccessibilityWithSelector() throws IOException, OperationNotSupportedException {
     this.webDriver.get("file:///" + new File(normalPage).getAbsolutePath());
-    Results result = new AxeBuilder(webDriver).include(Collections.singletonList("p")).analyze();
+    Results result = new AxeBuilder().include(Collections.singletonList("p")).analyze(webDriver);
     List<Rule> violations = result.getViolations();
     Assert.assertEquals("No violations found", 0, violations.size());
     AxeReporter.writeResultsToJsonFile("src/test/java/results/testAccessibilityWithSelector", result);
@@ -180,7 +180,7 @@ public class AxeExampleUnitTest {
   @Test
   public void testAccessibilityWithSelectors() throws IOException, OperationNotSupportedException {
     this.webDriver.get("file:///" + new File(normalPage).getAbsolutePath());
-    Results result = new AxeBuilder(webDriver).include(Arrays.asList("title", "p")).analyze();
+    Results result = new AxeBuilder().include(Arrays.asList("title", "p")).analyze(webDriver);
     List<Rule> violations = result.getViolations();
     Assert.assertEquals("No violations found", 0, violations.size());
     AxeReporter
@@ -202,9 +202,9 @@ public class AxeExampleUnitTest {
   public void testAccessibilityWithIncludesAndExcludes()
       throws IOException, OperationNotSupportedException {
     this.webDriver.get("file:///" + new File(includeExcludePage).getAbsolutePath());
-    Results result = new AxeBuilder(webDriver)
+    Results result = new AxeBuilder()
         .include(Collections.singletonList("body"))
-        .exclude(Collections.singletonList("li")).analyze();
+        .exclude(Collections.singletonList("li")).analyze(webDriver);
 
     List<Rule> violations = result.getViolations();
     Assert.assertNotEquals("No violations found", 0, violations.size());
@@ -225,7 +225,7 @@ public class AxeExampleUnitTest {
   @Test
   public void testAccessibilityWithWebElement() throws IOException, OperationNotSupportedException {
     this.webDriver.get("file:///" + new File(normalPage).getAbsolutePath());
-    Results result = new AxeBuilder(webDriver).analyze(webDriver.findElement(By.tagName("p")));
+    Results result = new AxeBuilder().analyze(webDriver, webDriver.findElement(By.tagName("p")));
     List<Rule>  violations = result.getViolations();
     Assert.assertEquals("No violations found", 0, violations.size());
     AxeReporter
@@ -246,7 +246,7 @@ public class AxeExampleUnitTest {
   @Test
   public void testAccessibilityWithWebElements() throws IOException, OperationNotSupportedException {
     this.webDriver.get("file:///" + new File(includeExcludePage).getAbsolutePath());
-    Results result = new AxeBuilder(webDriver).analyze(
+    Results result = new AxeBuilder().analyze(webDriver,
         webDriver.findElement(By.tagName("h1")), webDriver.findElement(By.tagName("h2")));
 
     List<Rule>  violations = result.getViolations();
@@ -275,7 +275,7 @@ public class AxeExampleUnitTest {
   @Test
   public void testAccessibilityWithShadowElement() throws IOException, OperationNotSupportedException {
     this.webDriver.get("file:///" + new File(shadowErrorPage).getAbsolutePath());
-    Results result = new AxeBuilder(webDriver).analyze();
+    Results result = new AxeBuilder().analyze(webDriver);
     List<Rule>  violations = result.getViolations();
     Rule resultItem = violations.get(0);
     List<CheckedNode> nodes = resultItem.getNodes();
@@ -298,12 +298,12 @@ public class AxeExampleUnitTest {
   public void testAxeErrorHandling() throws IOException, OperationNotSupportedException {
     this.webDriver.get("file:///" + new File(normalPage).getAbsolutePath());
     String errorFilePath = "src/test/resources/axe-error.js";
-    AxeBuilder builder = new AxeBuilder(webDriver);
+    AxeBuilder builder = new AxeBuilder();
     builder.setTimeout(1);
     FileAxeScriptProvider axeScriptProvider = new FileAxeScriptProvider(errorFilePath);
     WebDriverInjectorExtensions.inject(webDriver, axeScriptProvider);
 
-    Results res = builder.analyze();
+    Results res = builder.analyze(webDriver);
     Assert.assertTrue("Did raise axe-core error", res.isErrored());
   }
 
@@ -313,7 +313,7 @@ public class AxeExampleUnitTest {
   @Test
   public void testAccessibilityWithFewInclude() throws IOException, OperationNotSupportedException {
     this.webDriver.get("file:///" + new File(includeExcludePage).getAbsolutePath());
-    Results result = new AxeBuilder(webDriver).include(Arrays.asList("div", "p")).analyze();
+    Results result = new AxeBuilder().include(Arrays.asList("div", "p")).analyze(webDriver);
     List<Rule> violations = result.getViolations();
     Assert.assertEquals("No violations found", 0, violations.size());
     AxeReporter
@@ -335,9 +335,9 @@ public class AxeExampleUnitTest {
   public void testAccessibilityWithIncludesAndExcludesWithViolation()
       throws IOException, OperationNotSupportedException {
     this.webDriver.get("file:///" + new File(includeExcludePage).getAbsolutePath());
-    Results result = new AxeBuilder(webDriver)
+    Results result = new AxeBuilder()
         .include(Collections.singletonList("body"))
-        .exclude(Collections.singletonList("div")).analyze();
+        .exclude(Collections.singletonList("div")).analyze(webDriver);
 
     List<Rule> violations = result.getViolations();
     Rule resultItem = violations.get(0);
