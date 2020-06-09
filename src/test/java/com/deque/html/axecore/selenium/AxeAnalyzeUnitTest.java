@@ -106,6 +106,6 @@ public class AxeAnalyzeUnitTest {
       throws IOException, OperationNotSupportedException {
     AxeBuilder builder = new AxeBuilder();
     WebElement mainElement = this.webDriver.findElement(By.cssSelector("main"));
-    WebDriverExtensions.analyze(this.webDriver, mainElement, builder.getDefaultAxeBuilderOptions());
+    WebDriverExtensions.analyze(null, mainElement, builder.getDefaultAxeBuilderOptions());
   }
 }

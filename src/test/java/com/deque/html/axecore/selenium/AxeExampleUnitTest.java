@@ -142,12 +142,10 @@ public class AxeExampleUnitTest {
     try {
       AxeBuilder builder = new AxeBuilder().setTimeout(1);
       FileAxeScriptProvider axeScriptProvider = new FileAxeScriptProvider(timeoutFilePath);
-      WebDriverInjectorExtensions.inject(webDriver, axeScriptProvider);
+      builder.setAxeScriptProvider(axeScriptProvider);
       builder.analyze(webDriver);
     } catch (Exception e) {
       String msg = e.getMessage();
-      System.out.println("MSG:" + msg);
-      System.err.println("MSG:" + msg);
       Assert.assertTrue("Did not error with timeout message", msg.contains("1 seconds") || msg.contains("timeout"));
       didTimeout = true;
     }
@@ -301,7 +299,7 @@ public class AxeExampleUnitTest {
     AxeBuilder builder = new AxeBuilder();
     builder.setTimeout(1);
     FileAxeScriptProvider axeScriptProvider = new FileAxeScriptProvider(errorFilePath);
-    WebDriverInjectorExtensions.inject(webDriver, axeScriptProvider);
+    builder.setAxeScriptProvider(axeScriptProvider);
 
     Results res = builder.analyze(webDriver);
     Assert.assertTrue("Did raise axe-core error", res.isErrored());
