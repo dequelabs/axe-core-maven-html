@@ -81,7 +81,7 @@ public final class WebDriverExtensions {
     }
 
     if (context == null) {
-      throw new NullPointerException("the webDriver is null");
+      throw new NullPointerException("the context is null");
     }
     AxeBuilder axeBuilder = new AxeBuilder();
     return axeBuilder.analyze(webDriver, context);
@@ -104,7 +104,7 @@ public final class WebDriverExtensions {
     }
 
     if (context == null) {
-      throw new NullPointerException("the web Element is null");
+      throw new NullPointerException("the context is null");
     }
     AxeBuilder axeBuilder = new AxeBuilder(axeBuilderOptions);
     return axeBuilder.analyze(webDriver, context);

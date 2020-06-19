@@ -388,9 +388,7 @@ public class AxeBuilder {
       try {
         WebDriverInjectorExtensions.inject(
             webDriver, builderOptions.getScriptProvider());
-      } catch (IOException e) {
-          throw new RuntimeException("Unable to inject axe script", e);
-      } catch (OperationNotSupportedException e) {
+      } catch (Exception e) {
           throw new RuntimeException("Unable to inject axe script", e);
       }
     }
