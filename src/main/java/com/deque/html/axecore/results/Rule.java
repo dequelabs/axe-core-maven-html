@@ -88,12 +88,6 @@ public class Rule {
         this.createdDate = createdDate;
     }
 
-    /**********************************
-     * Below is generated code.
-     * DO NOT MODIFY
-     * Regenerate instead
-     **********************************/
-
     @Override
     public String toString() {
         return "Rule{" +

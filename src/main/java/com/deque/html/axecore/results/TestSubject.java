@@ -38,13 +38,6 @@ public class TestSubject {
     }
 
 
-    /**********************************
-     * Below is generated code.
-     * DO NOT MODIFY
-     * Regenerate instead
-     **********************************/
-
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
