@@ -5,7 +5,7 @@
 
     <groupId>com.deque.html.axe-core</groupId>
     <artifactId>selenium</artifactId>
-    <version>3.1</version>
+    <version>3.2-PRERELEASE</version>
     <build>
         <plugins>
             <plugin>
