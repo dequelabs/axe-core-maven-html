@@ -72,9 +72,6 @@ workflows:
           requires:
             - dependencies
             - tests
-          filters:
-            branches:
-              only: develop
       - release:
           requires:
             - dependencies
