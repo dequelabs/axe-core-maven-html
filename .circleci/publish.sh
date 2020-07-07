@@ -19,7 +19,7 @@ echo "  <servers>" >> ~/.m2/settings.xml
 echo "    <server>" >> ~/.m2/settings.xml
 echo "      <id>ossrh</id>" >> ~/.m2/settings.xml
 echo "      <username>$OSSRH_USERNAME</username>" >> ~/.m2/settings.xml
-echo "      <password>$OSSRH_PASSWORD</password>" >> ~/.m2/settings.xml
+echo "      <password><![CDATA[$OSSRH_PASSWORD]]></password>" >> ~/.m2/settings.xml
 echo "    </server>" >> ~/.m2/settings.xml
 echo "  </servers>" >> ~/.m2/settings.xml
 echo "  <profiles>" >> ~/.m2/settings.xml
