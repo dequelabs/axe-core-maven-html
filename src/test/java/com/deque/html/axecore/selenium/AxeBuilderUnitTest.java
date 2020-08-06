@@ -112,6 +112,25 @@ public class AxeBuilderUnitTest {
     verifyDriversNotNull();
   }
 
+
+  /**
+   * tests if sandbox buster is on
+   * @throws IOException if file writing fails
+   * @throws OperationNotSupportedException if the operation errors out
+   */
+  @Test()
+  public void shouldHandleRemovingSandboxes()
+      throws IOException, OperationNotSupportedException {
+    AxeBuilder builder = new AxeBuilder();
+    Results result = builder.withoutIframeSandboxes().analyze(this.webDriver);
+    verifyAxeResultsNotNull(result);
+    Assert.assertEquals(42, result.getInapplicable().size());
+    Assert.assertEquals(0, result.getIncomplete().size());
+    Assert.assertEquals(22, result.getPasses().size());
+    Assert.assertEquals(4, result.getViolations().size());
+    verifyDriversNotNull();
+  }
+
   /**
    * tests context if include is set.
    * @throws IOException if file writing fails
