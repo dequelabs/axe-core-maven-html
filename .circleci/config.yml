@@ -12,17 +12,25 @@ jobs:
       - checkout
       - restore_cache:
           key: v1-mvn-deps-{{ checksum "pom.xml" }}
+      - restore_cache:
+          key: v1-npm-deps-{{ checksum "package-lock.json" }}
       - run: mvn install -DskipTests
       - save_cache:
           key: v1-mvn-deps-{{ checksum "pom.xml" }}
           paths:
             - ~/.m2
+      - save_cache:
+          key: v1-npm-deps-{{ checksum "package-lock.json" }}
+          paths:
+            - node_modules
   tests:
     <<: *defaults
     steps:
       - checkout
       - restore_cache:
           key: v1-mvn-deps-{{ checksum "pom.xml" }}
+      - restore_cache:
+          key: v1-npm-deps-{{ checksum "package-lock.json" }}
       - run:
           command: node src/test/resources/test-app.js
           background: true
@@ -35,6 +43,8 @@ jobs:
       - checkout
       - restore_cache:
           key: v1-mvn-deps-{{ checksum "pom.xml" }}
+      - restore_cache:
+          key: v1-npm-deps-{{ checksum "package-lock.json" }}
       - run: python .circleci/snapshot.py
       - run: .circleci/publish.sh
 
@@ -44,6 +54,8 @@ jobs:
       - checkout
       - restore_cache:
           key: v1-mvn-deps-{{ checksum "pom.xml" }}
+      - restore_cache:
+          key: v1-npm-deps-{{ checksum "package-lock.json" }}
       - run: .circleci/publish.sh
 
   github_release:

@@ -105,10 +105,10 @@ public class AxeBuilderUnitTest {
     AxeBuilder builder = new AxeBuilder();
     Results result = builder.analyze(this.webDriver);
     verifyAxeResultsNotNull(result);
-    Assert.assertEquals(42, result.getInapplicable().size());
+    Assert.assertEquals(49, result.getInapplicable().size());
     Assert.assertEquals(0, result.getIncomplete().size());
-    Assert.assertEquals(22, result.getPasses().size());
-    Assert.assertEquals(4, result.getViolations().size());
+    Assert.assertEquals(23, result.getPasses().size());
+    Assert.assertEquals(5, result.getViolations().size());
     verifyDriversNotNull();
   }
 
@@ -127,9 +127,9 @@ public class AxeBuilderUnitTest {
 
     verifyAxeResultsNotNull(result);
 
-    Assert.assertEquals(56, result.getInapplicable().size());
+    Assert.assertEquals(67, result.getInapplicable().size());
     Assert.assertEquals(0, result.getIncomplete().size());
-    Assert.assertEquals(6, result.getPasses().size());
+    Assert.assertEquals(5, result.getPasses().size());
     Assert.assertEquals(1, result.getViolations().size());
 
     verifyDriversNotNull();
@@ -174,9 +174,9 @@ public class AxeBuilderUnitTest {
     Results result = builder.analyze(this.webDriver);
     verifyAxeResultsNotNull(result);
 
-    Assert.assertEquals(56, result.getInapplicable().size());
+    Assert.assertEquals(67, result.getInapplicable().size());
     Assert.assertEquals(0, result.getIncomplete().size());
-    Assert.assertEquals(6, result.getPasses().size());
+    Assert.assertEquals(5, result.getPasses().size());
     Assert.assertEquals(1, result.getViolations().size());
 
     verifyDriversNotNull();
@@ -195,10 +195,10 @@ public class AxeBuilderUnitTest {
     AxeBuilder builder = new AxeBuilder().withTags(expectedTags);
     Results result = builder.analyze(this.webDriver);
     verifyAxeResultsNotNull(result);
-    Assert.assertEquals(27, result.getInapplicable().size());
+    Assert.assertEquals(33, result.getInapplicable().size());
     Assert.assertEquals(0, result.getIncomplete().size());
     Assert.assertEquals(11, result.getPasses().size());
-    Assert.assertEquals(2, result.getViolations().size());
+    Assert.assertEquals(3, result.getViolations().size());
     verifyDriversNotNull();
   }
 
@@ -305,10 +305,10 @@ public class AxeBuilderUnitTest {
    * @param result the Axe Result to be compared
    */
   private void verifyAxeResult(Results result) {
-    Assert.assertEquals(42, result.getInapplicable().size());
+    Assert.assertEquals(49, result.getInapplicable().size());
     Assert.assertEquals(0, result.getIncomplete().size());
-    Assert.assertEquals(22, result.getPasses().size());
-    Assert.assertEquals(3, result.getViolations().size());
+    Assert.assertEquals(23, result.getPasses().size());
+    Assert.assertEquals(4, result.getViolations().size());
   }
 
   /**

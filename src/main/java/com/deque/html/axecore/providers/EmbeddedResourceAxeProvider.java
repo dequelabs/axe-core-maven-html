@@ -11,6 +11,8 @@
  */
 
 package com.deque.html.axecore.providers;
+import org.apache.commons.io.IOUtils;
+import java.net.URL;
 
 import java.io.IOException;
 
@@ -23,7 +25,7 @@ public class EmbeddedResourceAxeProvider implements IAxeScriptProvider {
    */
   @Override
   public String getScript() throws IOException {
-    return EmbeddedResourceProvider
-        .readEmbeddedFile("src/test/resources/axe.min.js");
+        URL axeUrl = getClass().getResource("/axe.min.js");
+        return IOUtils.toString(axeUrl.openStream());
   }
 }
