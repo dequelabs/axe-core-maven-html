@@ -348,7 +348,7 @@ public class AxeExampleUnitTest {
     Assert.assertTrue(getReadableAxeResults(ResultType.Violations.getKey(), webDriver, violations));
     AxeReporter.writeResultsToTextFile(
         "src/test/java/results/testAccessibilityWithIncludesAndExcludesWithViolation", AxeReporter.getAxeResultString());
-    Assert.assertEquals("No violations found", 1, violations.size());
+    Assert.assertEquals("No violations found", 2, violations.size());
 
     File jsonFile = new File("src/test/java/results/testAccessibilityWithIncludesAndExcludesWithViolation.json");
     File txtFile = new File("src/test/java/results/testAccessibilityWithIncludesAndExcludesWithViolation.txt");

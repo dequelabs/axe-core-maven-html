@@ -93,7 +93,7 @@ public class AxeIntegrationUnitTest {
     Assert.assertNotNull(results.getViolations().get(0).getTags());
     Assert.assertTrue(results.getViolations().get(0).getTags().contains("wcag2a"));
     Assert.assertTrue(results.getViolations().get(0).getTags().contains("wcag412"));
-    Assert.assertEquals(2, violations.size());
+    Assert.assertEquals(3, violations.size());
     Assert.assertNotNull(results.getViolations().get(0).getNodes());
 
     File file = new File("src/test/java/results/raw-axe-results.json");
@@ -116,7 +116,7 @@ public class AxeIntegrationUnitTest {
     WebElement mainElement = wait.until(drv -> drv.findElement(By.cssSelector("main")));
     AxeBuilder builder = new AxeBuilder();
     Results results = builder.analyze(this.webDriver, mainElement);
-    Assert.assertEquals(2, results.getViolations().size());
+    Assert.assertEquals(3, results.getViolations().size());
   }
 
   /**
