@@ -40,17 +40,17 @@ Include this library as a test-scoped dependency in your POM. Ensure the `versio
 The `AxeBuilder` type is the main interface. Pass it a Selenium `WebDriver` instance, configure it,
 and run the `analyze` method to get results.
 
-- `options` wires a JSON string to aXe, allowing rules to be toggled on or off.
+- `options` wires a JSON string to axe, allowing rules to be toggled on or off.
     See the `testAccessibilityWithOptions` unit test for a sample single-rule execution, and the
     [axe-core API documentation](https://github.com/dequelabs/axe-core/blob/master/doc/API.md#b-options-parameter)
-    for full documentation on the options object. The runOnly option with tags may be of particular interest, allowing aXe to execute all rules with the specified tag(s).
-- `include` adds to the list of included selectors. If you do not call `include` at all, aXe will run against the entire document.
+    for full documentation on the options object. The runOnly option with tags may be of particular interest, allowing axe to execute all rules with the specified tag(s).
+- `include` adds to the list of included selectors. If you do not call `include` at all, axe will run against the entire document.
 - `exclude` adds to the list of excluded selectors. Exclusions allow you to focus scope exactly where you need it, ignoring child elements you don't want to test.
 - `withOptions` takes an options object to be passed to the `axe.run` call.
 - `withTags` limits rules run to those that match specified tags.
 - `withOnlyRules` limites rules run to those specified.
 - `disabledRules` disables rules.
-- `analyze` executes aXe with any configuration you have previously defined. If you want to test one or more `WebElement`s, you may pass them into `analyze` instead of using `include` and `exclude`.
+- `analyze` executes axe with any configuration you have previously defined. If you want to test one or more `WebElement`s, you may pass them into `analyze` instead of using `include` and `exclude`.
 
 ## Contributing
 
