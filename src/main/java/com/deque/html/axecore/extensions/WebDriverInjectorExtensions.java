@@ -78,6 +78,22 @@ public final class WebDriverInjectorExtensions {
   }
 
   /**
+   * Injects script into frames to be run asynchronously.
+   * @param driver WebDriver instance to inject into
+   * @param script The script to inject
+   */
+  public static void injectAsync(final WebDriver driver,
+      final String script) {
+    List<WebElement> parents = new ArrayList<>();
+    JavascriptExecutor js = (JavascriptExecutor) driver;
+
+    driver.switchTo().defaultContent();
+    js.executeAsyncScript(script);
+    injectIntoFramesAsync(driver, script, parents);
+    driver.switchTo().defaultContent();
+  }
+
+  /**
    * Recursively find frames and inject a script into them.
    * @param driver An initialized WebDriver
    * @param script Script to inject
@@ -99,6 +115,42 @@ public final class WebDriverInjectorExtensions {
 
       driver.switchTo().frame(frame);
       js.executeScript(script);
+      List<WebElement> localParents = new ArrayList<>();
+
+      if (parents == null) {
+        localParents.add(null);
+        throw new NullPointerException();
+      } else {
+        localParents.addAll(parents);
+        localParents.add(frame);
+      }
+
+      injectIntoFrames(driver, script, localParents);
+    }
+  }
+
+  /**
+   * Recursively find frames and inject a script into them to be run asynchronously.
+   * @param driver An initialized WebDriver
+   * @param script Script to inject
+   * @param parents A list of all top level frames
+   */
+  private static void injectIntoFramesAsync(final WebDriver driver,
+      final String script, final List<WebElement> parents) {
+    JavascriptExecutor js = (JavascriptExecutor) driver;
+    List<WebElement> frames = driver.findElements(By.tagName("iframe"));
+
+    for (WebElement frame : frames) {
+      driver.switchTo().defaultContent();
+
+      if (parents != null) {
+        for (WebElement parent : parents) {
+          driver.switchTo().frame(parent);
+        }
+      }
+
+      driver.switchTo().frame(frame);
+      js.executeAsyncScript(script);
       List<WebElement> localParents = new ArrayList<>();
 
       if (parents == null) {

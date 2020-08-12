@@ -62,6 +62,8 @@ public class AxeBuilder {
    */
   private AxeBuilderOptions builderOptions = getDefaultAxeBuilderOptions();
 
+  private boolean noSandbox = true;
+
   /**
    * timeout of how the the scan should run until an error occurs.
    */
@@ -88,6 +90,26 @@ public class AxeBuilder {
     "    callback(results);" +
     "  }" +
     "});";
+
+  public final String sandboxBusterScript =
+    "const callback = arguments[arguments.length - 1];" +
+    "const iframes = Array.from(" +
+    "  document.querySelectorAll('iframe[sandbox]')" +
+    ");" +
+    "const removeSandboxAttr = clone => attr => {" +
+    "  if (attr.name === 'sandbox') return;" +
+    "  clone.setAttribute(attr.name, attr.value);" +
+    "};" +
+    "const replaceSandboxedIframe = iframe => {" +
+    "  const clone = document.createElement('iframe');" +
+    "  const promise = new Promise(" +
+    "    iframeLoaded => (clone.onload = iframeLoaded)" +
+    "  );" +
+    "  Array.from(iframe.attributes).forEach(removeSandboxAttr(clone));" +
+    "  iframe.parentElement.replaceChild(clone, iframe);" +
+    "  return promise;" +
+    "};" +
+    "Promise.all(iframes.map(replaceSandboxedIframe)).then(callback);";
 
   /**
    * get the default axe builder options.
@@ -178,6 +200,15 @@ public class AxeBuilder {
     validateNotNullParameter(objectMapper);
 
     this.objectMapper = objectMapper;
+  }
+
+  /**
+   *  Remove the "sandbox" attribute from iframes on the page.
+   * @return an Axe Builder
+   */
+  public AxeBuilder withoutIframeSandboxes() {
+    noSandbox = true;
+    return this;
   }
 
   /**
@@ -383,6 +414,15 @@ public class AxeBuilder {
     String rawOptionsArg = getOptions().equals("{}")
         ? AxeReporter.serialize(runOptions) : getOptions();
     Object[] rawArgs = new Object[] {rawContextArg, rawOptionsArg};
+
+    if (noSandbox) {
+      try {
+        WebDriverInjectorExtensions.injectAsync(
+            webDriver, sandboxBusterScript);
+      } catch (Exception e) {
+          throw new RuntimeException("Error when removing sandbox from iframes", e);
+      }
+    }
 
     if (injectAxe) {
       try {
