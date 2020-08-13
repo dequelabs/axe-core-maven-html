@@ -127,7 +127,7 @@ public class AxeBuilderUnitTest {
     Assert.assertEquals(49, result.getInapplicable().size());
     Assert.assertEquals(0, result.getIncomplete().size());
     Assert.assertEquals(23, result.getPasses().size());
-    Assert.assertEquals(4, result.getViolations().size());
+    Assert.assertEquals(5, result.getViolations().size());
     verifyDriversNotNull();
   }
 
