@@ -124,9 +124,9 @@ public class AxeBuilderUnitTest {
     AxeBuilder builder = new AxeBuilder();
     Results result = builder.withoutIframeSandboxes().analyze(this.webDriver);
     verifyAxeResultsNotNull(result);
-    Assert.assertEquals(42, result.getInapplicable().size());
+    Assert.assertEquals(49, result.getInapplicable().size());
     Assert.assertEquals(0, result.getIncomplete().size());
-    Assert.assertEquals(22, result.getPasses().size());
+    Assert.assertEquals(23, result.getPasses().size());
     Assert.assertEquals(4, result.getViolations().size());
     verifyDriversNotNull();
   }

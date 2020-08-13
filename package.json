@@ -4,6 +4,6 @@
   "description": "[![CircleCI](https://circleci.com/gh/dequelabs/axe-selenium-java.svg?style=svg)](https://circleci.com/gh/dequelabs/axe-selenium-java)",
   "license": "ISC",
   "dependencies": {
-    "axe-core": "^4.0.1"
+    "axe-core": "4.0.1"
   }
 }
