@@ -26,22 +26,22 @@ require('http').createServer(function (req, res) {
     } else if (req.url === '/include-exclude.html') {
         res.writeHead(200, {'Content-Type': 'text/html'});
         res.end(`
-			<!doctype html>
-			<html lang="en">
-				<head>
-					<title>Test Page</title>
-				</head>
-				<body>
-				    <h1><span style="color: yellow">This is a yellow text</span></h1>
-					<div role="main" id="host">
-						<p>This is a test page with violation</p>
-					</div>
-					<h2><span style="color: yellow">This is a yellow text</span></h2>
-					<p>This page is required to verify collaborative operation .include and .exclude</p>
-				</body>
-			</html>
-		`);
-   } else {
+    			<!doctype html>
+    			<html lang="en">
+    				<head>
+    					<title>Test Page</title>
+    				</head>
+    				<body>
+    				    <h1><span style="color: yellow">This is a yellow text</span></h1>
+    					<div role="main" id="host">
+    						<p>This is a test page with violation</p>
+    					</div>
+    					<h2><span style="color: yellow">This is a yellow text</span></h2>
+    					<p>This page is required to verify collaborative operation .include and .exclude</p>
+    				</body>
+    			</html>
+    		`);
+    } else {
         res.writeHead(200, {'Content-Type': 'text/html'});
         res.end(`
 			<!doctype html>

@@ -12,22 +12,65 @@ jobs:
       - checkout
       - restore_cache:
           key: v1-mvn-deps-{{ checksum "pom.xml" }}
+      - restore_cache:
+          key: v1-npm-deps-{{ checksum "package-lock.json" }}
       - run: mvn install -DskipTests
       - save_cache:
           key: v1-mvn-deps-{{ checksum "pom.xml" }}
           paths:
             - ~/.m2
+      - save_cache:
+          key: v1-npm-deps-{{ checksum "package-lock.json" }}
+          paths:
+            - node_modules
   tests:
     <<: *defaults
     steps:
       - checkout
       - restore_cache:
           key: v1-mvn-deps-{{ checksum "pom.xml" }}
+      - restore_cache:
+          key: v1-npm-deps-{{ checksum "package-lock.json" }}
       - run:
           command: node src/test/resources/test-app.js
           background: true
       - run: sleep 5 # sleep to allow the server some time to boot
       - run: mvn test
+
+  snapshot_release:
+    <<: *defaults
+    steps:
+      - checkout
+      - restore_cache:
+          key: v1-mvn-deps-{{ checksum "pom.xml" }}
+      - restore_cache:
+          key: v1-npm-deps-{{ checksum "package-lock.json" }}
+      - run: python .circleci/snapshot.py
+      - run: .circleci/publish.sh
+
+  release:
+    <<: *defaults
+    steps:
+      - checkout
+      - restore_cache:
+          key: v1-mvn-deps-{{ checksum "pom.xml" }}
+      - restore_cache:
+          key: v1-npm-deps-{{ checksum "package-lock.json" }}
+      - run: .circleci/publish.sh
+
+  github_release:
+    docker:
+      - image: circleci/golang:1.10
+    steps:
+      - checkout
+      - run: go get gopkg.in/aktau/github-release.v0
+      - run:
+          name: Download and run GitHub release script
+          command: |
+            curl https://raw.githubusercontent.com/dequelabs/attest-release-scripts/develop/src/java-github-release.sh -s -o ./java-github-release.sh
+            chmod +x ./java-github-release.sh
+            ./java-github-release.sh
+
 
 workflows:
   version: 2
@@ -37,3 +80,20 @@ workflows:
       - tests:
           requires:
             - dependencies
+      - snapshot_release:
+          requires:
+            - dependencies
+            - tests
+          filters:
+            branches:
+              only: develop
+      - release:
+          requires:
+            - dependencies
+            - tests
+          filters:
+            branches:
+              only: master
+      - github_release:
+          requires:
+            - release
