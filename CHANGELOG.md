@@ -8,6 +8,10 @@
 * add axe-core v4 ([#85](http://dequelabs/axe-core-maven-html/issues/85)) ([52b4534](http://dequelabs/axe-core-maven-html/commits/52b453465c1e2e6ac6974c84c8d83e64be2d575f))
 * add a more complete API ([#75](https://github.com/dequelabs/axe-core-maven-html/pull/75)) ([2285cb9](https://github.com/dequelabs/axe-core-maven-html/commit/2285cb980f6357a2b69dbec0dfabc62740d45f4d))
 
+### Breaking Changes
+
+* Changed package group ID to "com.deque.html.axe-core"
+* Renamed the Java package name to "com.deque.html.axecore.selenium"
 
 
 # [3.1.0](http://dequelabs/axe-core-maven-html/compare/v3.0.0...v3.1.0) (2020-03-17)
