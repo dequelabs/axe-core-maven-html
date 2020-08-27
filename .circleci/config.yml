@@ -81,6 +81,7 @@ workflows:
           requires:
             - dependencies
       - snapshot_release:
+          context: html-tools
           requires:
             - dependencies
             - tests
@@ -88,6 +89,7 @@ workflows:
             branches:
               only: develop
       - release:
+          context: html-tools
           requires:
             - dependencies
             - tests
@@ -95,5 +97,6 @@ workflows:
             branches:
               only: master
       - github_release:
+          context: html-tools
           requires:
             - release
