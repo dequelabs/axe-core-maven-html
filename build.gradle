@@ -1,0 +1,50 @@
+apply plugin: 'java'
+apply plugin: 'maven'
+
+group = 'com.deque.html.axe-core'
+version = '4.0.0'
+
+def artifactory_apikey = "$System.evn.ARTIFACTORY_API_KEY_PRIVATE"
+description = """aXe Selenium Integration"""
+
+sourceCompatibility = 8
+targetCompatibility = 8
+tasks.withType(JavaCompile) {
+	options.encoding = 'UTF-8'
+}
+
+
+
+repositories {
+        
+     maven { url "https://repo.maven.apache.org/maven2" }
+}
+dependencies {
+    compile group: 'commons-io', name: 'commons-io', version:'2.7'
+    compile group: 'org.seleniumhq.selenium', name: 'selenium-java', version:'3.141.59'
+    compile group: 'com.squareup.okhttp3', name: 'okhttp', version:'3.12.12'
+    compile group: 'io.github.bonigarcia', name: 'webdrivermanager', version:'4.2.0'
+    compile group: 'org.json', name: 'json', version:'20200518'
+    compile group: 'org.apache.commons', name: 'commons-lang3', version:'3.11'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version:'2.11.1'
+    testCompile group: 'junit', name: 'junit', version:'4.13'
+}
+
+
+/*
+ These tasks should NOT be touched.
+ */
+apply from: ".circleci/gradle-build-scripts/agora-publish.gradle"
+
+task publish {
+    dependsOn publishAgora
+    dependsOn publishMaven
+}
+
+task publishAgora {
+    dependsOn artifactoryPublish
+}
+
+task publishMaven {
+    dependsOn uploadArchives
+}
