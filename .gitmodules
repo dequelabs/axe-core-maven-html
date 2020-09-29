@@ -1,0 +1,3 @@
+[submodule ".circleci/deque-gradle-scripts"]
+	path = .circleci/deque-gradle-scripts
+	url = git@github.com:dequelabs/deque-gradle-scripts.git
