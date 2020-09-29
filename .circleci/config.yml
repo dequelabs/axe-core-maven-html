@@ -45,6 +45,7 @@ jobs:
           key: v1-mvn-deps-{{ checksum "pom.xml" }}
       - restore_cache:
           key: v1-npm-deps-{{ checksum "package-lock.json" }}
+      - run: git submodule update --init --recursive
       - run: sudo apt install gradle -y
       - run: gradle publishAgora
 

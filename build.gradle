@@ -34,7 +34,7 @@ dependencies {
 /*
  These tasks should NOT be touched.
  */
-apply from: ".circleci/gradle-build-scripts/agora-publish.gradle"
+apply from: ".circleci/deque-build-scripts/agora-publish.gradle"
 
 task publish {
     dependsOn publishAgora
