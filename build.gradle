@@ -4,7 +4,7 @@ apply plugin: 'maven'
 group = 'com.deque.html.axe-core'
 version = '4.0.0'
 
-def artifactory_apikey = "$System.evn.ARTIFACTORY_API_KEY_PRIVATE"
+def artifactory_apikey = "${System.env.ARTIFACTORY_API_KEY_PRIVATE}"
 description = """aXe Selenium Integration"""
 
 sourceCompatibility = 8

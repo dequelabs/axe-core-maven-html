@@ -37,6 +37,17 @@ jobs:
       - run: sleep 5 # sleep to allow the server some time to boot
       - run: mvn test
 
+  snapshot_release_gradle:
+    <<: *defaults
+    steps:
+      - checkout
+      - restore_cache:
+          key: v1-mvn-deps-{{ checksum "pom.xml" }}
+      - restore_cache:
+          key: v1-npm-deps-{{ checksum "package-lock.json" }}
+      - run: sudo apt install gradle -y
+      - run: gradle publishAgora
+
   snapshot_release:
     <<: *defaults
     steps:
@@ -96,6 +107,10 @@ workflows:
           filters:
             branches:
               only: master
+      - snapshot_release_gradle:
+          context: html-tools
+          requires:
+            - dependencies
       - github_release:
           context: html-tools
           requires:
