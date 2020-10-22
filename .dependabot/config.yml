@@ -4,9 +4,9 @@ update_configs:
     directory: "/"
     update_schedule: "daily"
     default_labels:
-      - "deps_bot" # this is to help our PR list to filter
+      - "axe_api_deps_bot" # this is to help our PR list to filter
   - package_manager: "java:maven"
     directory: "/"
     update_schedule: "daily"
     default_labels:
-      - "deps_bot" # this is to help our PR list to filter
+      - "axe_api_deps_bot" # this is to help our PR list to filter
