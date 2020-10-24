@@ -2,11 +2,11 @@ version: 1
 update_configs:
   - package_manager: "javascript"
     directory: "/"
-    update_schedule: "daily"
+    update_schedule: "weekly"
     default_labels:
-      - "axe_api_deps_bot" # this is to help our PR list to filter
+      - "axe_api_deps_bot"
   - package_manager: "java:maven"
     directory: "/"
-    update_schedule: "daily"
+    update_schedule: "weekly"
     default_labels:
-      - "axe_api_deps_bot" # this is to help our PR list to filter
+      - "axe_api_deps_bot"
