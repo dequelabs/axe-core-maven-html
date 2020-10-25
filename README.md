@@ -6,7 +6,7 @@ This example demonstrates how to use axe to run web accessibility tests in Java 
 
 Selenium integration enables testing of full pages and sites.
 
-## Requirements
+## Requirements for Installation
 
 - Chrome must be installed; follow the directions at https://www.google.com/chrome/ to install it. On Unix, ensure that Chrome is on your path.
 - The Java SE Development Kit must be installed; follow the directions at http://www.oracle.com/technetwork/java/javase/downloads/index.html to install it.
