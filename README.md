@@ -43,9 +43,9 @@ and run the `analyze` method to get results.
 - `options` wires a JSON string to axe, allowing rules to be toggled on or off.
     See the `testAccessibilityWithOptions` unit test for a sample single-rule execution, and the
     [axe-core API documentation](https://github.com/dequelabs/axe-core/blob/master/doc/API.md#b-options-parameter)
-    for full documentation on the options object. The runOnly option with tags may be of particular interest, allowing axe to execute all rules with the specified tag(s).
-- `include` adds to the list of included selectors. If you do not call `include` at all, axe will run against the entire document.
-- `exclude` adds to the list of excluded selectors. Exclusions allow you to focus scope exactly where you need it, ignoring child elements you don't want to test.
+    for full documentation on the options object. The run Only option with tags may be of particular interest, allowing axe to execute all rules with the specified tag(s).
+- `include` adds to the list of included selectors. If you do not call "include" at all, axe will run against the entire document.
+- `exclude` adds to the list of excluded selector. Exclusions allow you to focus scope exactly where you need it, ignoring child elements you don't want to test.
 - `withOptions` takes an options object to be passed to the `axe.run` call.
 - `withTags` limits rules run to those that match specified tags.
 - `withOnlyRules` limites rules run to those specified.
