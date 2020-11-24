@@ -310,7 +310,7 @@ public class AxeExampleUnitTest {
   @Test
   public void testAccessibilityWithFewInclude() throws IOException, OperationNotSupportedException {
     this.webDriver.get("file:///" + new File(includeExcludePage).getAbsolutePath());
-    Results result = new AxeBuilder().include(Arrays.asList("div", "p")).analyze(webDriver);
+    Results result = new AxeBuilder().include(Collections.singletonList("div")).include(Collections.singletonList("p")).analyze(webDriver);
     List<Rule> violations = result.getViolations();
     Assert.assertEquals("No violations found", 0, violations.size());
     AxeReporter
