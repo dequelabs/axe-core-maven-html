@@ -1,13 +1,13 @@
 {
   "name": "axe-core-maven-html",
-  "version": "4.0.0",
+  "version": "4.1.0",
   "description": "[![CircleCI](https://circleci.com/gh/dequelabs/axe-selenium-java.svg?style=svg)](https://circleci.com/gh/dequelabs/axe-selenium-java)",
   "license": "ISC",
   "scripts": {
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0"
   },
   "dependencies": {
-    "axe-core": "4.0.1",
+    "axe-core": "^4.1.1",
     "conventional-changelog-cli": "^2.1.0"
   }
 }

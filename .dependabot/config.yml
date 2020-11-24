@@ -1,0 +1,18 @@
+version: 1
+update_configs:
+  - package_manager: "javascript"
+    directory: "/"
+    update_schedule: "weekly"
+    default_labels:
+      - "axe_api_deps_bot"
+    allowed_updates:
+      - match:
+          update_type: "security"
+  - package_manager: "java:maven"
+    directory: "/"
+    update_schedule: "weekly"
+    default_labels:
+      - "axe_api_deps_bot"
+    allowed_updates:
+      - match:
+          update_type: "security"

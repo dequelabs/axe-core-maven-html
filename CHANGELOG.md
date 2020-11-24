@@ -1,3 +1,11 @@
+# [4.1.0](http://dequelabs/axe-core-maven-html/compare/v4.0.0...v4.1.0) (2020-11-24)
+
+
+### Features
+
+* bump axe-core to v4.1.0 ([0aeaa80](http://dequelabs/axe-core-maven-html/commits/0aeaa80820073c0fdcfe18e06611a9a946689153))
+* bump axe-core to v4.1.1 ([#114](http://dequelabs/axe-core-maven-html/issues/114)) ([71421da](http://dequelabs/axe-core-maven-html/commits/71421daf9ff2edd6819c6e9350241c770ec6dbe8))
+
 # [4.0.0](http://dequelabs/axe-core-maven-html/compare/v3.1.0...v4.0.0) (2020-08-24)
 
 

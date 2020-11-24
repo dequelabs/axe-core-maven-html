@@ -29,6 +29,7 @@ import com.deque.html.axecore.axeargs.AxeRunOnlyOptions;
 import com.deque.html.axecore.axeargs.AxeRunOptions;
 import com.deque.html.axecore.results.Results;
 import com.deque.html.axecore.selenium.AxeBuilder;
+import com.deque.html.axecore.results.Rule;
 
 import javax.naming.OperationNotSupportedException;
 import java.io.File;
@@ -36,7 +37,9 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.Map;
 
 /**
@@ -47,6 +50,36 @@ public class AxeBuilderUnitTest {
   private JavascriptExecutor javascriptExecutor;
   private WebDriver.TargetLocator targetLocator;
 
+  private void assertViolations(Results results, String... expectedsList) {
+    HashSet<String> actuals = new HashSet<String>();
+    for (Rule r : results.getViolations()) {
+      actuals.add(r.getId());
+    }
+    HashSet<String> expecteds = new HashSet<String>();
+    expecteds.addAll(Arrays.asList(expectedsList));
+
+    expecteds.removeAll(actuals);
+    actuals.removeAll(Arrays.asList(expectedsList));
+
+    String failureMessage = "";
+    if (!expecteds.isEmpty()) {
+      failureMessage += "Wanted but didn't find:\n";
+      for (String exp : expecteds) {
+        failureMessage += exp + "\n";
+      }
+    }
+
+    if (!actuals.isEmpty()) {
+      failureMessage += "Found unexpected:\n";
+      for (String act : actuals) {
+        failureMessage += act + "\n";
+      }
+    }
+
+    if (!expecteds.isEmpty() || !actuals.isEmpty()) {
+      Assert.fail(failureMessage);
+    }
+  }
   /**
    * Sets up the chrome driver before each test.
    */
@@ -105,10 +138,7 @@ public class AxeBuilderUnitTest {
     AxeBuilder builder = new AxeBuilder();
     Results result = builder.analyze(this.webDriver);
     verifyAxeResultsNotNull(result);
-    Assert.assertEquals(49, result.getInapplicable().size());
-    Assert.assertEquals(0, result.getIncomplete().size());
-    Assert.assertEquals(23, result.getPasses().size());
-    Assert.assertEquals(5, result.getViolations().size());
+    assertViolations(result, "aria-hidden-focus", "aria-roles", "color-contrast", "list", "page-has-heading-one");
     verifyDriversNotNull();
   }
 
@@ -124,10 +154,7 @@ public class AxeBuilderUnitTest {
     AxeBuilder builder = new AxeBuilder();
     Results result = builder.withoutIframeSandboxes().analyze(this.webDriver);
     verifyAxeResultsNotNull(result);
-    Assert.assertEquals(49, result.getInapplicable().size());
-    Assert.assertEquals(0, result.getIncomplete().size());
-    Assert.assertEquals(23, result.getPasses().size());
-    Assert.assertEquals(5, result.getViolations().size());
+    assertViolations(result, "aria-hidden-focus", "aria-roles", "color-contrast", "list", "page-has-heading-one");
     verifyDriversNotNull();
   }
 
@@ -146,10 +173,7 @@ public class AxeBuilderUnitTest {
 
     verifyAxeResultsNotNull(result);
 
-    Assert.assertEquals(67, result.getInapplicable().size());
-    Assert.assertEquals(0, result.getIncomplete().size());
-    Assert.assertEquals(5, result.getPasses().size());
-    Assert.assertEquals(1, result.getViolations().size());
+    assertViolations(result, "aria-roles");
 
     verifyDriversNotNull();
   }
@@ -193,10 +217,7 @@ public class AxeBuilderUnitTest {
     Results result = builder.analyze(this.webDriver);
     verifyAxeResultsNotNull(result);
 
-    Assert.assertEquals(67, result.getInapplicable().size());
-    Assert.assertEquals(0, result.getIncomplete().size());
-    Assert.assertEquals(5, result.getPasses().size());
-    Assert.assertEquals(1, result.getViolations().size());
+    assertViolations(result, "aria-roles");
 
     verifyDriversNotNull();
   }
@@ -214,10 +235,7 @@ public class AxeBuilderUnitTest {
     AxeBuilder builder = new AxeBuilder().withTags(expectedTags);
     Results result = builder.analyze(this.webDriver);
     verifyAxeResultsNotNull(result);
-    Assert.assertEquals(33, result.getInapplicable().size());
-    Assert.assertEquals(0, result.getIncomplete().size());
-    Assert.assertEquals(11, result.getPasses().size());
-    Assert.assertEquals(3, result.getViolations().size());
+    assertViolations(result, "aria-roles", "aria-hidden-focus", "list");
     verifyDriversNotNull();
   }
 
@@ -324,10 +342,7 @@ public class AxeBuilderUnitTest {
    * @param result the Axe Result to be compared
    */
   private void verifyAxeResult(Results result) {
-    Assert.assertEquals(49, result.getInapplicable().size());
-    Assert.assertEquals(0, result.getIncomplete().size());
-    Assert.assertEquals(23, result.getPasses().size());
-    Assert.assertEquals(4, result.getViolations().size());
+    assertViolations(result, "aria-hidden-focus", "list", "color-contrast", "page-has-heading-one");
   }
 
   /**
