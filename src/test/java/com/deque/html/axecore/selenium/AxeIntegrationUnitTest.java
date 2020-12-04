@@ -12,14 +12,26 @@
 
 package com.deque.html.axecore.selenium;
 
+import com.deque.html.axecore.axeargs.AxeRunOptions;
+import com.deque.html.axecore.results.Results;
+import com.deque.html.axecore.results.Rule;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.text.ParseException;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 import javax.naming.OperationNotSupportedException;
+import org.json.JSONObject;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.safety.Whitelist;
+import org.jsoup.select.Elements;
 import org.junit.Assert;
 import org.junit.After;
 import org.junit.Before;
@@ -31,14 +43,10 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.chrome.ChromeDriverService;
-import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import com.deque.html.axecore.axeargs.AxeRunOptions;
-import com.deque.html.axecore.results.Results;
-import com.deque.html.axecore.results.Rule;
-import com.deque.html.axecore.selenium.AxeBuilder;
+
 
 /**
  * Unit tests for Axe Integration.
@@ -47,8 +55,11 @@ public class AxeIntegrationUnitTest {
   private WebDriver webDriver;
   private WebDriverWait wait;
 
-  private static File integrationTestTargetFile = new File("src/test/resources/html/integration-test-target.html");
-  private static String integrationTestTargetUrl = integrationTestTargetFile.getAbsolutePath();
+  private final ObjectMapper objectMapper = new ObjectMapper();
+
+  private final static File integrationTestTargetFile = new File("src/test/resources/html/integration-test-target.html");
+  private final static String integrationTestTargetUrl = integrationTestTargetFile.getAbsolutePath();
+  private final static File integrationTestJsonResultFile =  new File("resources/files/sampleResults.json");
 
   /**
    * Sets up the tests and navigates to teh integration test site.
@@ -74,7 +85,7 @@ public class AxeIntegrationUnitTest {
    * @throws OperationNotSupportedException if the operation errors out
    */
   @Test()
-  public void runScanOnPageChrome() throws IOException, OperationNotSupportedException {
+  public void runScanOnPageChrome() {
     long timeBeforeScan = new Date().getTime();
 
     AxeRunOptions runOptions = new AxeRunOptions();
@@ -119,6 +130,90 @@ public class AxeIntegrationUnitTest {
     Assert.assertEquals(3, results.getViolations().size());
   }
 
+  @Test()
+  public void htmlReportFullPage() throws IOException, ParseException {
+    String path = createReportPath();
+    HtmlReporter.createAxeHtmlReport(this.webDriver, path);
+    validateReport(path, 4, 28, 0, 55);
+
+    File file = new File(path);
+
+    if (file.exists()) {
+      Assert.assertTrue("File was not deleted", file.delete());
+    }
+  }
+
+  @Test()
+  public void htmlViolationsOnlyReportFullPage() throws IOException, ParseException {
+    String path = createReportPath();
+    HtmlReporter.createAxeHtmlViolationsReport(this.webDriver, path);
+    validateReport(path, 4, 0, 0, 0);
+
+    File file = new File(path);
+
+    if (file.exists()) {
+      Assert.assertTrue("File was not deleted", file.delete());
+    }
+  }
+
+  @Test()
+  public void htmlReportOnElement() throws IOException, ParseException {
+    String path = createReportPath();
+    HtmlReporter.createAxeHtmlReport(this.webDriver, this.webDriver.findElement(By.cssSelector("main")), path);
+    validateReport(path, 4, 28, 0, 55);
+
+    File file = new File(path);
+
+    if (file.exists()) {
+      Assert.assertTrue("File was not deleted", file.delete());
+    }
+  }
+
+  @Test
+  public void reportRespectRules() throws IOException, ParseException {
+    String path = createReportPath();
+    AxeBuilder builder = new AxeBuilder().disableRules(Collections.singletonList("color-contrast"));
+    HtmlReporter.createAxeHtmlReport(webDriver, builder.analyze(webDriver), path);
+    validateReport(path, 3, 23, 0, 55);
+
+    File file = new File(path);
+
+    if (file.exists()) {
+      Assert.assertTrue("File was not deleted", file.delete());
+    }
+  }
+
+  @Test
+  public void ReportSampleResults() throws IOException, ParseException {
+    String path = createReportPath();
+    String fileAsString = new String(Files.readAllBytes(
+        Paths.get(integrationTestJsonResultFile.getAbsolutePath()).toAbsolutePath()));
+    JSONObject jResult = new JSONObject(fileAsString);
+
+    Results results = objectMapper.convertValue(jResult, Results.class);
+    HtmlReporter.createAxeHtmlReport(webDriver, results, path);
+    validateReport(path, 3, 5, 2, 4);
+
+    String text = new String(Files.readAllBytes(Paths.get(path)));
+    Document doc = Jsoup.parse(text);
+    String errorMessage = doc.selectFirst(".//*[@id=\"ErrorMessage\"]").text();
+    Assert.assertEquals("AutomationError", errorMessage);
+
+    String reportContext = doc.selectFirst(".//*[@id=\"reportContext\"]").text();
+    Assert.assertTrue(reportContext.contains("Url: https://www.google.com/"));
+    Assert.assertTrue(reportContext.contains("Orientation: landscape-primary"));
+    Assert.assertTrue(reportContext.contains("Size: 1200 x 646"));
+    Assert.assertTrue(reportContext.contains("Time: 4/14/2020 1:33:59 AM +00:00"));
+    Assert.assertTrue(reportContext.contains("User agent: AutoAgent"));
+    Assert.assertTrue(reportContext.contains("Using: axe-core (3.4.1)"));
+
+    File file = new File(path);
+
+    if (file.exists()) {
+      Assert.assertTrue("File was not deleted", file.delete());
+    }
+  }
+
   /**
    * initiates a web browser for Chrome and Firefox.
    * @param browser the string of the browser to be set.
@@ -144,5 +239,45 @@ public class AxeIntegrationUnitTest {
     wait = new WebDriverWait(this.webDriver,  20);
     webDriver.manage().timeouts().setScriptTimeout(20, TimeUnit.SECONDS);
     webDriver.manage().window().maximize();
+  }
+
+  private String createReportPath() {
+    // TODO: generate ideal path to place report for testing
+    return FileSystems.getDefault().getPath("results").toString() + UUID.randomUUID().toString() + ".html";
+  }
+
+  private void validateReport(String path, int violationCount, int passCount, int incompleteCount, int inapplicableCount)
+      throws IOException {
+    String text = Files.lines(Paths.get(path), StandardCharsets.UTF_8)
+        .collect(Collectors.joining(System.lineSeparator()));
+
+    Document doc = Jsoup.parse(Jsoup.clean(text, Whitelist.relaxed().preserveRelativeLinks(true)));
+
+    // Check violations
+    String xpath = ".//*[@id=\"ViolationsSection\"]//*[contains(concat(\" \",normalize-space(@class),\" \"),\"htmlTable\")]";
+    Elements liNodes = doc.select(xpath) != null ? doc.select(xpath) : new Elements();
+    Assert.assertEquals("Expected " + violationCount + " violations", violationCount, liNodes.size());
+
+    // Check passes
+    xpath = ".//*[@id=\"PassesSection\"]//*[contains(concat(\" \",normalize-space(@class),\" \"),\"htmlTable\")]";
+    liNodes = doc.select(xpath) != null ? doc.select(xpath) : new Elements();
+    Assert.assertEquals("Expected " + passCount + " passess", passCount, liNodes.size());
+
+    // Check inapplicables
+    xpath = ".//*[@id=\"InapplicableSection\"]//*[contains(concat(\" \",normalize-space(@class),\" \"),\"findings\")]";
+    liNodes = doc.select(xpath) != null ? doc.select(xpath) : new Elements();
+    Assert.assertEquals("Expected " + inapplicableCount + " inapplicables", inapplicableCount, liNodes.size());
+
+    // Check incompletes
+    xpath = ".//*[@id=\"IncompleteSection\"]//*[contains(concat(\" \",normalize-space(@class),\" \"),\"htmlTable\")]";
+    liNodes = doc.select(xpath) != null ? doc.select(xpath) : new Elements();
+    Assert.assertEquals("Expected " + incompleteCount + " incompletes", incompleteCount, liNodes.size());
+
+    // Check header data
+    Assert.assertTrue("Expected to find 'Using: axe-core'", text.contains("Using: axe-core"));
+    Assert.assertTrue("Expected to find 'Violation: " + violationCount + "'", text.contains("Violation: " + violationCount));
+    Assert.assertTrue("Expected to find 'Incomplete: " + incompleteCount + "'", text.contains("Incomplete: " + incompleteCount));
+    Assert.assertTrue("Expected to find 'Pass: " + passCount + "'", text.contains("Pass: " + passCount));
+    Assert.assertTrue("Expected to find 'Inapplicable: {inapplicableCount}'", text.contains("Inapplicable: " + inapplicableCount));
   }
 }

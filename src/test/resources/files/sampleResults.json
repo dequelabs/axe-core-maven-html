@@ -1,0 +1,457 @@
+{
+  "error": "AutomationError",
+  "results": {
+    "testEngine": {
+      "name": "axe-core",
+      "version": "3.4.1"
+    },
+    "testRunner": {
+      "name": "axe"
+    },
+    "testEnvironment": {
+      "userAgent": "AutoAgent",
+      "windowWidth": 1200,
+      "windowHeight": 646,
+      "orientationAngle": 0,
+      "orientationType": "landscape-primary"
+    },
+    "timestamp": "2020-04-14T01:33:59.139Z",
+    "url": "https://www.google.com/",
+    "toolOptions": {
+      "reporter": "v1"
+    },
+    "violations": [
+      {
+        "id": "aria-required-attr",
+        "impact": "critical",
+        "tags": [
+          "cat.aria",
+          "wcag2a",
+          "wcag412"
+        ],
+        "description": "Ensures elements with ARIA roles have all required ARIA attributes",
+        "help": "Required ARIA attributes must be provided",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/3.4/aria-required-attr?application=axeAPI",
+        "nodes": [
+          {
+            "any": [
+              {
+                "id": "aria-required-attr",
+                "data": [
+                  "aria-expanded"
+                ],
+                "relatedNodes": [],
+                "impact": "critical",
+                "message": "Required ARIA attribute not present: aria-expanded"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "critical",
+            "html": "<input class=\"gLFyf gsfi\" maxlength=\"2048\" name=\"q\" type=\"text\" jsaction=\"paste:puy29d\" aria-autocomplete=\"both\" aria-haspopup=\"false\" autocapitalize=\"off\" autocomplete=\"off\" autocorrect=\"off\" autofocus=\"\" role=\"combobox\" spellcheck=\"false\" title=\"Search\" value=\"\" aria-label=\"Search\" data-ved=\"0ahUKEwjSv6GJ4-boAhWbW80KHbYyB08Q39UDCAY\">",
+            "target": [
+              ".gLFyf"
+            ],
+            "failureSummary": "Fix any of the following:\n  Required ARIA attribute not present: aria-expanded"
+          }
+        ]
+      },
+      {
+        "id": "bypass",
+        "impact": "serious",
+        "tags": [
+          "cat.keyboard",
+          "wcag2a",
+          "wcag241",
+          "section508",
+          "section508.22.o"
+        ],
+        "description": "Ensures each page has at least one mechanism for a user to bypass navigation and jump straight to the content",
+        "help": "Page must have means to bypass repeated blocks",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/3.4/bypass?application=axeAPI",
+        "nodes": [
+          {
+            "any": [
+              {
+                "id": "internal-link-present",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "serious",
+                "message": "No valid skip link found"
+              },
+              {
+                "id": "header-present",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "serious",
+                "message": "Page does not have a header"
+              },
+              {
+                "id": "landmark",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "serious",
+                "message": "Page does not have a landmark region"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<html itemscope=\"\" itemtype=\"http://schema.org/WebPage\" lang=\"en\">",
+            "target": [
+              "html"
+            ],
+            "failureSummary": "Fix any of the following:\n  No valid skip link found\n  Page does not have a header\n  Page does not have a landmark region"
+          }
+        ]
+      },
+      {
+        "id": "image-alt",
+        "impact": "critical",
+        "tags": [
+          "cat.text-alternatives",
+          "wcag2a",
+          "wcag111",
+          "section508",
+          "section508.22.a"
+        ],
+        "description": "Ensures <img> elements have alternate text or a role of none or presentation",
+        "help": "Images must have alternate text",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/3.4/image-alt?application=axeAPI",
+        "nodes": [
+          {
+            "any": [
+              {
+                "id": "has-alt",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "critical",
+                "message": "Element does not have an alt attribute"
+              },
+              {
+                "id": "aria-label",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "serious",
+                "message": "aria-label attribute does not exist or is empty"
+              },
+              {
+                "id": "aria-labelledby",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "serious",
+                "message": "aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty"
+              },
+              {
+                "id": "non-empty-title",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "serious",
+                "message": "Element has no title attribute or the title attribute is empty"
+              },
+              {
+                "id": "role-presentation",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "minor",
+                "message": "Element's default semantics were not overridden with role=\"presentation\""
+              },
+              {
+                "id": "role-none",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "minor",
+                "message": "Element's default semantics were not overridden with role=\"none\""
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "critical",
+            "html": "<img class=\"fJOQGe\" src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAWCAYAAADEtGw7AAAAoklEQVR42mNgSGNgIAM7APFMIH4AxTOhYgg1ZBp6Boj/o+EzKIaTYfBMLIbC8ExKDH6Ax+AHg85gZyC+TGpQ4ItpGSBeiWTALWIjD1dMn4Va8BnKB9EVQOxCbHLDF9MwvBqI5YgONiIi5BMQu5IcySTFNBkG4wuKy5S4GFfk3aI0jHElN1Dsl1OSKghhstMxTXPe8CyEaFoe06wGoVmdRxQGAFGkZrwntB5AAAAAAElFTkSuQmCC\" border=\"0\" height=\"22\" width=\"22\" data-iml=\"1586828033011\" data-atf=\"1\">",
+            "target": [
+              ".fJOQGe"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute or the title attribute is empty\n  Element's default semantics were not overridden with role=\"presentation\"\n  Element's default semantics were not overridden with role=\"none\""
+          }
+        ]
+      }
+    ],
+    "passes": [
+      {
+        "id": "aria-allowed-attr",
+        "impact": null,
+        "tags": [
+          "cat.aria",
+          "wcag2a",
+          "wcag412"
+        ],
+        "description": "Ensures ARIA attributes are allowed for an element's role",
+        "help": "Elements must only use allowed ARIA attributes",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/3.4/aria-allowed-attr?application=axeAPI",
+        "nodes": [
+          {
+            "any": [
+              {
+                "id": "aria-allowed-attr",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "critical",
+                "message": "ARIA attributes are used correctly for the defined role"
+              }
+            ],
+            "all": [],
+            "none": [
+              {
+                "id": "aria-unsupported-attr",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "critical",
+                "message": "ARIA attribute is supported"
+              }
+            ],
+            "impact": null,
+            "html": "<a class=\"gb_D gb_tc\" href=\"https://www.google.com/intl/en/about/products?tab=wh\" title=\"Google apps\" aria-expanded=\"false\" role=\"button\" tabindex=\"0\"></a>",
+            "target": [
+              ".gb_D"
+            ]
+          },
+          {
+            "any": [
+              {
+                "id": "aria-allowed-attr",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "critical",
+                "message": "ARIA attributes are used correctly for the defined role"
+              }
+            ],
+            "all": [],
+            "none": [
+              {
+                "id": "aria-unsupported-attr",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "critical",
+                "message": "ARIA attribute is supported"
+              }
+            ],
+            "impact": null,
+            "html": "<input class=\"gLFyf gsfi\" maxlength=\"2048\" name=\"q\" type=\"text\" jsaction=\"paste:puy29d\" aria-autocomplete=\"both\" aria-haspopup=\"false\" autocapitalize=\"off\" autocomplete=\"off\" autocorrect=\"off\" autofocus=\"\" role=\"combobox\" spellcheck=\"false\" title=\"Search\" value=\"\" aria-label=\"Search\" data-ved=\"0ahUKEwjSv6GJ4-boAhWbW80KHbYyB08Q39UDCAY\">",
+            "target": [
+              ".gLFyf"
+            ]
+          },
+          {
+            "any": [
+              {
+                "id": "aria-allowed-attr",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "critical",
+                "message": "ARIA attributes are used correctly for the defined role"
+              }
+            ],
+            "all": [],
+            "none": [
+              {
+                "id": "aria-unsupported-attr",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "critical",
+                "message": "ARIA attribute is supported"
+              }
+            ],
+            "impact": null,
+            "html": "<div jscontroller=\"MC8mtf\" class=\"hpuQDe\" aria-label=\"Search by voice\" role=\"button\" tabindex=\"0\" jsaction=\"h5M12e;rcuQ6b:npT2md\" data-ved=\"0ahUKEwjSv6GJ4-boAhWbW80KHbYyB08Qvs8DCAg\"><span class=\"HPVvwb\"></span></div>",
+            "target": [
+              ".hpuQDe"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "aria-allowed-role",
+        "impact": null,
+        "tags": [
+          "cat.aria",
+          "best-practice"
+        ],
+        "description": "Ensures role attribute has an appropriate value for the element",
+        "help": "ARIA role must be appropriate for the element",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/3.4/aria-allowed-role?application=axeAPI",
+        "nodes": [
+          {
+            "any": [
+              {
+                "id": "aria-allowed-role",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "minor",
+                "message": "ARIA role is allowed for given element"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": null,
+            "html": "<a class=\"gb_D gb_tc\" href=\"https://www.google.com/intl/en/about/products?tab=wh\" title=\"Google apps\" aria-expanded=\"false\" role=\"button\" tabindex=\"0\"></a>",
+            "target": [
+              ".gb_D"
+            ]
+          },
+          {
+            "any": [
+              {
+                "id": "aria-allowed-role",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "minor",
+                "message": "ARIA role is allowed for given element"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": null,
+            "html": "<form class=\"tsf nj\" action=\"/search\" style=\"overflow:visible\" data-submitfalse=\"q\" id=\"tsf\" method=\"GET\" name=\"f\" role=\"search\">",
+            "target": [
+              "#tsf"
+            ]
+          }
+        ]
+      }
+    ],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "tags": [
+          "cat.color",
+          "wcag2aa",
+          "wcag143"
+        ],
+        "description": "Ensures the contrast between foreground and background colors meets WCAG 2 AA contrast ratio thresholds",
+        "help": "Elements must have sufficient color contrast",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/3.4/color-contrast?application=axeAPI",
+        "nodes": [
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#ffffff",
+                  "contrastRatio": 0,
+                  "fontSize": "9.8pt (13px)",
+                  "fontWeight": "bold",
+                  "missingData": "bgGradient",
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<a class=\"gb_he gb_4 gb_1c\" id=\"gb_70\" href=\"https://accounts.google.com/ServiceLogin?hl=en&amp;passive=true&amp;continue=https://www.google.com/%3Fgws_rd%3Dssl\" target=\"_top\">Sign in</a>",
+                    "target": [
+                      "#gb_70"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element's background color could not be determined due to a background gradient"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<a class=\"gb_he gb_4 gb_1c\" id=\"gb_70\" href=\"https://accounts.google.com/ServiceLogin?hl=en&amp;passive=true&amp;continue=https://www.google.com/%3Fgws_rd%3Dssl\" target=\"_top\">Sign in</a>",
+            "target": [
+              "#gb_70"
+            ]
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#5f6368",
+                  "contrastRatio": 0,
+                  "fontSize": "10.5pt (14px)",
+                  "fontWeight": "normal",
+                  "missingData": "bgGradient",
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<input value=\"I'm Feeling Lucky\" aria-label=\"I'm Feeling Lucky\" id=\"gbqfbb\" name=\"btnI\" type=\"submit\" data-ved=\"0ahUKEwjSv6GJ4-boAhWbW80KHbYyB08QnRsIDg\">",
+                    "target": [
+                      "#gbqfbb"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element's background color could not be determined due to a background gradient"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<input value=\"I'm Feeling Lucky\" aria-label=\"I'm Feeling Lucky\" id=\"gbqfbb\" name=\"btnI\" type=\"submit\" data-ved=\"0ahUKEwjSv6GJ4-boAhWbW80KHbYyB08QnRsIDg\">",
+            "target": [
+              "#gbqfbb"
+            ]
+          }
+        ]
+      }
+    ],
+    "inapplicable": [
+      {
+        "id": "accesskeys",
+        "impact": null,
+        "tags": [
+          "best-practice",
+          "cat.keyboard"
+        ],
+        "description": "Ensures every accesskey attribute value is unique",
+        "help": "accesskey attribute value must be unique",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/3.4/accesskeys?application=axeAPI",
+        "nodes": []
+      },
+      {
+        "id": "area-alt",
+        "impact": null,
+        "tags": [
+          "cat.text-alternatives",
+          "wcag2a",
+          "wcag111",
+          "section508",
+          "section508.22.a"
+        ],
+        "description": "Ensures <area> elements of image maps have alternate text",
+        "help": "Active <area> elements must have alternate text",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/3.4/area-alt?application=axeAPI",
+        "nodes": []
+      },
+      {
+        "id": "aria-dpub-role-fallback",
+        "impact": null,
+        "tags": [
+          "cat.aria",
+          "wcag2a",
+          "wcag131"
+        ],
+        "description": "Ensures unsupported DPUB roles are only used on elements with implicit fallback roles",
+        "help": "Unsupported DPUB ARIA roles should be used on elements with implicit fallback roles",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/3.4/aria-dpub-role-fallback?application=axeAPI",
+        "nodes": []
+      },
+      {
+        "id": "aria-input-field-name",
+        "impact": null,
+        "tags": [
+          "wcag2a",
+          "wcag412"
+        ],
+        "description": "Ensures every ARIA input field has an accessible name",
+        "help": "ARIA input fields have an accessible name",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/3.4/aria-input-field-name?application=axeAPI",
+        "nodes": []
+      }
+    ]
+  }
+}
