@@ -25,7 +25,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.text.StringEscapeUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -35,8 +34,6 @@ import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.WrapsElement;
-
-
 
 public class HtmlReporter {
 
@@ -172,8 +169,7 @@ public class HtmlReporter {
 
       Element error = new Element("div");
       error.attributes().put("id", "ErrorMessage");
-
-      error.appendText(StringEscapeUtils.escapeHtml4(results.getErrorMessage()));
+      error.appendText(results.getErrorMessage());
       body.appendChild(error);
     }
 
@@ -220,14 +216,14 @@ public class HtmlReporter {
     for (Rule element : results) {
       childEl = new Element("div");
       childEl.attr("class", "findings");
-      childEl.appendText(loops++ + ": " + StringEscapeUtils.escapeHtml4(element.getHelp()));
+      childEl.appendText(loops++ + ": " + element.getHelp());
       section.appendChild(childEl);
 
       Element childEl2 = new Element("div");
       childEl2.attr("class", "emTwo");
-      childEl2.text("Description: " + StringEscapeUtils.escapeHtml4(element.getDescription()));
+      childEl2.text("Description: " + element.getDescription());
       childEl2.appendChild(new Element("br"));
-      childEl2.appendText("Help: " + StringEscapeUtils.escapeHtml4(element.getHelp()));
+      childEl2.appendText("Help: " + element.getHelp());
       childEl2.appendChild(new Element("br"));
       childEl2.appendText("Help URL: ");
 
@@ -239,12 +235,11 @@ public class HtmlReporter {
       childEl2.appendChild(new Element("br"));
 
       if (!element.getImpact().isEmpty()) {
-        childEl2.appendText("Impact: " + StringEscapeUtils.escapeHtml4(element.getImpact()));
+        childEl2.appendText("Impact: " + element.getImpact());
         childEl2.appendChild(new Element("br"));
       }
 
-      childEl2.appendText("Tags: ").append(StringEscapeUtils.escapeHtml4(
-          String.join(", ", element.getTags())));
+      childEl2.appendText("Tags: ").append(String.join(", ", element.getTags()));
       childEl2.appendChild(new Element("br"));
 
       if (!element.getNodes().isEmpty()) {
@@ -278,7 +273,7 @@ public class HtmlReporter {
         for (Object target : Collections.singletonList(item.getTarget())) {
           String targetString = target.toString().replace("[", "").replace("]", "");
           htmlAndSelector.text(targetString);
-          htmlAndSelector.html(StringEscapeUtils.escapeHtml4(targetString));
+          htmlAndSelector.html(targetString);
         }
 
         htmlAndSelectorWrapper.appendChild(htmlAndSelector);

@@ -15,6 +15,7 @@ package com.deque.html.axecore.selenium;
 import com.deque.html.axecore.axeargs.AxeRunOptions;
 import com.deque.html.axecore.results.Results;
 import com.deque.html.axecore.results.Rule;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -52,9 +53,8 @@ public class AxeIntegrationUnitTest {
 
   private final static File integrationTestTargetFile = new File("src/test/resources/html/integration-test-target.html");
   private final static String integrationTestTargetUrl = integrationTestTargetFile.getAbsolutePath();
-
-
-  private final static String userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/86.0.4240.198 Safari/537.36";
+  private final static File integrationTestJsonResultFile = new File("src/test/java/results/SampleResults.json");
+  private final static String integrationTestJsonResultUrl = integrationTestJsonResultFile.getAbsolutePath();
 
   /**
    * Sets up the tests and navigates to teh integration test site.
@@ -189,21 +189,26 @@ public class AxeIntegrationUnitTest {
   @Test
   public void ReportSampleResults() throws IOException, ParseException {
     String path = createReportPath();
-    HtmlReporter.createAxeHtmlReport(webDriver, path);
-    validateReport(path, 5, 46, 0, 57);
+
+    ObjectMapper mapper = new ObjectMapper();
+    Results results = mapper.readValue(new File(integrationTestJsonResultUrl), Results.class);
+
+    HtmlReporter.createAxeHtmlReport(webDriver, results, path);
+    validateReport(path, 3, 5, 2, 4);
 
     String text = new String(Files.readAllBytes(Paths.get(path)));
     Document doc = Jsoup.parse(text);
 
+    String errorMessage = doc.selectFirst("#ErrorMessage").text();
+    Assert.assertEquals("AutomationError", errorMessage);
+
     String reportContext = doc.selectFirst("#reportContext").text();
-    Assert.assertTrue(reportContext.contains("Url: ")
-        && reportContext.contains(integrationTestTargetFile.toURI().toURL().getPath()));
+    Assert.assertTrue(reportContext.contains("Url: https://www.google.com/"));
     Assert.assertTrue(reportContext.contains("Orientation: landscape-primary"));
-    Assert.assertTrue(reportContext.contains("Size: 1920 x 1200"));
-    // TODO: assert time contains the time scan is taken
-    Assert.assertTrue(reportContext.contains("Time: 4/14/2020 1:33:59 AM +00:00"));
-    Assert.assertTrue(reportContext.contains("User agent: " + userAgent));
-    Assert.assertTrue(reportContext.contains("Using: axe-core (4.1.1)"));
+    Assert.assertTrue(reportContext.contains("Size: 1200 x 646"));
+    Assert.assertTrue(reportContext.contains("Time: 14-Apr-20 01:33:59 -0500"));
+    Assert.assertTrue(reportContext.contains("User agent: AutoAgent"));
+    Assert.assertTrue(reportContext.contains("Using: axe-core (3.4.1)"));
 
     File file = new File(path);
 
@@ -267,7 +272,7 @@ public class AxeIntegrationUnitTest {
     Assert.assertEquals("Expected " + inapplicableCount + " inapplicables", inapplicableCount, liNodes.size());
 
     // Check incompletes
-    xpath = "#IncompleteSection > div.findings";
+    xpath = "#IncompleteSection > div > div.htmlTable";
     liNodes = doc.select(xpath) != null ? doc.select(xpath) : new Elements();
     Assert.assertEquals("Expected " + incompleteCount + " incompletes", incompleteCount, liNodes.size());
 
