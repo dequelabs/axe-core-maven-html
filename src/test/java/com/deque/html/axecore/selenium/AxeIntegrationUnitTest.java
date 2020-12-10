@@ -61,8 +61,6 @@ public class AxeIntegrationUnitTest {
    */
   @Before
   public void setup() {
-    System.setProperty("webdriver.chrome.driver",
-        "C:\\webdrivers\\chromedriver.exe");
     initDriver("Chrome");
     this.webDriver.get("file:///" + new File(integrationTestTargetUrl).getAbsolutePath());
     wait.until(drv -> drv.findElement(By.cssSelector("main")));
