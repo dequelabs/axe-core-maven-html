@@ -150,7 +150,7 @@ public class AxeIntegrationUnitTest {
     // Check violations
     String xpath = "#ViolationsSection > div > div.htmlTable";
     Elements liNodes = doc.select(xpath) != null ? doc.select(xpath) : new Elements();
-    Assert.assertEquals("Expected " + 5 + " violations", 5, liNodes.size());
+    Assert.assertEquals("Expected 5 violations", 5, liNodes.size());
 
     File file = new File(path);
 
@@ -203,12 +203,12 @@ public class AxeIntegrationUnitTest {
     Assert.assertEquals("AutomationError", errorMessage);
 
     String reportContext = doc.selectFirst("#reportContext").text();
-    Assert.assertTrue(reportContext.contains("Url: https://www.google.com/"));
-    Assert.assertTrue(reportContext.contains("Orientation: landscape-primary"));
-    Assert.assertTrue(reportContext.contains("Size: 1200 x 646"));
-    Assert.assertTrue(reportContext.contains("Time: 14-Apr-20 01:33:59 -0500"));
-    Assert.assertTrue(reportContext.contains("User agent: AutoAgent"));
-    Assert.assertTrue(reportContext.contains("Using: axe-core (3.4.1)"));
+    Assert.assertTrue("URL is not in the document", reportContext.contains("Url: https://www.google.com/"));
+    Assert.assertTrue("Orientation is not in the document", reportContext.contains("Orientation: landscape-primary"));
+    Assert.assertTrue("Size is not in the document", reportContext.contains("Size: 1200 x 646"));
+    Assert.assertTrue("Time is not in the document", reportContext.contains("Time: 14-Apr-20 01:33:59 -0500"));
+    Assert.assertTrue("User Agent is not in the document", reportContext.contains("User agent: AutoAgent"));
+    Assert.assertTrue("Using is not in the document", reportContext.contains("Using: axe-core (3.4.1)"));
 
     File file = new File(path);
 
