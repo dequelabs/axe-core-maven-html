@@ -53,7 +53,7 @@ public class AxeIntegrationUnitTest {
 
   private final static File integrationTestTargetFile = new File("src/test/resources/html/integration-test-target.html");
   private final static String integrationTestTargetUrl = integrationTestTargetFile.getAbsolutePath();
-  private final static File integrationTestJsonResultFile = new File("src/test/java/results/SampleResults.json");
+  private final static File integrationTestJsonResultFile = new File("src/test/java/results/sampleResults.json");
   private final static String integrationTestJsonResultUrl = integrationTestJsonResultFile.getAbsolutePath();
 
   /**
