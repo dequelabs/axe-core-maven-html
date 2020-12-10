@@ -61,6 +61,8 @@ public class AxeIntegrationUnitTest {
    */
   @Before
   public void setup() {
+    System.setProperty("webdriver.chrome.driver",
+        "C:\\webdrivers\\chromedriver.exe");
     initDriver("Chrome");
     this.webDriver.get("file:///" + new File(integrationTestTargetUrl).getAbsolutePath());
     wait.until(drv -> drv.findElement(By.cssSelector("main")));
@@ -148,10 +150,7 @@ public class AxeIntegrationUnitTest {
     Document doc = Jsoup.parse(text);
 
     // Check violations
-    String xpath = "#ViolationsSection > div > div.htmlTable";
-    Elements liNodes = doc.select(xpath) != null ? doc.select(xpath) : new Elements();
-    Assert.assertEquals("Expected 5 violations", 5, liNodes.size());
-
+    validateReport(path, 5, 0, 0, 0);
     File file = new File(path);
 
     if (file.exists()) {
@@ -279,8 +278,13 @@ public class AxeIntegrationUnitTest {
     // Check header data
     Assert.assertTrue("Expected to find 'Using: axe-core'", text.contains("Using: axe-core"));
     Assert.assertTrue("Expected to find 'Violation: {violationCount}'", text.contains("Violation: " + violationCount));
+
+    if (passCount == 0 && incompleteCount == 0 && inapplicableCount == 0 ) {
+      return;
+    }
+
     Assert.assertTrue("Expected to find 'Incomplete: {incompleteCount}'", text.contains("Incomplete: " + incompleteCount));
     Assert.assertTrue("Expected to find 'Pass: {passCount}'", text.contains("Pass: " + passCount));
     Assert.assertTrue("Expected to find 'Inapplicable: {inapplicableCount}'", text.contains("Inapplicable: " + inapplicableCount));
-  }
+}
 }
