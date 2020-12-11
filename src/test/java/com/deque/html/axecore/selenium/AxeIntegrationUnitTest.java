@@ -56,14 +56,18 @@ public class AxeIntegrationUnitTest {
   private final static File integrationTestJsonResultFile = new File("src/test/java/results/sampleResults.json");
   private final static String integrationTestJsonResultUrl = integrationTestJsonResultFile.getAbsolutePath();
 
+  private final String mainElementSelector = "main";
+
   /**
    * Sets up the tests and navigates to teh integration test site.
    */
   @Before
   public void setup() {
+    System.setProperty("webdriver.chrome.driver",
+        "C:\\webdrivers\\chromedriver.exe");
     initDriver("Chrome");
     this.webDriver.get("file:///" + new File(integrationTestTargetUrl).getAbsolutePath());
-    wait.until(drv -> drv.findElement(By.cssSelector("main")));
+    wait.until(drv -> drv.findElement(By.cssSelector(mainElementSelector)));
   }
 
   /**
@@ -119,7 +123,7 @@ public class AxeIntegrationUnitTest {
    */
   @Test()
   public void runScanOnGivenElementChrome() throws IOException, OperationNotSupportedException {
-    WebElement mainElement = wait.until(drv -> drv.findElement(By.cssSelector("main")));
+    WebElement mainElement = wait.until(drv -> drv.findElement(By.cssSelector(mainElementSelector)));
     AxeBuilder builder = new AxeBuilder();
     Results results = builder.analyze(this.webDriver, mainElement);
     Assert.assertEquals(3, results.getViolations().size());
@@ -159,7 +163,7 @@ public class AxeIntegrationUnitTest {
   @Test()
   public void htmlReportOnElement() throws IOException, ParseException {
     String path = createReportPath();
-    HtmlReporter.createAxeHtmlReport(this.webDriver, this.webDriver.findElement(By.cssSelector("main")), path);
+    HtmlReporter.createAxeHtmlReport(this.webDriver, this.webDriver.findElement(By.cssSelector(mainElementSelector)), path);
     validateReport(path, 3, 16, 0, 69);
 
     File file = new File(path);
