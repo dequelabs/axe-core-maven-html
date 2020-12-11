@@ -40,4 +40,4 @@ echo "</settings>" >> ~/.m2/settings.xml
 
 chmod 0600 ~/.m2/settings.xml
 
-mvn clean deploy -DskipTests
+mvn clean deploy -DskipTests -Prelease
