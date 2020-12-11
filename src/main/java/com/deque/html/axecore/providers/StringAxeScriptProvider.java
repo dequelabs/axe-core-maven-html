@@ -39,6 +39,7 @@ public class StringAxeScriptProvider implements IAxeScriptProvider {
    * gets the script from the string.
    * @return the string of the script
    * @throws OperationNotSupportedException if the file doesn't exist yet
+   * @throws IOException if the file doesn't exist yet
    */
   public String getScript() throws OperationNotSupportedException, IOException {
     return axeSource;
