@@ -29,8 +29,7 @@ echo "      <activation>" >> ~/.m2/settings.xml
 echo "        <activeByDefault>true</activeByDefault>" >> ~/.m2/settings.xml
 echo "      </activation>" >> ~/.m2/settings.xml
 echo "      <properties>" >> ~/.m2/settings.xml
-echo "        <gpg.executable>gpg2</gpg.executable>" >> ~/.m2/settings.xml
-echo "        <gpg.passphrase>$GPG_PASSPHRASE</gpg.passphrase>" >> ~/.m2/settings.xml
+# echo "        <gpg.passphrase>$GPG_PASSPHRASE</gpg.passphrase>" >> ~/.m2/settings.xml
 echo "      </properties>" >> ~/.m2/settings.xml
 echo "    </profile>" >> ~/.m2/settings.xml
 echo "  </profiles>" >> ~/.m2/settings.xml
