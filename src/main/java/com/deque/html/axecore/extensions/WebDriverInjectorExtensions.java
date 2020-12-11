@@ -51,6 +51,7 @@ public final class WebDriverInjectorExtensions {
    * @param driver WebDriver instance to inject into
    * @param scriptProvider Provider that get the aXe script to inject
    * @throws OperationNotSupportedException if the operation errors out
+   * @throws IOException if an IO exception occurs
    */
   public static void inject(final WebDriver driver,
       final IAxeScriptProvider scriptProvider)

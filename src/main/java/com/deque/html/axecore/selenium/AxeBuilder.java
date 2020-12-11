@@ -251,7 +251,7 @@ public class AxeBuilder {
    * Limit analysis to only the specified rules.
    * Refer https://dequeuniversity.com/rules/axe/
    * to get the complete listing of available rule IDs.
-   * Cannot be used with WithTags(List&lt;String&rt;) &amp; Options
+   * Cannot be used with WithTags(List&lt;String&gt;) &amp; Options
    * @param rules rule IDs to be used for scanning
    * @return an Axe Builder
    */
@@ -272,7 +272,7 @@ public class AxeBuilder {
    * Limit analysis to only the specified rules.
    * Refer https://dequeuniversity.com/rules/axe/
    * to get the complete listing of available rule IDs.
-   * Cannot be used with WithTags(List&lt;String&rt;) &amp; Options
+   * Cannot be used with WithTags(List&lt;String&gt;) &amp; Options
    * @param rules rule IDs to be used for scanning
    * @return an Axe Builder
    */
@@ -320,7 +320,7 @@ public class AxeBuilder {
    * Selectors to include in the validation.
    * Note that the selectors array uniquely identifies one element in the page,
    * Valid usage:
-   * axeBuilder.Include("#parent-iframe1", "#element-inside-iframe"); =&rt;
+   * axeBuilder.Include("#parent-iframe1", "#element-inside-iframe"); =&gt;
    * to select #element-inside-iframe under #parent-iframe1
    * axeBuilder.Include("#element-inside-main-frame1");
    * Invalid usage: axeBuilder.Include("#element-inside-main-frame1",

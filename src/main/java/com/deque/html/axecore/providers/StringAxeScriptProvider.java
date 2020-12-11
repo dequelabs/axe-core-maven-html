@@ -29,7 +29,6 @@ public class StringAxeScriptProvider implements IAxeScriptProvider {
   /**
    * Sets the new file path for the file script provider.
    * @param axeSource the string source of axe-core
-   * @throws FileNotFoundException if the file is not found
    */
   public StringAxeScriptProvider(final String axeSource) {
     this.axeSource = axeSource;
