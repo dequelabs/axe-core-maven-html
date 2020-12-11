@@ -57,6 +57,7 @@ jobs:
       - restore_cache:
           key: v1-npm-deps-{{ checksum "package-lock.json" }}
       - run: echo "$GPG_PRIVATE_KEY" | base64 --decode | gpg --import
+      - run: echo "default-key 7701193A898A849383D3E8B49F8AFEACBF07F7C4" > ~/.gnupg/gpg.conf
       - run: .circleci/publish.sh
 
   github_release:
