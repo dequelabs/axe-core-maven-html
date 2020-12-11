@@ -119,7 +119,12 @@ public class AxeIntegrationUnitTest {
    */
   @Test()
   public void runScanOnGivenElementChrome() throws IOException, OperationNotSupportedException {
-    WebElement mainElement = wait.until(drv -> drv.findElement(By.cssSelector("main")));
+    Function<WebDriver, WebElement> waitFunc = new Function<WebDriver, WebElement>() {
+      public WebElement apply(WebDriver driver) {
+        return driver.findElement(By.cssSelector("main"));
+      }
+    };
+    WebElement mainElement = wait.until(waitFunc);
     AxeBuilder builder = new AxeBuilder();
     Results results = builder.analyze(this.webDriver, mainElement);
     Assert.assertEquals(3, results.getViolations().size());
