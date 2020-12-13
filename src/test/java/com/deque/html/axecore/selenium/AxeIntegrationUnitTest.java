@@ -56,6 +56,8 @@ public class AxeIntegrationUnitTest {
   private final static File integrationTestJsonResultFile = new File("src/test/java/results/sampleResults.json");
   private final static String integrationTestJsonResultUrl = integrationTestJsonResultFile.getAbsolutePath();
 
+  private final static String rawAxeResultsJsonFileUrl = "src/test/java/results/raw-axe-results.json";
+
   private final String mainElementSelector = "main";
 
   /**
@@ -91,7 +93,7 @@ public class AxeIntegrationUnitTest {
     AxeBuilder builder = new AxeBuilder().withOptions(runOptions)
          .withTags(Arrays.asList("wcag2a", "wcag412"))
          .disableRules(Collections.singletonList("color-contrast"))
-         .withOutputFile("src/test/java/results/raw-axe-results.json");
+         .withOutputFile(rawAxeResultsJsonFileUrl);
 
     Results results = builder.analyze(webDriver);
     List<Rule> violations = results.getViolations();
@@ -104,7 +106,7 @@ public class AxeIntegrationUnitTest {
     Assert.assertEquals(3, violations.size());
     Assert.assertNotNull(results.getViolations().get(0).getNodes());
 
-    File file = new File("src/test/java/results/raw-axe-results.json");
+    File file = new File(rawAxeResultsJsonFileUrl);
     long time = file.lastModified();
     Assert.assertNotEquals(time, timeBeforeScan);
     Assert.assertTrue(time < timeBeforeScan);
@@ -286,5 +288,5 @@ public class AxeIntegrationUnitTest {
     Assert.assertTrue("Expected to find 'Incomplete: {incompleteCount}'", text.contains("Incomplete: " + incompleteCount));
     Assert.assertTrue("Expected to find 'Pass: {passCount}'", text.contains("Pass: " + passCount));
     Assert.assertTrue("Expected to find 'Inapplicable: {inapplicableCount}'", text.contains("Inapplicable: " + inapplicableCount));
-}
+  }
 }
