@@ -186,7 +186,7 @@ public class AxeIntegrationUnitTest {
   }
 
   @Test
-  public void ReportSampleResults() throws IOException, ParseException {
+  public void reportSampleResults() throws IOException, ParseException {
     String path = createReportPath();
 
     ObjectMapper mapper = new ObjectMapper();
