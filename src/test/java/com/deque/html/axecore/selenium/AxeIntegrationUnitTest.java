@@ -53,8 +53,13 @@ public class AxeIntegrationUnitTest {
 
   private final static File integrationTestTargetFile = new File("src/test/resources/html/integration-test-target.html");
   private final static String integrationTestTargetUrl = integrationTestTargetFile.getAbsolutePath();
+
+  private final static String rawAxeResultsFileString = "src/test/java/results/raw-axe-results.json";
+
   private final static File integrationTestJsonResultFile = new File("src/test/java/results/sampleResults.json");
   private final static String integrationTestJsonResultUrl = integrationTestJsonResultFile.getAbsolutePath();
+
+
 
   private final String mainElementSelector = "main";
 
@@ -63,6 +68,8 @@ public class AxeIntegrationUnitTest {
    */
   @Before
   public void setup() {
+    System.setProperty("webdriver.chrome.driver",
+        "C:\\webdrivers\\chromedriver.exe");
     initDriver("Chrome");
     this.webDriver.get("file:///" + new File(integrationTestTargetUrl).getAbsolutePath());
     wait.until(drv -> drv.findElement(By.cssSelector(mainElementSelector)));
@@ -91,7 +98,7 @@ public class AxeIntegrationUnitTest {
     AxeBuilder builder = new AxeBuilder().withOptions(runOptions)
          .withTags(Arrays.asList("wcag2a", "wcag412"))
          .disableRules(Collections.singletonList("color-contrast"))
-         .withOutputFile("src/test/java/results/raw-axe-results.json");
+         .withOutputFile(rawAxeResultsFileString);
 
     Results results = builder.analyze(webDriver);
     List<Rule> violations = results.getViolations();
@@ -104,7 +111,7 @@ public class AxeIntegrationUnitTest {
     Assert.assertEquals(3, violations.size());
     Assert.assertNotNull(results.getViolations().get(0).getNodes());
 
-    File file = new File("src/test/java/results/raw-axe-results.json");
+    File file = new File(rawAxeResultsFileString);
     long time = file.lastModified();
     Assert.assertNotEquals(time, timeBeforeScan);
     Assert.assertTrue(time < timeBeforeScan);
