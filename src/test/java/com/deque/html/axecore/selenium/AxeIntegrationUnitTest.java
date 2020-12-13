@@ -15,6 +15,8 @@ package com.deque.html.axecore.selenium;
 import com.deque.html.axecore.axeargs.AxeRunOptions;
 import com.deque.html.axecore.results.Results;
 import com.deque.html.axecore.results.Rule;
+import com.deque.html.axecore.results.reports.Report;
+import com.deque.html.axecore.results.reports.ReportType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.io.IOException;
@@ -59,7 +61,7 @@ public class AxeIntegrationUnitTest {
   private final static File integrationTestJsonResultFile = new File("src/test/java/results/sampleResults.json");
   private final static String integrationTestJsonResultUrl = integrationTestJsonResultFile.getAbsolutePath();
 
-
+  private final ObjectMapper mapper = new ObjectMapper();
 
   private final String mainElementSelector = "main";
 
@@ -137,7 +139,7 @@ public class AxeIntegrationUnitTest {
   @Test()
   public void htmlReportFullPage() throws IOException, ParseException {
     String path = createReportPath();
-    HtmlReporter.createAxeHtmlReport(this.webDriver, path);
+    HtmlReporter.createAxeHtmlReport(this.webDriver, path, ReportType.getAll());
     validateReport(path, 5, 46, 0, 57);
 
     File file = new File(path);
@@ -150,11 +152,7 @@ public class AxeIntegrationUnitTest {
   @Test()
   public void htmlViolationsOnlyReportFullPage() throws IOException, ParseException {
     String path = createReportPath();
-    HtmlReporter.createAxeHtmlViolationsReport(this.webDriver, path);
-
-    String text = Files.lines(Paths.get(path), StandardCharsets.UTF_8)
-        .collect(Collectors.joining(System.lineSeparator()));
-    Document doc = Jsoup.parse(text);
+    HtmlReporter.createAxeHtmlReport(this.webDriver, path, new Report[] {ReportType.Violations});
 
     // Check violations
     validateReport(path, 5, 0, 0, 0);
@@ -166,9 +164,24 @@ public class AxeIntegrationUnitTest {
   }
 
   @Test()
+  public void htmlPassesInapplicableViolationsOnlyReportFullPage() throws IOException, ParseException {
+    String path = createReportPath();
+    HtmlReporter.createAxeHtmlReport(this.webDriver, path, new Report[] {ReportType.Passes, ReportType.Inapplicable, ReportType.Violations});
+
+    // Check Passes
+    validateReport(path, 5, 46, 0, 57);
+    File file = new File(path);
+
+    if (file.exists()) {
+      Assert.assertTrue("File was not deleted", file.delete());
+    }
+  }
+
+  @Test()
   public void htmlReportOnElement() throws IOException, ParseException {
     String path = createReportPath();
-    HtmlReporter.createAxeHtmlReport(this.webDriver, this.webDriver.findElement(By.cssSelector(mainElementSelector)), path);
+    HtmlReporter.createAxeHtmlReport(this.webDriver,
+        this.webDriver.findElement(By.cssSelector(mainElementSelector)), path, ReportType.getAll());
     validateReport(path, 3, 16, 0, 69);
 
     File file = new File(path);
@@ -182,7 +195,7 @@ public class AxeIntegrationUnitTest {
   public void reportRespectRules() throws IOException, ParseException {
     String path = createReportPath();
     AxeBuilder builder = new AxeBuilder().disableRules(Collections.singletonList("color-contrast"));
-    HtmlReporter.createAxeHtmlReport(webDriver, builder.analyze(webDriver), path);
+    HtmlReporter.createAxeHtmlReport(webDriver, builder.analyze(webDriver), path, ReportType.getAll());
     validateReport(path, 4, 39, 0, 57);
 
     File file = new File(path);
@@ -193,13 +206,13 @@ public class AxeIntegrationUnitTest {
   }
 
   @Test
-  public void ReportSampleResults() throws IOException, ParseException {
+  public void reportSampleResults() throws IOException, ParseException {
     String path = createReportPath();
 
-    ObjectMapper mapper = new ObjectMapper();
+
     Results results = mapper.readValue(new File(integrationTestJsonResultUrl), Results.class);
 
-    HtmlReporter.createAxeHtmlReport(webDriver, results, path);
+    HtmlReporter.createAxeHtmlReport(webDriver, results, path, ReportType.getAll());
     validateReport(path, 3, 5, 2, 4);
 
     String text = new String(Files.readAllBytes(Paths.get(path)));
@@ -275,7 +288,8 @@ public class AxeIntegrationUnitTest {
     // Check inapplicables
     xpath = "#InapplicableSection > div.findings";
     liNodes = doc.select(xpath) != null ? doc.select(xpath) : new Elements();
-    Assert.assertEquals("Expected " + inapplicableCount + " inapplicables", inapplicableCount, liNodes.size());
+    Assert.assertEquals("Expected " + inapplicableCount + " inapplicables", inapplicableCount,
+        liNodes.size());
 
     // Check incompletes
     xpath = "#IncompleteSection > div > div.htmlTable";
@@ -284,14 +298,21 @@ public class AxeIntegrationUnitTest {
 
     // Check header data
     Assert.assertTrue("Expected to find 'Using: axe-core'", text.contains("Using: axe-core"));
-    Assert.assertTrue("Expected to find 'Violation: {violationCount}'", text.contains("Violation: " + violationCount));
 
-    if (passCount == 0 && incompleteCount == 0 && inapplicableCount == 0 ) {
-      return;
+    if (violationCount != 0) {
+      Assert.assertTrue("Expected to find 'Violations: " + violationCount, text.contains("Violations: " + violationCount));
     }
 
-    Assert.assertTrue("Expected to find 'Incomplete: {incompleteCount}'", text.contains("Incomplete: " + incompleteCount));
-    Assert.assertTrue("Expected to find 'Pass: {passCount}'", text.contains("Pass: " + passCount));
-    Assert.assertTrue("Expected to find 'Inapplicable: {inapplicableCount}'", text.contains("Inapplicable: " + inapplicableCount));
-}
+    if (incompleteCount != 0) {
+    Assert.assertTrue("Expected to find 'Incomplete: " + incompleteCount, text.contains("Incomplete: " + incompleteCount));
+    }
+
+    if (passCount != 0) {
+      Assert.assertTrue("Expected to find 'Passes: " + passCount, text.contains("Passes: " + passCount));
+    }
+
+    if (inapplicableCount != 0) {
+      Assert.assertTrue("Expected to find 'Inapplicable: " + inapplicableCount, text.contains("Inapplicable: " + inapplicableCount));
+    }
+  }
 }

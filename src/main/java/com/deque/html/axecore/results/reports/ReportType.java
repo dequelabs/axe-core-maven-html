@@ -9,4 +9,8 @@ public class ReportType {
   public static final Report Violations = Report.VIOLATIONS;
   public static final Report Incomplete = Report.INCOMPLETE;
   public static final Report Inapplicable = Report.INAPPLICABLE;
+
+  public static Report[] getAll() {
+    return All;
+  }
 }
