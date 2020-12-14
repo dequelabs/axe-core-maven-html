@@ -50,14 +50,19 @@ public class HtmlReporter {
     createAxeHtmlReport(webDriver, axeBuilder.analyze(webDriver), destination, ReportType.getAll());
   }
 
+  public static void createAxeHtmlReport(WebDriver webDriver, String destination, Report[] requestedResults)
+      throws IOException, ParseException {
+    createAxeHtmlReport(webDriver, axeBuilder.analyze(webDriver), destination, requestedResults);
+  }
+
   public static void createAxeHtmlReport(WebDriver webDriver, WebElement element, String destination)
       throws IOException, ParseException {
     createAxeHtmlReport(webDriver, axeBuilder.analyze(webDriver, element), destination, ReportType.getAll());
   }
 
-  public static void createAxeHtmlReport(WebDriver webDriver, String destination, Report[] requestedResults)
+  public static void createAxeHtmlReport(WebDriver webDriver, WebElement element, String destination, Report[] requestedResults)
       throws IOException, ParseException {
-    createAxeHtmlReport(webDriver, axeBuilder.analyze(webDriver), destination, requestedResults);
+    createAxeHtmlReport(webDriver, axeBuilder.analyze(webDriver, element), destination, requestedResults);
   }
 
   public static void createAxeHtmlReport(WebDriver webDriver, Results results, String destination,
