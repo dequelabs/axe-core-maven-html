@@ -20,10 +20,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 import org.apache.commons.io.FileUtils;
 import org.jsoup.Jsoup;
@@ -40,8 +37,8 @@ public class HtmlReporter {
 
   private static final AxeBuilder axeBuilder = new AxeBuilder();
 
-  protected static final ResultType[] all = new ResultType[]
-      { ResultType.Passes, ResultType.Violations, ResultType.Incomplete, ResultType.Inapplicable};
+  protected static final List<ResultType> all = Arrays.asList(
+      ResultType.Passes, ResultType.Violations, ResultType.Incomplete, ResultType.Inapplicable);
 
   private HtmlReporter() {
   }
@@ -51,7 +48,7 @@ public class HtmlReporter {
     createAxeHtmlReport(webDriver, destination, all);
   }
 
-  public static void createAxeHtmlReport(WebDriver webDriver, String destination, ResultType[] requestedResults)
+  public static void createAxeHtmlReport(WebDriver webDriver, String destination, List<ResultType> requestedResults)
       throws IOException, ParseException {
     createAxeHtmlReport(webDriver, axeBuilder.analyze(webDriver), destination, requestedResults);
   }
@@ -61,7 +58,7 @@ public class HtmlReporter {
     createAxeHtmlReport(webDriver, element, destination, all);
   }
 
-  public static void createAxeHtmlReport(WebDriver webDriver, WebElement element, String destination, ResultType[] requestedResults)
+  public static void createAxeHtmlReport(WebDriver webDriver, WebElement element, String destination, List<ResultType> requestedResults)
       throws IOException, ParseException {
     createAxeHtmlReport(webDriver, axeBuilder.analyze(webDriver, element), destination, requestedResults);
   }
@@ -72,7 +69,7 @@ public class HtmlReporter {
   }
 
   public static void createAxeHtmlReport(WebDriver webDriver, Results results, String destination,
-      ResultType[] requestedResults) throws IOException, ParseException {
+      List<ResultType> requestedResults) throws IOException, ParseException {
     createAxeHtmlReport(webDriver, results, destination, reportResultsToString(requestedResults));
   }
 
@@ -329,7 +326,7 @@ public class HtmlReporter {
     return new SimpleDateFormat("dd-MMM-yy HH:mm:ss Z").format(date);
   }
 
-  private static String reportResultsToString(ResultType[] requestedResults) {
+  private static String reportResultsToString(List<ResultType> requestedResults) {
     String requested = "";
 
     for (ResultType reportType : requestedResults) {

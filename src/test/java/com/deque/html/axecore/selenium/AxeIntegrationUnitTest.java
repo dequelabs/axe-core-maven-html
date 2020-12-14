@@ -27,6 +27,8 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import javax.naming.OperationNotSupportedException;
+import javax.xml.transform.Result;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
@@ -68,8 +70,6 @@ public class AxeIntegrationUnitTest {
    */
   @Before
   public void setup() {
-    System.setProperty("webdriver.chrome.driver",
-        "C:\\webdrivers\\chromedriver.exe");
     initDriver("Chrome");
     this.webDriver.get("file:///" + new File(integrationTestTargetUrl).getAbsolutePath());
     wait.until(drv -> drv.findElement(By.cssSelector(mainElementSelector)));
@@ -150,12 +150,13 @@ public class AxeIntegrationUnitTest {
   @Test()
   public void htmlViolationsOnlyReportFullPage() throws IOException, ParseException {
     String path = createReportPath();
-    HtmlReporter.createAxeHtmlReport(this.webDriver, path, new ResultType[] { Report.Violations});
+    HtmlReporter.createAxeHtmlReport(this.webDriver, path,
+        Collections.singletonList(ResultType.Violations));
 
     // Check violations
     validateReport(path, 5, 0, 0, 0);
     assertResultNotWritten(path,
-        new ResultType[] { ResultType.Passes, ResultType.Inapplicable, ResultType.Incomplete });
+        Arrays.asList( ResultType.Passes, ResultType.Inapplicable, ResultType.Incomplete));
 
     File file = new File(path);
 
@@ -168,11 +169,12 @@ public class AxeIntegrationUnitTest {
   public void htmlPassesInapplicableViolationsOnlyReportFullPage() throws IOException, ParseException {
     String path = createReportPath();
     HtmlReporter.createAxeHtmlReport(this.webDriver, path,
-        new ResultType[] { Report.Passes, Report.Inapplicable, Report.Violations});
+        Arrays.asList(ResultType.Passes, ResultType.Inapplicable, ResultType.Violations));
 
     // Check Passes
     validateReport(path, 5, 46, 0, 57);
-    assertResultNotWritten(path, new ResultType[] {Report.Incomplete});
+    assertResultNotWritten(path, Collections.singletonList(ResultType.Incomplete));
+
 
     File file = new File(path);
 
@@ -322,7 +324,7 @@ public class AxeIntegrationUnitTest {
     Assert.assertTrue("Expected to find '" + resultType + ": " + count, text.contains(resultType + ": " + count));
   }
 
-  private void assertResultNotWritten(String path, ResultType[] resultTypeArray) throws IOException {
+  private void assertResultNotWritten(String path, List<ResultType> resultTypeArray) throws IOException {
     String text = Files.lines(Paths.get(path), StandardCharsets.UTF_8)
         .collect(Collectors.joining(System.lineSeparator()));
 
