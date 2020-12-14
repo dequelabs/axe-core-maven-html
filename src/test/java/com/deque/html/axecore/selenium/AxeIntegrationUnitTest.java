@@ -139,7 +139,7 @@ public class AxeIntegrationUnitTest {
   @Test()
   public void htmlReportFullPage() throws IOException, ParseException {
     String path = createReportPath();
-    HtmlReporter.createAxeHtmlReport(this.webDriver, path, ReportType.getAll());
+    HtmlReporter.createAxeHtmlReport(this.webDriver, path);
     validateReport(path, 5, 46, 0, 57);
 
     File file = new File(path);
@@ -166,7 +166,8 @@ public class AxeIntegrationUnitTest {
   @Test()
   public void htmlPassesInapplicableViolationsOnlyReportFullPage() throws IOException, ParseException {
     String path = createReportPath();
-    HtmlReporter.createAxeHtmlReport(this.webDriver, path, new Report[] {ReportType.Passes, ReportType.Inapplicable, ReportType.Violations});
+    HtmlReporter.createAxeHtmlReport(this.webDriver, path,
+        new Report[] {ReportType.Passes, ReportType.Inapplicable, ReportType.Violations});
 
     // Check Passes
     validateReport(path, 5, 46, 0, 57);
@@ -181,7 +182,7 @@ public class AxeIntegrationUnitTest {
   public void htmlReportOnElement() throws IOException, ParseException {
     String path = createReportPath();
     HtmlReporter.createAxeHtmlReport(this.webDriver,
-        this.webDriver.findElement(By.cssSelector(mainElementSelector)), path, ReportType.getAll());
+        this.webDriver.findElement(By.cssSelector(mainElementSelector)), path);
     validateReport(path, 3, 16, 0, 69);
 
     File file = new File(path);
@@ -212,7 +213,7 @@ public class AxeIntegrationUnitTest {
 
     Results results = mapper.readValue(new File(integrationTestJsonResultUrl), Results.class);
 
-    HtmlReporter.createAxeHtmlReport(webDriver, results, path, ReportType.getAll());
+    HtmlReporter.createAxeHtmlReport(webDriver, results, path);
     validateReport(path, 3, 5, 2, 4);
 
     String text = new String(Files.readAllBytes(Paths.get(path)));

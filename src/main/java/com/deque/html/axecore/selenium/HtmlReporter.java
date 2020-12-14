@@ -26,6 +26,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import com.deque.html.axecore.results.reports.Report;
+import com.deque.html.axecore.results.reports.ReportType;
 import org.apache.commons.io.FileUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -44,9 +45,14 @@ public class HtmlReporter {
   private HtmlReporter() {
   }
 
-  public static void createAxeHtmlReport(WebDriver webDriver, WebElement element, String destination, Report[] requestedResults)
+  public static void createAxeHtmlReport(WebDriver webDriver, String destination)
       throws IOException, ParseException {
-    createAxeHtmlReport(webDriver, axeBuilder.analyze(webDriver, element), destination, requestedResults);
+    createAxeHtmlReport(webDriver, axeBuilder.analyze(webDriver), destination, ReportType.getAll());
+  }
+
+  public static void createAxeHtmlReport(WebDriver webDriver, WebElement element, String destination)
+      throws IOException, ParseException {
+    createAxeHtmlReport(webDriver, axeBuilder.analyze(webDriver, element), destination, ReportType.getAll());
   }
 
   public static void createAxeHtmlReport(WebDriver webDriver, String destination, Report[] requestedResults)
@@ -57,6 +63,11 @@ public class HtmlReporter {
   public static void createAxeHtmlReport(WebDriver webDriver, Results results, String destination,
       Report[] requestedResults) throws IOException, ParseException {
     createAxeHtmlReport(webDriver, results, destination, requestedResultsToString(requestedResults));
+  }
+
+  public static void createAxeHtmlReport(WebDriver webDriver, Results results, String destination)
+      throws IOException, ParseException {
+    createAxeHtmlReport(webDriver, results, destination, ReportType.getAll());
   }
 
   private static void createAxeHtmlReport(SearchContext context, Results results, String destination,
