@@ -25,8 +25,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
-import com.deque.html.axecore.results.reports.Report;
-import com.deque.html.axecore.results.reports.ReportType;
 import org.apache.commons.io.FileUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -42,37 +40,40 @@ public class HtmlReporter {
 
   private static final AxeBuilder axeBuilder = new AxeBuilder();
 
+  protected static final ResultType[] all = new ResultType[]
+      { ResultType.Passes, ResultType.Violations, ResultType.Incomplete, ResultType.Inapplicable};
+
   private HtmlReporter() {
   }
 
   public static void createAxeHtmlReport(WebDriver webDriver, String destination)
       throws IOException, ParseException {
-    createAxeHtmlReport(webDriver, axeBuilder.analyze(webDriver), destination, ReportType.getAll());
+    createAxeHtmlReport(webDriver, destination, all);
   }
 
-  public static void createAxeHtmlReport(WebDriver webDriver, String destination, Report[] requestedResults)
+  public static void createAxeHtmlReport(WebDriver webDriver, String destination, ResultType[] requestedResults)
       throws IOException, ParseException {
     createAxeHtmlReport(webDriver, axeBuilder.analyze(webDriver), destination, requestedResults);
   }
 
   public static void createAxeHtmlReport(WebDriver webDriver, WebElement element, String destination)
       throws IOException, ParseException {
-    createAxeHtmlReport(webDriver, axeBuilder.analyze(webDriver, element), destination, ReportType.getAll());
+    createAxeHtmlReport(webDriver, element, destination, all);
   }
 
-  public static void createAxeHtmlReport(WebDriver webDriver, WebElement element, String destination, Report[] requestedResults)
+  public static void createAxeHtmlReport(WebDriver webDriver, WebElement element, String destination, ResultType[] requestedResults)
       throws IOException, ParseException {
     createAxeHtmlReport(webDriver, axeBuilder.analyze(webDriver, element), destination, requestedResults);
   }
 
-  public static void createAxeHtmlReport(WebDriver webDriver, Results results, String destination,
-      Report[] requestedResults) throws IOException, ParseException {
-    createAxeHtmlReport(webDriver, results, destination, requestedResultsToString(requestedResults));
-  }
-
   public static void createAxeHtmlReport(WebDriver webDriver, Results results, String destination)
       throws IOException, ParseException {
-    createAxeHtmlReport(webDriver, results, destination, ReportType.getAll());
+    createAxeHtmlReport(webDriver, results, destination, all);
+  }
+
+  public static void createAxeHtmlReport(WebDriver webDriver, Results results, String destination,
+      ResultType[] requestedResults) throws IOException, ParseException {
+    createAxeHtmlReport(webDriver, results, destination, reportResultsToString(requestedResults));
   }
 
   private static void createAxeHtmlReport(SearchContext context, Results results, String destination,
@@ -171,24 +172,24 @@ public class HtmlReporter {
 
     Element area = new Element("div");
 
-    if (violationCount > 0 && requestedResults.contains(Report.VIOLATIONS.name())) {
+    if (violationCount > 0 && requestedResults.contains(ResultType.Violations.getKey())) {
       area.appendChild(new Element("br"));
-      area.appendChild(getReadableAxeResults(results.getViolations(), ResultType.Violations.name()));
+      area.appendChild(getReadableAxeResults(results.getViolations(), ResultType.Violations.getKey()));
     }
 
-    if (incompleteCount > 0 && requestedResults.contains(Report.INCOMPLETE.name())) {
+    if (incompleteCount > 0 && requestedResults.contains(ResultType.Incomplete.getKey())) {
       area.appendChild(new Element("br"));
-      area.appendChild(getReadableAxeResults(results.getIncomplete(), ResultType.Incomplete.name()));
+      area.appendChild(getReadableAxeResults(results.getIncomplete(), ResultType.Incomplete.getKey()));
     }
 
-    if (passCount > 0 && requestedResults.contains(Report.PASSES.name())) {
+    if (passCount > 0 && requestedResults.contains(ResultType.Passes.getKey())) {
       area.appendChild(new Element("br"));
-      area.appendChild(getReadableAxeResults(results.getPasses(), ResultType.Passes.name()));
+      area.appendChild(getReadableAxeResults(results.getPasses(), ResultType.Passes.getKey()));
     }
 
-    if (inapplicableCount > 0 && requestedResults.contains(Report.INAPPLICABLE.name())) {
+    if (inapplicableCount > 0 && requestedResults.contains(ResultType.Inapplicable.getKey())) {
       area.appendChild(new Element("br"));
-      area.appendChild(getReadableAxeResults(results.getInapplicable(), ResultType.Inapplicable.name()));
+      area.appendChild(getReadableAxeResults(results.getInapplicable(), ResultType.Inapplicable.getKey()));
     }
 
     body.appendChild(area);
@@ -297,22 +298,22 @@ public class HtmlReporter {
   private static Element getCountContent(int violationCount, int incompleteCount, int passCount,
       int inapplicableCount, String requestedResults, Element element) {
 
-    if (requestedResults.contains(Report.VIOLATIONS.name())) {
+    if (requestedResults.contains(ResultType.Violations.getKey())) {
       element.text(" Violations: " + violationCount);
       element.appendChild(new Element("br"));
     }
 
-    if (requestedResults.contains(Report.INCOMPLETE.name())) {
+    if (requestedResults.contains(ResultType.Incomplete.getKey())) {
       element.appendText(" Incomplete: " + incompleteCount);
       element.appendChild(new Element("br"));
     }
 
-    if (requestedResults.contains(Report.PASSES.name())) {
+    if (requestedResults.contains(ResultType.Passes.getKey())) {
       element.appendText(" Passes: " + passCount);
       element.appendChild(new Element("br"));
     }
 
-    if (requestedResults.contains(Report.INAPPLICABLE.name())) {
+    if (requestedResults.contains(ResultType.Inapplicable.getKey())) {
       element.appendText(" Inapplicable: " + inapplicableCount);
     }
     return element;
@@ -328,11 +329,11 @@ public class HtmlReporter {
     return new SimpleDateFormat("dd-MMM-yy HH:mm:ss Z").format(date);
   }
 
-  private static String requestedResultsToString(Report[] requestedResults) {
+  private static String reportResultsToString(ResultType[] requestedResults) {
     String requested = "";
 
-    for (Report reportType : requestedResults) {
-      requested = requested.concat(reportType.name().toUpperCase());
+    for (ResultType reportType : requestedResults) {
+      requested = requested.concat(reportType.getKey());
     }
     return requested;
   }

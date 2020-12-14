@@ -19,22 +19,22 @@ public enum ResultType {
   /**
    * Check for violations.
    */
-  Violations("violations"),
+  Violations("Violations"),
 
   /**
    * Check for passing.
    */
-  Passes("passes"),
+  Passes("Passes"),
 
   /**
    * Check for inapplicable.
    */
-  Inapplicable("inapplicable"),
+  Inapplicable("Inapplicable"),
 
   /**
    * Check for incomplete.
    */
-  Incomplete("incomplete");
+  Incomplete("Incomplete");
 
   /**
    * String value of the enum.

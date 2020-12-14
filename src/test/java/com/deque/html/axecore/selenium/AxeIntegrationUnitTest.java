@@ -15,8 +15,6 @@ package com.deque.html.axecore.selenium;
 import com.deque.html.axecore.axeargs.AxeRunOptions;
 import com.deque.html.axecore.results.Results;
 import com.deque.html.axecore.results.Rule;
-import com.deque.html.axecore.results.reports.Report;
-import com.deque.html.axecore.results.reports.ReportType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.io.IOException;
@@ -56,10 +54,10 @@ public class AxeIntegrationUnitTest {
   private final static File integrationTestTargetFile = new File("src/test/resources/html/integration-test-target.html");
   private final static String integrationTestTargetUrl = integrationTestTargetFile.getAbsolutePath();
 
-  private final static String rawAxeResultsFileString = "src/test/java/results/raw-axe-results.json";
-
   private final static File integrationTestJsonResultFile = new File("src/test/java/results/sampleResults.json");
   private final static String integrationTestJsonResultUrl = integrationTestJsonResultFile.getAbsolutePath();
+
+  private final static String rawAxeResultsFileString = "src/test/java/results/raw-axe-results.json";
 
   private final ObjectMapper mapper = new ObjectMapper();
 
@@ -152,10 +150,13 @@ public class AxeIntegrationUnitTest {
   @Test()
   public void htmlViolationsOnlyReportFullPage() throws IOException, ParseException {
     String path = createReportPath();
-    HtmlReporter.createAxeHtmlReport(this.webDriver, path, new Report[] {ReportType.Violations});
+    HtmlReporter.createAxeHtmlReport(this.webDriver, path, new ResultType[] { Report.Violations});
 
     // Check violations
     validateReport(path, 5, 0, 0, 0);
+    assertResultNotWritten(path,
+        new ResultType[] { ResultType.Passes, ResultType.Inapplicable, ResultType.Incomplete });
+
     File file = new File(path);
 
     if (file.exists()) {
@@ -167,10 +168,12 @@ public class AxeIntegrationUnitTest {
   public void htmlPassesInapplicableViolationsOnlyReportFullPage() throws IOException, ParseException {
     String path = createReportPath();
     HtmlReporter.createAxeHtmlReport(this.webDriver, path,
-        new Report[] {ReportType.Passes, ReportType.Inapplicable, ReportType.Violations});
+        new ResultType[] { Report.Passes, Report.Inapplicable, Report.Violations});
 
     // Check Passes
     validateReport(path, 5, 46, 0, 57);
+    assertResultNotWritten(path, new ResultType[] {Report.Incomplete});
+
     File file = new File(path);
 
     if (file.exists()) {
@@ -196,7 +199,7 @@ public class AxeIntegrationUnitTest {
   public void reportRespectRules() throws IOException, ParseException {
     String path = createReportPath();
     AxeBuilder builder = new AxeBuilder().disableRules(Collections.singletonList("color-contrast"));
-    HtmlReporter.createAxeHtmlReport(webDriver, builder.analyze(webDriver), path, ReportType.getAll());
+    HtmlReporter.createAxeHtmlReport(webDriver, builder.analyze(webDriver), path);
     validateReport(path, 4, 39, 0, 57);
 
     File file = new File(path);
@@ -209,8 +212,6 @@ public class AxeIntegrationUnitTest {
   @Test
   public void reportSampleResults() throws IOException, ParseException {
     String path = createReportPath();
-
-
     Results results = mapper.readValue(new File(integrationTestJsonResultUrl), Results.class);
 
     HtmlReporter.createAxeHtmlReport(webDriver, results, path);
@@ -278,42 +279,55 @@ public class AxeIntegrationUnitTest {
 
     // Check violations
     String xpath = "#ViolationsSection > div > div.htmlTable";
-    Elements liNodes = doc.select(xpath) != null ? doc.select(xpath) : new Elements();
-    Assert.assertEquals("Expected " + violationCount + " violations", violationCount, liNodes.size());
+    assertElementCount(doc, violationCount, xpath, ResultType.Violations);
 
     // Check passes
     xpath = "#PassesSection > div > div.htmlTable";
-    liNodes = doc.select(xpath) != null ? doc.select(xpath) : new Elements();
-    Assert.assertEquals("Expected " + passCount + " passess", passCount, liNodes.size());
+    assertElementCount(doc, passCount, xpath, ResultType.Passes);
 
-    // Check inapplicables
+    // Check inapplicable
     xpath = "#InapplicableSection > div.findings";
-    liNodes = doc.select(xpath) != null ? doc.select(xpath) : new Elements();
-    Assert.assertEquals("Expected " + inapplicableCount + " inapplicables", inapplicableCount,
-        liNodes.size());
+    assertElementCount(doc, inapplicableCount, xpath, ResultType.Inapplicable);
 
-    // Check incompletes
+    // Check incomplete
     xpath = "#IncompleteSection > div > div.htmlTable";
-    liNodes = doc.select(xpath) != null ? doc.select(xpath) : new Elements();
-    Assert.assertEquals("Expected " + incompleteCount + " incompletes", incompleteCount, liNodes.size());
+    assertElementCount(doc, incompleteCount, xpath, ResultType.Incomplete);
 
     // Check header data
     Assert.assertTrue("Expected to find 'Using: axe-core'", text.contains("Using: axe-core"));
 
     if (violationCount != 0) {
-      Assert.assertTrue("Expected to find 'Violations: " + violationCount, text.contains("Violations: " + violationCount));
+      assertResultCount(text, violationCount, ResultType.Violations);
     }
 
     if (incompleteCount != 0) {
-    Assert.assertTrue("Expected to find 'Incomplete: " + incompleteCount, text.contains("Incomplete: " + incompleteCount));
+      assertResultCount(text, incompleteCount, ResultType.Incomplete);
     }
 
     if (passCount != 0) {
-      Assert.assertTrue("Expected to find 'Passes: " + passCount, text.contains("Passes: " + passCount));
+      assertResultCount(text, passCount, ResultType.Passes);
     }
 
     if (inapplicableCount != 0) {
-      Assert.assertTrue("Expected to find 'Inapplicable: " + inapplicableCount, text.contains("Inapplicable: " + inapplicableCount));
+      assertResultCount(text, inapplicableCount, ResultType.Inapplicable);
+    }
+  }
+
+  private void assertElementCount(Document doc, int count, String xpath, ResultType resultType) {
+    Elements liNodes = doc.select(xpath) != null ? doc.select(xpath) : new Elements();
+    Assert.assertEquals("Expected " + count + " " + resultType, count, liNodes.size());
+  }
+
+  private void assertResultCount(String text, int count, ResultType resultType) {
+    Assert.assertTrue("Expected to find '" + resultType + ": " + count, text.contains(resultType + ": " + count));
+  }
+
+  private void assertResultNotWritten(String path, ResultType[] resultTypeArray) throws IOException {
+    String text = Files.lines(Paths.get(path), StandardCharsets.UTF_8)
+        .collect(Collectors.joining(System.lineSeparator()));
+
+    for (ResultType resultType : resultTypeArray) {
+      Assert.assertFalse("Expected to not find '" + resultType  + ": '", text.contains(resultType + ": "));
     }
   }
 }
