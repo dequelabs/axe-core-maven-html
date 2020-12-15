@@ -62,7 +62,7 @@ public class AxeBuilder {
    */
   private AxeBuilderOptions builderOptions = getDefaultAxeBuilderOptions();
 
-  private boolean noSandbox = true;
+  private boolean noSandbox = false;
 
   /**
    * timeout of how the the scan should run until an error occurs.
