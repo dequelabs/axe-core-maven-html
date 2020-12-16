@@ -36,6 +36,7 @@ public final class WebDriverInjectorExtensions {
   /**
    * Execute an asynchronous JavaScript command.
    *
+   * @param webDriver for the page to be scanned
    * @param command The command to be executed.
    * @param args Additional arguments to be provided to the command.
    * @return the results that would normally be provided to the asynchronous commands callback.
@@ -50,6 +51,7 @@ public final class WebDriverInjectorExtensions {
    * @param driver WebDriver instance to inject into
    * @param scriptProvider Provider that get the aXe script to inject
    * @throws OperationNotSupportedException if the operation errors out
+   * @throws IOException if an IO exception occurs
    */
   public static void inject(final WebDriver driver,
       final IAxeScriptProvider scriptProvider)

@@ -146,7 +146,7 @@ public class AxeBuilder {
    * Refer to https://github.com/dequelabs/axe-core
    * /blob/develop/doc/API.md#options-parameter.
    * Cannot not be used with WithRules(List<String>),
-   * WithTags(List<String>), & "DisableRules(List<String>).
+   * WithTags(List<String>), &amp; "DisableRules(List<String>).
    * @deprecated Obsolete(" Use WithOptions
    * / WithTags / WithRules / DisableRules apis ")]
    */
@@ -192,8 +192,8 @@ public class AxeBuilder {
 
   /**
    * Initialize an instance of AxeBuilder.
-   * @param newWebDriver Selenium driver to use
    * @param builderOptions Builder options
+   * @param objectMapper Mapper to use when converting JSON
    */
   public AxeBuilder(final AxeBuilderOptions builderOptions, final ObjectMapper objectMapper) {
     validateNotNullParameter(builderOptions);
@@ -214,7 +214,7 @@ public class AxeBuilder {
   /**
    *  Run configuration data that is passed to axe for scanning the web page.
    *  This will override the value set by WithRules(string[]),
-   * WithTags(string[]) & DisableRules(string[])
+   * WithTags(string[]) &amp; DisableRules(string[])
    * @param newRunOptions run options to be used for scanning.
    * @return an Axe Builder
    */
@@ -230,7 +230,7 @@ public class AxeBuilder {
    * Refer https://www.deque.com/axe/axe-for-web/
    * documentation/api-documentation/#api-name-axegetrules
    * to get the list of supported tag names.
-   * Cannot be used with WithRules(string[]) & Options
+   * Cannot be used with WithRules(string[]) &amp; Options
    * @param tags tags to be used for scanning
    * @return an Axe Builder
    */
@@ -251,7 +251,7 @@ public class AxeBuilder {
    * Limit analysis to only the specified rules.
    * Refer https://dequeuniversity.com/rules/axe/
    * to get the complete listing of available rule IDs.
-   * Cannot be used with WithTags(List<String>) & Options/>
+   * Cannot be used with WithTags(List&lt;String&gt;) &amp; Options
    * @param rules rule IDs to be used for scanning
    * @return an Axe Builder
    */
@@ -272,7 +272,7 @@ public class AxeBuilder {
    * Limit analysis to only the specified rules.
    * Refer https://dequeuniversity.com/rules/axe/
    * to get the complete listing of available rule IDs.
-   * Cannot be used with WithTags(List<String>) & Options/>
+   * Cannot be used with WithTags(List&lt;String&gt;) &amp; Options
    * @param rules rule IDs to be used for scanning
    * @return an Axe Builder
    */
@@ -320,12 +320,12 @@ public class AxeBuilder {
    * Selectors to include in the validation.
    * Note that the selectors array uniquely identifies one element in the page,
    * Valid usage:
-   * axeBuilder.Include("#parent-iframe1", "#element-inside-iframe"); =>
+   * axeBuilder.Include("#parent-iframe1", "#element-inside-iframe"); =&gt;
    * to select #element-inside-iframe under #parent-iframe1
    * axeBuilder.Include("#element-inside-main-frame1");
    * Invalid usage: axeBuilder.Include("#element-inside-main-frame1",
    *      "#element-inside-main-frame2");
-   * @param selectors >Any valid CSS selectors
+   * @param selectors Any valid CSS selectors
    * @return an Axe Builder
    */
   public AxeBuilder include(final List<String> selectors) {
@@ -369,6 +369,7 @@ public class AxeBuilder {
   /**
    * Run axe against a specific WebElement
    * or webElements (including its descendants).
+   * @param webDriver for the page to be scanned
    * @param context WebElement(s) to test
    * @return An axe results document
    */
@@ -378,6 +379,7 @@ public class AxeBuilder {
 
   /**
    * Run axe against the entire page.
+   * @param webDriver for the page to be scanned
    * @return An axe results document
    */
   public Results analyze(final WebDriver webDriver) {
@@ -390,6 +392,8 @@ public class AxeBuilder {
 
   /**
    * Run axe against the entire page.
+   * @param webDriver for the page to be scanned
+   * @param injectAxe whether or not to inject axe into the page
    * @return An axe results document
    */
   public Results analyze(final WebDriver webDriver, boolean injectAxe) {
