@@ -254,5 +254,12 @@
             <version>5.7.0</version>
             <scope>test</scope>
         </dependency>
+        <!-- Overrides junit used in junit-vintage-engine for security reasons -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.13.1</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 </project>
