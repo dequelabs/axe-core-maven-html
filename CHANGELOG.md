@@ -1,3 +1,11 @@
+# [4.1.1](http://dequelabs/axe-core-maven-html/compare/v4.1.0...v4.1.1) (2020-12-16)
+
+
+### Bug Fixes
+
+* sandbox buster is off by default ([#124](http://dequelabs/axe-core-maven-html/issues/124)) ([a7959c5](http://dequelabs/axe-core-maven-html/commits/a7959c5712aefae7fa003a75e956fa5275bc82a3))
+
+
 # [4.1.0](http://dequelabs/axe-core-maven-html/compare/v4.0.0...v4.1.0) (2020-11-24)
 
 

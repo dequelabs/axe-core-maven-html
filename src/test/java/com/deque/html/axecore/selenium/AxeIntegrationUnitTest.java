@@ -34,6 +34,7 @@ import org.openqa.selenium.chrome.ChromeDriverService;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import java.util.function.Function;
 
 import com.deque.html.axecore.axeargs.AxeRunOptions;
 import com.deque.html.axecore.results.Results;
@@ -57,7 +58,12 @@ public class AxeIntegrationUnitTest {
   public void setup() {
     initDriver("Chrome");
     this.webDriver.get("file:///" + new File(integrationTestTargetUrl).getAbsolutePath());
-    wait.until(drv -> drv.findElement(By.cssSelector("main")));
+    Function<WebDriver, WebElement> waitFunc = new Function<WebDriver, WebElement>() {
+      public WebElement apply(WebDriver driver) {
+        return driver.findElement(By.cssSelector("main"));
+      }
+    };
+    wait.until(waitFunc);
   }
 
   /**
@@ -113,7 +119,12 @@ public class AxeIntegrationUnitTest {
    */
   @Test()
   public void runScanOnGivenElementChrome() throws IOException, OperationNotSupportedException {
-    WebElement mainElement = wait.until(drv -> drv.findElement(By.cssSelector("main")));
+    Function<WebDriver, WebElement> waitFunc = new Function<WebDriver, WebElement>() {
+      public WebElement apply(WebDriver driver) {
+        return driver.findElement(By.cssSelector("main"));
+      }
+    };
+    WebElement mainElement = wait.until(waitFunc);
     AxeBuilder builder = new AxeBuilder();
     Results results = builder.analyze(this.webDriver, mainElement);
     Assert.assertEquals(3, results.getViolations().size());

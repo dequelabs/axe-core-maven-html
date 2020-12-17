@@ -5,7 +5,7 @@
 
     <groupId>com.deque.html.axe-core</groupId>
     <artifactId>selenium</artifactId>
-    <version>4.1.0</version>
+    <version>4.1.1</version>
     <build>
         <resources>
             <resource>
@@ -171,6 +171,9 @@
                       </goals>
                     </execution>
                   </executions>
+                  <configuration>
+                    <source>8</source>
+                  </configuration>
                 </plugin>
                 <plugin>
                   <groupId>org.apache.maven.plugins</groupId>
@@ -249,6 +252,13 @@
             <groupId>org.junit.vintage</groupId>
             <artifactId>junit-vintage-engine</artifactId>
             <version>5.7.0</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- Overrides junit used in junit-vintage-engine for security reasons -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.13.1</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
