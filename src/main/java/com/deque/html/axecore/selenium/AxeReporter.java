@@ -157,7 +157,7 @@ public final class AxeReporter {
       message.append("Tags: ").append(String.join(", ", element.getTags()));
       message.append(System.lineSeparator());
 
-      if (element.getNodes() != null && element.getNodes().isEmpty()) {
+      if (element.getNodes() != null && !element.getNodes().isEmpty()) {
         for (Node item : element.getNodes()) {
           message.append("\\t\\t" + "HTML element: ").append(item.getHtml());
           message.append("\\t\\t" + "Selector: ").append(item.getTarget());
