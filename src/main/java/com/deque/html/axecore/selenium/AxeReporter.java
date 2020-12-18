@@ -159,8 +159,10 @@ public final class AxeReporter {
 
       if (element.getNodes() != null && !element.getNodes().isEmpty()) {
         for (Node item : element.getNodes()) {
-          message.append("\\t\\t" + "HTML element: ").append(item.getHtml());
-          message.append("\\t\\t" + "Selector: ").append(item.getTarget());
+          message.append("\t\t" + "HTML element: ").append(item.getHtml());
+          message.append(System.lineSeparator());
+          message.append("\t\t" + "Selector: ").append(item.getTarget());
+          message.append(System.lineSeparator());
         }
       }
       message.append(System.lineSeparator());

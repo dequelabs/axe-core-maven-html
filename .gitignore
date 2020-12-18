@@ -7,3 +7,5 @@ target
 .settings
 .vscode
 bin
+node_modules
+build
