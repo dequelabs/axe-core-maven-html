@@ -17,27 +17,27 @@ public class Results {
     private List<Rule> incomplete;
     private List<Rule> inapplicable;
     // The error message from `axe.run()`
-    private Exception errorMessage;
+    private AxeRuntimeException errorObject;
 
     public boolean isErrored() {
-      return errorMessage != null;
+      return errorObject != null;
     }
 
-    public void setErrorMessage(final Exception errorMessage) {
-      this.errorMessage = errorMessage;
+    public void setErrorMessage(final Exception errorObject) {
+      this.errorObject = new AxeRuntimeException(errorObject);
     }
 
     public String getErrorMessage() {
-      if (errorMessage == null) {
+      if (errorObject == null) {
         return null;
       }
-      return errorMessage.toString();
+      return errorObject.getCause().toString();
     }
 
     @JsonIgnore
     public AxeRuntimeException getError() {
       if (this.isErrored()) {
-        return new AxeRuntimeException(errorMessage);
+        return errorObject;
       }
 
       return null;
