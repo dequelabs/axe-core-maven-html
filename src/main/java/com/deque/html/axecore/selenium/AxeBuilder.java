@@ -40,6 +40,7 @@ import com.deque.html.axecore.providers.IAxeScriptProvider;
 import com.deque.html.axecore.providers.EmbeddedResourceAxeProvider;
 import com.deque.html.axecore.providers.EmbeddedResourceProvider;
 import com.deque.html.axecore.results.Results;
+import com.deque.html.axecore.results.Rule;
 
 /**
  * Fluent style builder for invoking aXe.
@@ -459,8 +460,8 @@ public class AxeBuilder {
       SimpleDateFormat df = new SimpleDateFormat("E MMM dd yyyy HH:mm:ss 'GMT'XX (zzzz)");
       String dateTime = df.format(new Date());
       Results results = new Results();
-      results.setViolations(new ArrayList<>());
-      results.setPasses(new ArrayList<>());
+      results.setViolations(new ArrayList<Rule>());
+      results.setPasses(new ArrayList<Rule>());
       results.setUrl("");
       results.setTimestamp(dateTime);
       results.setErrorMessage(je);
