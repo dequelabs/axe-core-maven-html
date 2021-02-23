@@ -64,6 +64,8 @@ public class AxeBuilder {
 
   private boolean noSandbox = false;
 
+  private boolean disableIframeTesting = false;
+
   /**
    * timeout of how the the scan should run until an error occurs.
    */
@@ -208,6 +210,15 @@ public class AxeBuilder {
    */
   public AxeBuilder withoutIframeSandboxes() {
     noSandbox = true;
+    return this;
+  }
+
+  /**
+   *  Inject and run axe on the top-level iframe only.
+   * @return an Axe Builder
+   */
+  public AxeBuilder disableIframeTesting() {
+    this.disableIframeTesting = true;
     return this;
   }
 
@@ -422,7 +433,7 @@ public class AxeBuilder {
     if (noSandbox) {
       try {
         WebDriverInjectorExtensions.injectAsync(
-            webDriver, sandboxBusterScript);
+            webDriver, sandboxBusterScript, disableIframeTesting);
       } catch (Exception e) {
           throw new RuntimeException("Error when removing sandbox from iframes", e);
       }
@@ -431,7 +442,7 @@ public class AxeBuilder {
     if (injectAxe) {
       try {
         WebDriverInjectorExtensions.inject(
-            webDriver, builderOptions.getScriptProvider());
+            webDriver, builderOptions.getScriptProvider(), disableIframeTesting);
       } catch (Exception e) {
           throw new RuntimeException("Unable to inject axe script", e);
       }

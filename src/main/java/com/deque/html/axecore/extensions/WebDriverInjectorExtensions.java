@@ -54,14 +54,14 @@ public final class WebDriverInjectorExtensions {
    * @throws IOException if an IO exception occurs
    */
   public static void inject(final WebDriver driver,
-      final IAxeScriptProvider scriptProvider)
+      final IAxeScriptProvider scriptProvider, boolean disableIframeTesting)
       throws OperationNotSupportedException, IOException {
     if (scriptProvider == null) {
       throw new NullPointerException("the Script provider is null");
     }
 
     String script = scriptProvider.getScript();
-    inject(driver, script);
+    inject(driver, script, disableIframeTesting);
   }
 
   /**
@@ -70,13 +70,16 @@ public final class WebDriverInjectorExtensions {
    * @param script The script to inject
    */
   public static void inject(final WebDriver driver,
-      final String script) {
+      final String script, boolean disableIframeTesting) {
     List<WebElement> parents = new ArrayList<>();
     JavascriptExecutor js = (JavascriptExecutor) driver;
 
-    injectIntoFrames(driver, script, parents);
     driver.switchTo().defaultContent();
     js.executeScript(script);
+    if (!disableIframeTesting) {
+      injectIntoFrames(driver, script, parents);
+      driver.switchTo().defaultContent();
+    }
   }
 
   /**
@@ -85,14 +88,16 @@ public final class WebDriverInjectorExtensions {
    * @param script The script to inject
    */
   public static void injectAsync(final WebDriver driver,
-      final String script) {
+      final String script, boolean disableIframeTesting) {
     List<WebElement> parents = new ArrayList<>();
     JavascriptExecutor js = (JavascriptExecutor) driver;
 
     driver.switchTo().defaultContent();
     js.executeAsyncScript(script);
-    injectIntoFramesAsync(driver, script, parents);
-    driver.switchTo().defaultContent();
+    if (!disableIframeTesting) {
+      injectIntoFramesAsync(driver, script, parents);
+      driver.switchTo().defaultContent();
+    }
   }
 
   /**
