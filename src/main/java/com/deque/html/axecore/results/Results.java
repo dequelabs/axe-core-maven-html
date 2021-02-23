@@ -1,4 +1,5 @@
 package com.deque.html.axecore.results;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.util.List;
@@ -16,23 +17,27 @@ public class Results {
     private List<Rule> incomplete;
     private List<Rule> inapplicable;
     // The error message from `axe.run()`
-    private String errorMessage;
+    private AxeRuntimeException errorObject;
 
-    public boolean isErrored () {
-      return errorMessage != null;
+    public boolean isErrored() {
+      return errorObject != null;
     }
 
-    public void setErrorMessage (final String errorMessage) {
-      this.errorMessage = errorMessage;
+    public void setErrorMessage(final Exception errorObject) {
+      this.errorObject = new AxeRuntimeException(errorObject);
     }
 
-    public String getErrorMessage () {
-      return errorMessage;
+    public String getErrorMessage() {
+      if (errorObject == null) {
+        return null;
+      }
+      return errorObject.getCause().toString();
     }
 
-    public AxeRuntimeException getError () {
+    @JsonIgnore
+    public AxeRuntimeException getError() {
       if (this.isErrored()) {
-        return new AxeRuntimeException(errorMessage);
+        return errorObject;
       }
 
       return null;
