@@ -13,13 +13,19 @@
 package com.deque.html.axecore.selenium;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Date;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 import javax.naming.OperationNotSupportedException;
 import org.json.JSONObject;
 import org.openqa.selenium.InvalidArgumentException;
+import org.openqa.selenium.JavascriptException;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -64,6 +70,8 @@ public class AxeBuilder {
 
   private boolean noSandbox = false;
 
+  private boolean disableIframeTesting = false;
+
   /**
    * timeout of how the the scan should run until an error occurs.
    */
@@ -79,13 +87,7 @@ public class AxeBuilder {
     "axe.run(context, options, function (err, results) {" +
     "  {" +
     "    if (err) {" +
-    "      results = {" +
-    "        violations: []," +
-    "        passes: []," +
-    "        url: ''," +
-    "        timestamp: new Date().toString()," +
-    "        errorMessage: err.message" +
-    "      }" +
+    "      throw new Error(err);" +
     "    }" +
     "    callback(results);" +
     "  }" +
@@ -208,6 +210,15 @@ public class AxeBuilder {
    */
   public AxeBuilder withoutIframeSandboxes() {
     noSandbox = true;
+    return this;
+  }
+
+  /**
+   *  Inject and run axe on the top-level iframe only.
+   * @return an Axe Builder
+   */
+  public AxeBuilder disableIframeTesting() {
+    this.disableIframeTesting = true;
     return this;
   }
 
@@ -422,7 +433,7 @@ public class AxeBuilder {
     if (noSandbox) {
       try {
         WebDriverInjectorExtensions.injectAsync(
-            webDriver, sandboxBusterScript);
+            webDriver, sandboxBusterScript, disableIframeTesting);
       } catch (Exception e) {
           throw new RuntimeException("Error when removing sandbox from iframes", e);
       }
@@ -431,7 +442,7 @@ public class AxeBuilder {
     if (injectAxe) {
       try {
         WebDriverInjectorExtensions.inject(
-            webDriver, builderOptions.getScriptProvider());
+            webDriver, builderOptions.getScriptProvider(), disableIframeTesting);
       } catch (Exception e) {
           throw new RuntimeException("Unable to inject axe script", e);
       }
@@ -439,8 +450,22 @@ public class AxeBuilder {
     webDriver.manage().timeouts()
         .setScriptTimeout(timeout, TimeUnit.SECONDS);
 
-    Object response = ((JavascriptExecutor) webDriver)
+    Object response = null;
+    try {
+      response = ((JavascriptExecutor) webDriver)
         .executeAsyncScript(axeRunScript, rawArgs);
+    } catch (JavascriptException je) {
+      // Formatted to match what you get if you run `new Date().toString()` in JS
+      SimpleDateFormat df = new SimpleDateFormat("E MMM dd yyyy HH:mm:ss 'GMT'XX (zzzz)");
+      String dateTime = df.format(new Date());
+      Results results = new Results();
+      results.setViolations(new ArrayList<>());
+      results.setPasses(new ArrayList<>());
+      results.setUrl("");
+      results.setTimestamp(dateTime);
+      results.setErrorMessage(je);
+      return results;
+    }
 
     Results results = objectMapper.convertValue(response, Results.class);
     return results;

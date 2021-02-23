@@ -5,7 +5,7 @@
 
     <groupId>com.deque.html.axe-core</groupId>
     <artifactId>selenium</artifactId>
-    <version>4.1.1</version>
+    <version>4.1.2</version>
     <build>
         <resources>
             <resource>
@@ -91,7 +91,7 @@
     <description>
 		Tools for using aXe for web accessibility testing with JUnit and Selenium.
     </description>
-    <url>https://github.com/dequelabs/axe-selenium-java</url>
+    <url>https://github.com/dequelabs/axe-core-maven-html</url>
 
     <licenses>
         <license>
@@ -121,9 +121,9 @@
     </developers>
 
     <scm>
-        <connection>scm:git:git@github.com:dequelabs/axe-selenium-java.git</connection>
-        <developerConnection>scm:git:git@github.com:dequelabs/axe-selenium-java.git</developerConnection>
-        <url>https://github.com/dequelabs/axe-selenium-java</url>
+        <connection>scm:git:git@github.com:dequelabs/axe-core-maven-html.git</connection>
+        <developerConnection>scm:git:git@github.com:dequelabs/axe-core-maven-html.git</developerConnection>
+        <url>https://github.com/dequelabs/axe-core-maven-html</url>
     </scm>
 
     <properties>
@@ -227,6 +227,12 @@
             <groupId>com.squareup.okhttp3</groupId>
             <artifactId>okhttp</artifactId>
             <version>3.12.12</version>
+        </dependency>
+        <!-- Overrides guava used in selenium-java for security reasons -->
+        <dependency>
+          <groupId>com.google.guava</groupId>
+          <artifactId>guava</artifactId>
+          <version>30.1-jre</version>
         </dependency>
         <dependency>
             <groupId>io.github.bonigarcia</groupId>
