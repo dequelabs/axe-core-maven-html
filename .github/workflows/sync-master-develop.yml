@@ -6,10 +6,11 @@ on:
 jobs:
   create_sync_pull_request:
     runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == 'true'
     steps:
-      - uses: dequelabs/action-sync-branches@v1.0.0
+      - uses: dequelabs/action-sync-branches@v1
         with:
-          github-token: \${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           pr-title: "chore: merge master into develop"
           pr-reviewers: AdnoC,stephenmathieson
           pr-labels: chore
