@@ -150,7 +150,7 @@ public final class AxeReporter {
       message.append(System.lineSeparator());
       message.append("Description: ").append(element.getDescription());
       message.append(System.lineSeparator());
-      message.append("Help URL: ").append(element.getHelp());
+      message.append("Help URL: ").append(element.getHelpUrl());
       message.append(System.lineSeparator());
       message.append("Impact: ").append(element.getImpact());
       message.append(System.lineSeparator());
