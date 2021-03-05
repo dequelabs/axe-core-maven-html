@@ -18,6 +18,7 @@ import java.util.List;
 import javax.naming.OperationNotSupportedException;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.NoSuchFrameException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
@@ -48,6 +49,7 @@ public final class WebDriverInjectorExtensions {
 
   /**
    * Injects Axe script into frames.
+   * If a frame (not top-level) errors when injecting due to not being displayed, the error is ignored.
    * @param driver WebDriver instance to inject into
    * @param scriptProvider Provider that get the aXe script to inject
    * @throws OperationNotSupportedException if the operation errors out
@@ -66,6 +68,7 @@ public final class WebDriverInjectorExtensions {
 
   /**
    * Injects Axe script into frames.
+   * If a frame (not top-level) errors when injecting due to not being displayed, the error is ignored.
    * @param driver WebDriver instance to inject into
    * @param script The script to inject
    */
@@ -102,6 +105,7 @@ public final class WebDriverInjectorExtensions {
 
   /**
    * Recursively find frames and inject a script into them.
+   * If a frame errors when injecting due to not being displayed, the error is ignored.
    * @param driver An initialized WebDriver
    * @param script Script to inject
    * @param parents A list of all top level frames
@@ -114,13 +118,27 @@ public final class WebDriverInjectorExtensions {
     for (WebElement frame : frames) {
       driver.switchTo().defaultContent();
 
-      if (parents != null) {
-        for (WebElement parent : parents) {
-          driver.switchTo().frame(parent);
+      WebElement nextFrame = null;
+      try {
+        if (parents != null) {
+          for (WebElement parent : parents) {
+            nextFrame = parent;
+            driver.switchTo().frame(parent);
+          }
         }
+
+        nextFrame = frame;
+        driver.switchTo().frame(frame);
+      } catch (NoSuchFrameException nsfe) {
+        // If a frame has the CSS `display: none`, selenium errors when trying to
+        // switch to it.
+        // So, throw an error if that was not the case and ignore the frame if it was.
+        if (nextFrame.isDisplayed()) {
+          throw nsfe;
+        }
+        return;
       }
 
-      driver.switchTo().frame(frame);
       js.executeScript(script);
       List<WebElement> localParents = new ArrayList<>();
 
@@ -138,6 +156,7 @@ public final class WebDriverInjectorExtensions {
 
   /**
    * Recursively find frames and inject a script into them to be run asynchronously.
+   * If a frame errors when injecting due to not being displayed, the error is ignored.
    * @param driver An initialized WebDriver
    * @param script Script to inject
    * @param parents A list of all top level frames
@@ -150,13 +169,27 @@ public final class WebDriverInjectorExtensions {
     for (WebElement frame : frames) {
       driver.switchTo().defaultContent();
 
-      if (parents != null) {
-        for (WebElement parent : parents) {
-          driver.switchTo().frame(parent);
+      WebElement nextFrame = null;
+      try {
+        if (parents != null) {
+          for (WebElement parent : parents) {
+            nextFrame = parent;
+            driver.switchTo().frame(parent);
+          }
         }
+
+        nextFrame = frame;
+        driver.switchTo().frame(frame);
+      } catch (NoSuchFrameException nsfe) {
+        // If a frame has the CSS `display: none`, selenium errors when trying to
+        // switch to it.
+        // So, throw an error if that was not the case and ignore the frame if it was.
+        if (nextFrame.isDisplayed()) {
+          throw nsfe;
+        }
+        return;
       }
 
-      driver.switchTo().frame(frame);
       js.executeAsyncScript(script);
       List<WebElement> localParents = new ArrayList<>();
 
