@@ -167,7 +167,7 @@ public final class WebDriverInjectorExtensions {
     JavascriptExecutor js = (JavascriptExecutor) driver;
     List<WebElement> frames = driver.findElements(By.tagName("iframe"));
     frames.addAll(driver.findElements(By.tagName("frame")));
-    
+
     for (WebElement frame : frames) {
       driver.switchTo().defaultContent();
 
