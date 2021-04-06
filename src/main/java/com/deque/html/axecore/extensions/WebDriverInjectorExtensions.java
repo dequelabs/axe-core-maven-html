@@ -18,7 +18,7 @@ import java.util.List;
 import javax.naming.OperationNotSupportedException;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.NoSuchFrameException;
+import org.openqa.selenium.JavascriptException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
@@ -80,7 +80,14 @@ public final class WebDriverInjectorExtensions {
     driver.switchTo().defaultContent();
     js.executeScript(script);
     if (!disableIframeTesting) {
-      injectIntoFrames(driver, script, parents);
+      try {
+        injectIntoFrames(driver, script, parents);
+      } catch (Exception e) {
+        // Ignore all errors except those caused by the injected javascript itself
+        if (e instanceof JavascriptException) {
+          throw e;
+        }
+      }
       driver.switchTo().defaultContent();
     }
   }
@@ -98,7 +105,14 @@ public final class WebDriverInjectorExtensions {
     driver.switchTo().defaultContent();
     js.executeAsyncScript(script);
     if (!disableIframeTesting) {
-      injectIntoFramesAsync(driver, script, parents);
+      try {
+        injectIntoFramesAsync(driver, script, parents);
+      } catch (Exception e) {
+        // Ignore all errors except those caused by the injected javascript itself
+        if (e instanceof JavascriptException) {
+          throw e;
+        }
+      }
       driver.switchTo().defaultContent();
     }
   }
@@ -118,26 +132,13 @@ public final class WebDriverInjectorExtensions {
     for (WebElement frame : frames) {
       driver.switchTo().defaultContent();
 
-      WebElement nextFrame = null;
-      try {
-        if (parents != null) {
-          for (WebElement parent : parents) {
-            nextFrame = parent;
-            driver.switchTo().frame(parent);
-          }
+      if (parents != null) {
+        for (WebElement parent : parents) {
+          driver.switchTo().frame(parent);
         }
-
-        nextFrame = frame;
-        driver.switchTo().frame(frame);
-      } catch (NoSuchFrameException nsfe) {
-        // If a frame has the CSS `display: none`, selenium errors when trying to
-        // switch to it.
-        // So, throw an error if that was not the case and ignore the frame if it was.
-        if (nextFrame.isDisplayed()) {
-          throw nsfe;
-        }
-        return;
       }
+
+      driver.switchTo().frame(frame);
 
       js.executeScript(script);
       List<WebElement> localParents = new ArrayList<>();
@@ -169,26 +170,13 @@ public final class WebDriverInjectorExtensions {
     for (WebElement frame : frames) {
       driver.switchTo().defaultContent();
 
-      WebElement nextFrame = null;
-      try {
-        if (parents != null) {
-          for (WebElement parent : parents) {
-            nextFrame = parent;
-            driver.switchTo().frame(parent);
-          }
+      if (parents != null) {
+        for (WebElement parent : parents) {
+          driver.switchTo().frame(parent);
         }
-
-        nextFrame = frame;
-        driver.switchTo().frame(frame);
-      } catch (NoSuchFrameException nsfe) {
-        // If a frame has the CSS `display: none`, selenium errors when trying to
-        // switch to it.
-        // So, throw an error if that was not the case and ignore the frame if it was.
-        if (nextFrame.isDisplayed()) {
-          throw nsfe;
-        }
-        return;
       }
+
+      driver.switchTo().frame(frame);
 
       js.executeAsyncScript(script);
       List<WebElement> localParents = new ArrayList<>();
