@@ -50,8 +50,8 @@ public class AxeExampleUnitTest {
   private static final String shadowErrorPage = "src/test/resources/html/shadow-error.html";
   private static final String includeExcludePage = "src/test/resources/html/include-exclude.html";
   private static final String normalPage = "src/test/resources/html/normal.html";
-  private static final String nestedIframe = "src/test/resources/html/nested-iframes.html";
-  private static final String nestedFrame = "src/test/resources/html/nested-frames.html";
+  private static final String nestedIframePage = "src/test/resources/html/nested-iframes.html";
+  private static final String nestedFramePage = "src/test/resources/html/nested-frames.html";
 
   /**
    * Instantiate the WebDriver and navigate to the test site
@@ -117,7 +117,7 @@ public class AxeExampleUnitTest {
    */
   @Test
   public void testInjectsIntoNestedIframes() throws IOException, OperationNotSupportedException {
-    this.webDriver.get("file:///" + new File(nestedIframe).getAbsolutePath());
+    this.webDriver.get("file:///" + new File(nestedIframePage).getAbsolutePath());
     Results result = new AxeBuilder().withOnlyRules(Arrays.asList("frame-title")).analyze(webDriver);
     List<Rule> violations = result.getViolations();
     Assert.assertEquals("'frame-title' passed", 1, violations.size());
@@ -139,7 +139,7 @@ public class AxeExampleUnitTest {
    */
   @Test
   public void testInjectsIntoNestedFrames() throws IOException, OperationNotSupportedException {
-    this.webDriver.get("file:///" + new File(nestedFrame).getAbsolutePath());
+    this.webDriver.get("file:///" + new File(nestedFramePage).getAbsolutePath());
     Results result = new AxeBuilder().withOnlyRules(Arrays.asList("frame-title")).analyze(webDriver);
     List<Rule> violations = result.getViolations();
     Assert.assertEquals("'frame-title' passed", 1, violations.size());
