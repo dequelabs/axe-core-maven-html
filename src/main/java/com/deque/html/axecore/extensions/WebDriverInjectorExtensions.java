@@ -131,28 +131,34 @@ public final class WebDriverInjectorExtensions {
     frames.addAll(driver.findElements(By.tagName("frame")));
 
     for (WebElement frame : frames) {
-      driver.switchTo().defaultContent();
+      try {
+        driver.switchTo().defaultContent();
+        if (parents != null) {
+          for (WebElement parent : parents) {
+            driver.switchTo().frame(parent);
+          }
+        }
 
-      if (parents != null) {
-        for (WebElement parent : parents) {
-          driver.switchTo().frame(parent);
+        driver.switchTo().frame(frame);
+
+        js.executeScript(script);
+        List<WebElement> localParents = new ArrayList<>();
+
+        if (parents == null) {
+          localParents.add(null);
+          throw new NullPointerException();
+        } else {
+          localParents.addAll(parents);
+          localParents.add(frame);
+        }
+
+        injectIntoFrames(driver, script, localParents);
+      } catch (Exception e) {
+        // Ignore all errors except those caused by the injected javascript itself
+        if (e instanceof JavascriptException) {
+          throw e;
         }
       }
-
-      driver.switchTo().frame(frame);
-
-      js.executeScript(script);
-      List<WebElement> localParents = new ArrayList<>();
-
-      if (parents == null) {
-        localParents.add(null);
-        throw new NullPointerException();
-      } else {
-        localParents.addAll(parents);
-        localParents.add(frame);
-      }
-
-      injectIntoFrames(driver, script, localParents);
     }
   }
 
@@ -170,28 +176,35 @@ public final class WebDriverInjectorExtensions {
     frames.addAll(driver.findElements(By.tagName("frame")));
 
     for (WebElement frame : frames) {
-      driver.switchTo().defaultContent();
+      try {
+        driver.switchTo().defaultContent();
 
-      if (parents != null) {
-        for (WebElement parent : parents) {
-          driver.switchTo().frame(parent);
+        if (parents != null) {
+          for (WebElement parent : parents) {
+            driver.switchTo().frame(parent);
+          }
+        }
+
+        driver.switchTo().frame(frame);
+
+        js.executeAsyncScript(script);
+        List<WebElement> localParents = new ArrayList<>();
+
+        if (parents == null) {
+          localParents.add(null);
+          throw new NullPointerException();
+        } else {
+          localParents.addAll(parents);
+          localParents.add(frame);
+        }
+
+        injectIntoFrames(driver, script, localParents);
+      } catch (Exception e) {
+        // Ignore all errors except those caused by the injected javascript itself
+        if (e instanceof JavascriptException) {
+          throw e;
         }
       }
-
-      driver.switchTo().frame(frame);
-
-      js.executeAsyncScript(script);
-      List<WebElement> localParents = new ArrayList<>();
-
-      if (parents == null) {
-        localParents.add(null);
-        throw new NullPointerException();
-      } else {
-        localParents.addAll(parents);
-        localParents.add(frame);
-      }
-
-      injectIntoFrames(driver, script, localParents);
     }
   }
 }
