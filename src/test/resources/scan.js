@@ -7,6 +7,8 @@ var options = JSON.parse(arguments[1]);
 
 var result = { error: '', results: null };
 
+axe.configure({ allowedOrigins: ['<unsafe_all_origins>'] });
+
 axe.run(context, options, function (err, res) {
     {
         if (err) {
