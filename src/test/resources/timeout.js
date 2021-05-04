@@ -1,5 +1,6 @@
 // A fake axe-core that takes 5 minutes to finish
 window.axe = {
+  configure: function () {},
   run: function (context, options, callback) {
     setTimeout(function () {
       callback()
