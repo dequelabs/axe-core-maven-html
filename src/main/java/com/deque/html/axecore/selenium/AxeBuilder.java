@@ -454,7 +454,7 @@ public class AxeBuilder {
       WebDriverInjectorExtensions.inject(
           webDriver, iframeAllowScript, disableIframeTesting);
     } catch (Exception e) {
-        throw new RuntimeException("Unable to inject axe script", e);
+        throw new RuntimeException("Error when enabling iframe communication", e);
     }
     webDriver.manage().timeouts()
         .setScriptTimeout(timeout, TimeUnit.SECONDS);
