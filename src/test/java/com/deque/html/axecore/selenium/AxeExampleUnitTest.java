@@ -52,6 +52,7 @@ public class AxeExampleUnitTest {
   private static final String normalPage = "src/test/resources/html/normal.html";
   private static final String nestedIframePage = "src/test/resources/html/nested-iframes.html";
   private static final String nestedFramePage = "src/test/resources/html/nested-frames.html";
+  private static final String violationPage = "src/test/resources/html/violation.html";
 
   /**
    * Instantiate the WebDriver and navigate to the test site
@@ -160,10 +161,23 @@ public class AxeExampleUnitTest {
    * Test with options
    */
   @Test
-  public void testAccessibilityWithOptions() throws IOException, OperationNotSupportedException {
-    this.webDriver.get("file:///" + new File(normalPage).getAbsolutePath());
+  public void testAccessibilityWithOptionsAndViolations() throws IOException, OperationNotSupportedException {
+    this.webDriver.get("file:///" + new File(violationPage).getAbsolutePath());
     AxeBuilder builder = new AxeBuilder();
-    builder.setOptions("{ \"rules\": { \"accesskeys\": { \"enabled\": false } } }");
+    builder.setOptions("{ \"rules\": { \"object-alt\": { \"enabled\": false } } }");
+    Results result = builder.analyze(webDriver);
+    List<Rule> violations = result.getViolations();
+    Assert.assertEquals("violations found", 1, violations.size());
+  }
+
+  /**
+   * Test with options
+   */
+  @Test
+  public void testAccessibilityWithOptions() throws IOException, OperationNotSupportedException {
+    this.webDriver.get("file:///" + new File(violationPage).getAbsolutePath());
+    AxeBuilder builder = new AxeBuilder();
+    builder.setOptions("{ \"rules\": { \"image-alt\": { \"enabled\": false } } }");
     Results result = builder.analyze(webDriver);
     List<Rule> violations = result.getViolations();
     Assert.assertEquals("No violations found", 0, violations.size());
