@@ -85,7 +85,6 @@ public class AxeBuilder {
     "var context = typeof arguments[0] === 'string' ? JSON.parse(arguments[0]) : arguments[0];" +
     "context = context || document;" +
     "var options = JSON.parse(arguments[1]);" +
-    "axe.configure({ allowedOrigins: ['<unsafe_all_origins>'] });" +
     "axe.run(context, options, function (err, results) {" +
     "  {" +
     "    if (err) {" +
@@ -94,6 +93,8 @@ public class AxeBuilder {
     "    callback(results);" +
     "  }" +
     "});";
+
+  public final String iframeAllowScript = "axe.configure({ allowedOrigins: ['<unsafe_all_origins>'] });";
 
   public final String sandboxBusterScript =
     "const callback = arguments[arguments.length - 1];" +
@@ -448,6 +449,12 @@ public class AxeBuilder {
       } catch (Exception e) {
           throw new RuntimeException("Unable to inject axe script", e);
       }
+    }
+    try {
+      WebDriverInjectorExtensions.inject(
+          webDriver, iframeAllowScript, disableIframeTesting);
+    } catch (Exception e) {
+        throw new RuntimeException("Error when enabling iframe communication", e);
     }
     webDriver.manage().timeouts()
         .setScriptTimeout(timeout, TimeUnit.SECONDS);

@@ -143,7 +143,6 @@ public final class WebDriverInjectorExtensions {
         driver.switchTo().frame(frame);
 
         js.executeScript(script);
-        js.executeScript("axe.configure({ allowedOrigins: ['<unsafe_all_origins>'] });");
 
         List<WebElement> localParents = new ArrayList<>();
 
@@ -191,7 +190,6 @@ public final class WebDriverInjectorExtensions {
         driver.switchTo().frame(frame);
 
         js.executeAsyncScript(script);
-        js.executeScript("axe.configure({ allowedOrigins: ['<unsafe_all_origins>'] });");
 
         List<WebElement> localParents = new ArrayList<>();
 
