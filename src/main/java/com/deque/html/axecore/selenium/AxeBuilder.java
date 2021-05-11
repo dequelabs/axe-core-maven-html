@@ -94,6 +94,8 @@ public class AxeBuilder {
     "  }" +
     "});";
 
+  public final String iframeAllowScript = "axe.configure({ allowedOrigins: ['<unsafe_all_origins>'] });";
+
   public final String sandboxBusterScript =
     "const callback = arguments[arguments.length - 1];" +
     "const iframes = Array.from(" +
@@ -447,6 +449,12 @@ public class AxeBuilder {
       } catch (Exception e) {
           throw new RuntimeException("Unable to inject axe script", e);
       }
+    }
+    try {
+      WebDriverInjectorExtensions.inject(
+          webDriver, iframeAllowScript, disableIframeTesting);
+    } catch (Exception e) {
+        throw new RuntimeException("Error when enabling iframe communication", e);
     }
     webDriver.manage().timeouts()
         .setScriptTimeout(timeout, TimeUnit.SECONDS);

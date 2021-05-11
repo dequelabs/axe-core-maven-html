@@ -86,6 +86,7 @@ public class AxeReporterTest {
 
     Rule r1 = new Rule();
     r1.setHelp("help1");
+    r1.setHelpUrl("helpUrl1");
     r1.setDescription("desc1");
     r1.setImpact("critical1");
     r1.setTags(Arrays.asList("tag11", "tag12", "tag13"));
@@ -100,6 +101,7 @@ public class AxeReporterTest {
 
     Rule r2 = new Rule();
     r2.setHelp("help2");
+    r2.setHelpUrl("helpUrl2");
     r2.setDescription("desc2");
     r2.setImpact("critical2");
     r2.setTags(Arrays.asList("tag21", "tag22"));
@@ -108,6 +110,7 @@ public class AxeReporterTest {
 
     Rule r3 = new Rule();
     r3.setHelp("help3");
+    r3.setHelpUrl("helpUrl3");
     r3.setDescription("desc3");
     r3.setImpact("critical3");
     r3.setTags(Arrays.asList("tag31", "tag32"));
@@ -121,7 +124,7 @@ public class AxeReporterTest {
       newline() +
       "1: help1" + newline() +
       "Description: desc1" + newline() +
-      "Help URL: help1" + newline() +
+      "Help URL: helpUrl1" + newline() +
       "Impact: critical1" + newline() +
       "Tags: tag11, tag12, tag13" + newline() +
       "\t\tHTML element: html11" + newline() +
@@ -132,14 +135,14 @@ public class AxeReporterTest {
       newline() +
       "2: help2" + newline() +
       "Description: desc2" + newline() +
-      "Help URL: help2" + newline() +
+      "Help URL: helpUrl2" + newline() +
       "Impact: critical2" + newline() +
       "Tags: tag21, tag22" + newline() +
       newline() +
       newline() +
       "3: help3" + newline() +
       "Description: desc3" + newline() +
-      "Help URL: help3" + newline() +
+      "Help URL: helpUrl3" + newline() +
       "Impact: critical3" + newline() +
       "Tags: tag31, tag32";
 

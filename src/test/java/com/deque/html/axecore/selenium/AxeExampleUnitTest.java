@@ -50,6 +50,9 @@ public class AxeExampleUnitTest {
   private static final String shadowErrorPage = "src/test/resources/html/shadow-error.html";
   private static final String includeExcludePage = "src/test/resources/html/include-exclude.html";
   private static final String normalPage = "src/test/resources/html/normal.html";
+  private static final String nestedIframePage = "src/test/resources/html/nested-iframes.html";
+  private static final String nestedFramePage = "src/test/resources/html/nested-frames.html";
+  private static final String violationPage = "src/test/resources/html/violation.html";
 
   /**
    * Instantiate the WebDriver and navigate to the test site
@@ -111,13 +114,70 @@ public class AxeExampleUnitTest {
   }
 
   /**
+   * Test with nested iframes
+   */
+  @Test
+  public void testInjectsIntoNestedIframes() throws IOException, OperationNotSupportedException {
+    this.webDriver.get("file:///" + new File(nestedIframePage).getAbsolutePath());
+    Results result = new AxeBuilder().withOnlyRules(Arrays.asList("frame-title")).analyze(webDriver);
+    List<Rule> violations = result.getViolations();
+    Assert.assertEquals("'frame-title' passed", 1, violations.size());
+    Assert.assertEquals("3 nodes found", 3, violations.get(0).getNodes().size());
+    AxeReporter.writeResultsToJsonFile("src/test/java/results/testInjectsIntoNestedIframes", result);
+
+    Assert.assertTrue(getReadableAxeResults(ResultType.Violations.getKey(), webDriver, violations));
+    AxeReporter.writeResultsToTextFile("src/test/java/results/testInjectsIntoNestedIframes",
+        AxeReporter.getAxeResultString());
+
+    File jsonFile = new File("src/test/java/results/testInjectsIntoNestedIframes.json");
+    File txtFile = new File("src/test/java/results/testInjectsIntoNestedIframes.txt");
+    Assert.assertTrue("Json file was not deleted.", jsonFile.delete());
+    Assert.assertTrue("Txt file was not deleted.", txtFile.delete());
+  }
+
+  /**
+   * Test with nested frames
+   */
+  @Test
+  public void testInjectsIntoNestedFrames() throws IOException, OperationNotSupportedException {
+    this.webDriver.get("file:///" + new File(nestedFramePage).getAbsolutePath());
+    Results result = new AxeBuilder().withOnlyRules(Arrays.asList("frame-title")).analyze(webDriver);
+    List<Rule> violations = result.getViolations();
+    Assert.assertEquals("'frame-title' passed", 1, violations.size());
+    Assert.assertEquals("3 nodes found", 3, violations.get(0).getNodes().size());
+    AxeReporter.writeResultsToJsonFile("src/test/java/results/testInjectsIntoNestedFrames", result);
+
+    Assert.assertTrue(getReadableAxeResults(ResultType.Violations.getKey(), webDriver, violations));
+    AxeReporter.writeResultsToTextFile("src/test/java/results/testInjectsIntoNestedFrames",
+        AxeReporter.getAxeResultString());
+
+    File jsonFile = new File("src/test/java/results/testInjectsIntoNestedFrames.json");
+    File txtFile = new File("src/test/java/results/testInjectsIntoNestedFrames.txt");
+    Assert.assertTrue("Json file was not deleted.", jsonFile.delete());
+    Assert.assertTrue("Txt file was not deleted.", txtFile.delete());
+  }
+
+  /**
+   * Test with options
+   */
+  @Test
+  public void testAccessibilityWithOptionsAndViolations() throws IOException, OperationNotSupportedException {
+    this.webDriver.get("file:///" + new File(violationPage).getAbsolutePath());
+    AxeBuilder builder = new AxeBuilder();
+    builder.setOptions("{ \"rules\": { \"object-alt\": { \"enabled\": false } } }");
+    Results result = builder.analyze(webDriver);
+    List<Rule> violations = result.getViolations();
+    Assert.assertEquals("violations found", 1, violations.size());
+  }
+
+  /**
    * Test with options
    */
   @Test
   public void testAccessibilityWithOptions() throws IOException, OperationNotSupportedException {
-    this.webDriver.get("file:///" + new File(normalPage).getAbsolutePath());
+    this.webDriver.get("file:///" + new File(violationPage).getAbsolutePath());
     AxeBuilder builder = new AxeBuilder();
-    builder.setOptions("{ \"rules\": { \"accesskeys\": { \"enabled\": false } } }");
+    builder.setOptions("{ \"rules\": { \"image-alt\": { \"enabled\": false } } }");
     Results result = builder.analyze(webDriver);
     List<Rule> violations = result.getViolations();
     Assert.assertEquals("No violations found", 0, violations.size());
