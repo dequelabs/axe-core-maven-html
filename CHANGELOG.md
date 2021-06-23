@@ -1,4 +1,13 @@
-## [4.2.1](https://github.com/dequelabs/axe-core-maven-html/compare/v4.2.0...v4.2.1) (2021-05-19)
+## [4.2.2](https://github.com/dequelabs/axe-core-maven-html/compare/v4.2.1...v4.2.2) (2021-06-16)
+
+
+### Features
+
+* update to use `axe-core@4.2.2` ([#166](https://github.com/dequelabs/axe-core-maven-html/issues/166)) ([7685a72](https://github.com/dequelabs/axe-core-maven-html/commit/7685a72e2dd37c895071309b5f39aabf7744c65b))
+
+
+
+## [4.2.1](https://github.com/dequelabs/axe-core-maven-html/compare/v4.2.0...v4.2.1) (2021-05-18)
 
 
 ### Features
