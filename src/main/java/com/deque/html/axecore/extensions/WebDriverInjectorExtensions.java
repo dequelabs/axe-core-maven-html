@@ -126,12 +126,19 @@ public final class WebDriverInjectorExtensions {
     List<WebElement> frames = driver.findElements(By.xpath(".//*[local-name()='frame' or local-name()='iframe']"));
 
     for (WebElement frame : frames) {
+      try {
         driver.switchTo().frame(frame);
         js.executeScript(script);
 
         injectIntoFrames(driver, script);
 
         driver.switchTo().parentFrame();
+      } catch (Exception e) {
+        // Ignore all errors except those caused by the injected javascript itself
+        if (e instanceof JavascriptException) {
+          throw e;
+        }
+      }
     }
   }
 
@@ -147,12 +154,19 @@ public final class WebDriverInjectorExtensions {
     List<WebElement> frames = driver.findElements(By.xpath(".//*[local-name()='frame' or local-name()='iframe']"));
 
     for (WebElement frame : frames) {
-      driver.switchTo().frame(frame);
-      js.executeScript(script);
+      try {
+        driver.switchTo().frame(frame);
+        js.executeScript(script);
 
-      injectIntoFramesAsync(driver, script);
+        injectIntoFramesAsync(driver, script);
 
-      driver.switchTo().parentFrame();
+        driver.switchTo().parentFrame();
+      } catch (Exception e) {
+        // Ignore all errors except those caused by the injected javascript itself
+        if (e instanceof JavascriptException) {
+          throw e;
+        }
+      }
     }
   }
 }
