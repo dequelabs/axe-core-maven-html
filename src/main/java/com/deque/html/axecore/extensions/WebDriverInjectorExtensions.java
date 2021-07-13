@@ -79,14 +79,7 @@ public final class WebDriverInjectorExtensions {
     driver.switchTo().defaultContent();
     js.executeScript(script);
     if (!disableIframeTesting) {
-      try {
-        injectIntoFrames(driver, script);
-      } catch (Exception e) {
-        // Ignore all errors except those caused by the injected javascript itself
-        if (e instanceof JavascriptException) {
-          throw e;
-        }
-      }
+      injectIntoFrames(driver, script);
     }
   }
 
@@ -103,14 +96,7 @@ public final class WebDriverInjectorExtensions {
     js.executeAsyncScript(script);
 
     if (!disableIframeTesting) {
-      try {
-        injectIntoFramesAsync(driver, script);
-      } catch (Exception e) {
-        // Ignore all errors except those caused by the injected javascript itself
-        if (e instanceof JavascriptException) {
-          throw e;
-        }
-      }
+      injectIntoFramesAsync(driver, script);
     }
   }
 
