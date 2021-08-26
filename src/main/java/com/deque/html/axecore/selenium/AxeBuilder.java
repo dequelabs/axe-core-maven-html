@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
+
 import javax.naming.OperationNotSupportedException;
 import org.json.JSONObject;
 import org.openqa.selenium.InvalidArgumentException;
@@ -31,14 +33,17 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.deque.html.axecore.axeargs.AxeRuleOptions;
 import com.deque.html.axecore.axeargs.AxeRunContext;
 import com.deque.html.axecore.axeargs.AxeRunOnlyOptions;
 import com.deque.html.axecore.axeargs.AxeRunOptions;
 import com.deque.html.axecore.extensions.WebDriverInjectorExtensions;
+import com.deque.html.axecore.extensions.WebDriverExtensions;
 import com.deque.html.axecore.providers.IAxeScriptProvider;
 import com.deque.html.axecore.providers.EmbeddedResourceAxeProvider;
 import com.deque.html.axecore.providers.EmbeddedResourceProvider;
+import com.deque.html.axecore.results.FrameContext;
 import com.deque.html.axecore.results.Results;
 import com.deque.html.axecore.results.Rule;
 
@@ -73,6 +78,7 @@ public class AxeBuilder {
 
   private boolean disableIframeTesting = false;
 
+  private Consumer<WebDriver> injectAxeCallback;
   /**
    * timeout of how the the scan should run until an error occurs.
    */
@@ -95,6 +101,8 @@ public class AxeBuilder {
     "});";
 
   public final String iframeAllowScript = "axe.configure({ allowedOrigins: ['<unsafe_all_origins>'] });";
+
+  public final String hasRunPartialScript = "return typeof window.axe.runPartial === 'function'";
 
   public final String sandboxBusterScript =
     "const callback = arguments[arguments.length - 1];" +
@@ -380,6 +388,12 @@ public class AxeBuilder {
     return this;
   }
 
+  // TODO: Docs
+  public void setInjectAxe(Consumer<WebDriver> cb) {
+    injectAxeCallback = cb;
+  }
+
+
   /**
    * Run axe against a specific WebElement
    * or webElements (including its descendants).
@@ -388,7 +402,7 @@ public class AxeBuilder {
    * @return An axe results document
    */
   public Results analyze(final WebDriver webDriver, final WebElement... context) {
-    return analyzeRawContext(webDriver, context, true);
+    return analyzeRawContext(webDriver, context);
   }
 
   /**
@@ -400,8 +414,8 @@ public class AxeBuilder {
     boolean runContextHasData = this.runContext.getInclude() != null
         || this.runContext.getExclude() != null;
     String rawContext = runContextHasData
-        ? AxeReporter.serialize(runContext) : null;
-    return analyzeRawContext(webDriver, rawContext, true);
+        ? AxeReporter.serialize(runContext) : "{ 'exclude': [] }";
+    return analyzeRawContext(webDriver, rawContext);
   }
 
   /**
@@ -414,11 +428,9 @@ public class AxeBuilder {
     boolean runContextHasData = this.runContext.getInclude() != null
         || this.runContext.getExclude() != null;
     String rawContext = runContextHasData
-        ? AxeReporter.serialize(runContext) : null;
-    return analyzeRawContext(webDriver, rawContext, injectAxe);
+        ? AxeReporter.serialize(runContext) : "{ 'exclude': [] }";
+    return analyzeRawContext(webDriver, rawContext);
   }
-
-
   /**
    * Runs axe via axeRunScript at a specific context, which will be passed
    * as-is to Selenium for scan.js to interpret, and parses/handles
@@ -427,11 +439,8 @@ public class AxeBuilder {
    *                      scan.js to use as the axe.run "context" argument
    * @return an Axe Result
    */
-  private Results analyzeRawContext(final WebDriver webDriver, final Object rawContextArg, boolean injectAxe) {
+  private Results analyzeRawContext(final WebDriver webDriver, final Object rawContextArg) {
     validateNotNullParameter(webDriver);
-    String rawOptionsArg = getOptions().equals("{}")
-        ? AxeReporter.serialize(runOptions) : getOptions();
-    Object[] rawArgs = new Object[] {rawContextArg, rawOptionsArg};
 
     if (noSandbox) {
       try {
@@ -442,14 +451,141 @@ public class AxeBuilder {
       }
     }
 
-    if (injectAxe) {
+    injectAxe(webDriver);
+
+    boolean hasRunPartial = (Boolean) WebDriverInjectorExtensions.executeScript(webDriver, hasRunPartialScript);
+    if (hasRunPartial) {
+      return analyzePost43x(webDriver, rawContextArg);
+    } else {
+      return analyzePre43x(webDriver, rawContextArg);
+    }
+  }
+
+  private Results buildErrorResults(JavascriptException je) {
+      // Formatted to match what you get if you run `new Date().toString()` in JS
+      SimpleDateFormat df = new SimpleDateFormat("E MMM dd yyyy HH:mm:ss 'GMT'XX (zzzz)");
+      String dateTime = df.format(new Date());
+      Results results = new Results();
+      results.setViolations(new ArrayList<Rule>());
+      results.setPasses(new ArrayList<Rule>());
+      results.setUrl("");
+      results.setTimestamp(dateTime);
+      results.setErrorMessage(je);
+      return results;
+  }
+
+  private ArrayList<Object> runPartialRecursive(final WebDriver webDriver, final Object options, final Object context, final boolean isTopLevel) {
+    if (!isTopLevel) { injectAxe(webDriver);
+    }
+
+    try {
+      Object fcResponse = WebDriverInjectorExtensions.executeScript(webDriver, frameContextScript, context);
+      ArrayList<FrameContext> contexts = objectMapper.convertValue(fcResponse, new TypeReference<ArrayList<FrameContext>>() {});
+
+      Object resResponse = WebDriverInjectorExtensions.executeAsyncScript(webDriver, runPartialScript, context, options);
+      ArrayList<Object> partialResults = new ArrayList<Object>();
+      partialResults.add(resResponse);
+
+      for (FrameContext fc : contexts) {
+        Object frameContext = AxeReporter.serialize(fc.getFrameContext());
+        Object frameSelector = AxeReporter.serialize(fc.getFrameSelector());
+        Object frame = WebDriverInjectorExtensions.executeScript(webDriver, shadowSelectScript, frameSelector);
+
+        if (frame instanceof String) {
+          webDriver.switchTo().frame((String) frame);
+        } else if (frame instanceof WebElement) {
+          WebElement elem = (WebElement) frame;
+          webDriver.switchTo().frame((WebElement) frame);
+        } else if (frame instanceof Integer) {
+          webDriver.switchTo().frame((Integer) frame);
+        } else {
+          partialResults.add(null);
+          continue;
+        }
+        ArrayList<Object> morePartialResults = runPartialRecursive(webDriver, options, frameContext, false);
+        partialResults.addAll(morePartialResults);
+      }
+      if (!isTopLevel) {
+        webDriver.switchTo().parentFrame();
+      }
+      return partialResults;
+    } catch (RuntimeException e) {
+      if (isTopLevel) {
+        throw e;
+      } else {
+        return new ArrayList<Object>();
+      }
+    }
+  }
+  private static String shadowSelectScript = "return axe.utils.shadowSelect(JSON.parse(arguments[0]))";
+  private static String runPartialScript = 
+    "const context = typeof arguments[0] == 'string' ? JSON.parse(arguments[0]) : arguments[0];" +
+    "const options = JSON.parse(arguments[1]);" +
+    "const cb = arguments[arguments.length - 1];" +
+    "window.c = context; window.o = options;" + // FIXME
+    "try {" +
+    "  window.axe.runPartial(context, options).then(cb);" +
+    "} catch (err) {" +
+    "  cb({" +
+    "    violations: []," +
+    "    passes: []," +
+    "    url: ''," +
+    "    timestamp: new Date().toString()," +
+    "    errorMessage: err.message" +
+    "  });" +
+    "};";
+  private static String frameContextScript = 
+    "const context = typeof arguments[0] == 'string' ? JSON.parse(arguments[0]) : arguments[0];" +
+    "try {" +
+    "  return window.axe.utils.getFrameContexts(context);" +
+    "} catch (err) {" +
+    "  return {" +
+    "    violations: []," +
+    "    passes: []," +
+    "    url: ''," +
+    "    timestamp: new Date().toString()," +
+    "    errorMessage: err.message" +
+    "  };" +
+    "}";
+  private static String finishRunScript = "return axe.finishRun(arguments[0])";
+
+  private Results analyzePost43x(final WebDriver webDriver, final Object rawContextArg) {
+    String rawOptionsArg = getOptions().equals("{}")
+        ? AxeReporter.serialize(runOptions) : getOptions();
+
+    ArrayList<Object> partialResults;
+    try {
+      partialResults = runPartialRecursive(webDriver, rawOptionsArg, rawContextArg, true);
+    } catch (JavascriptException je) {
+      return buildErrorResults(je);
+    }
+
+    String prevWindow = WebDriverExtensions.openAboutBlank(webDriver);
+    injectAxe(webDriver);
+    Object resResponse = WebDriverInjectorExtensions.executeScript(webDriver, finishRunScript, partialResults);
+    WebDriverExtensions.closeAboutBlank(webDriver, prevWindow);
+    Results res = objectMapper.convertValue(resResponse, Results.class);
+
+
+    return res;
+  }
+
+  private Results analyzePre43x(final WebDriver webDriver, final Object rawContextArg) {
+    String rawOptionsArg = getOptions().equals("{}")
+        ? AxeReporter.serialize(runOptions) : getOptions();
+    Object[] rawArgs = new Object[] {rawContextArg, rawOptionsArg};
+
+    if (injectAxeCallback == null) {
       try {
         WebDriverInjectorExtensions.inject(
             webDriver, builderOptions.getScriptProvider(), disableIframeTesting);
       } catch (Exception e) {
           throw new RuntimeException("Unable to inject axe script", e);
       }
+    } else {
+      injectAxeCallback.accept(webDriver);
     }
+
     try {
       WebDriverInjectorExtensions.inject(
           webDriver, iframeAllowScript, disableIframeTesting);
@@ -464,20 +600,25 @@ public class AxeBuilder {
       response = ((JavascriptExecutor) webDriver)
         .executeAsyncScript(axeRunScript, rawArgs);
     } catch (JavascriptException je) {
-      // Formatted to match what you get if you run `new Date().toString()` in JS
-      SimpleDateFormat df = new SimpleDateFormat("E MMM dd yyyy HH:mm:ss 'GMT'XX (zzzz)");
-      String dateTime = df.format(new Date());
-      Results results = new Results();
-      results.setViolations(new ArrayList<Rule>());
-      results.setPasses(new ArrayList<Rule>());
-      results.setUrl("");
-      results.setTimestamp(dateTime);
-      results.setErrorMessage(je);
-      return results;
+      return buildErrorResults(je);
     }
 
     Results results = objectMapper.convertValue(response, Results.class);
     return results;
+  }
+
+  private void injectAxe(final WebDriver webDriver) {
+    if (injectAxeCallback == null) {
+      try {
+        WebDriverInjectorExtensions.executeScript(
+            webDriver, builderOptions.getScriptProvider().getScript());
+      } catch (Exception e) {
+          throw new RuntimeException("Unable to inject axe script", e);
+      }
+    } else {
+      injectAxeCallback.accept(webDriver);
+    }
+
   }
 
   /**

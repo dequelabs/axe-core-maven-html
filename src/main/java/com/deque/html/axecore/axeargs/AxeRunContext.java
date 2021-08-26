@@ -57,6 +57,9 @@ public class AxeRunContext {
    */
   @JsonProperty(value = "exclude")
   public List<List<String>> getExclude() {
+    if (exclude == null) {
+      this.exclude = new ArrayList<>();
+    }
     return this.exclude;
   }
 

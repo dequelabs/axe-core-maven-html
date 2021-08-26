@@ -49,7 +49,7 @@ public class AxeRunContextUnitTest {
   @Test()
   public void shouldNotIncludeNullPropertiesOnSerializing() throws JsonProcessingException {
     AxeRunContext context = new AxeRunContext();
-    String expectedContent = "{}";
+    String expectedContent = "{\"exclude\":[]}";
     Assert.assertEquals(AxeReporter.serialize(context), expectedContent);
   }
 }

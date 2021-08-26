@@ -237,7 +237,7 @@ public class AxeExampleUnitTest {
   @Test
   public void testAccessibilityWithSelectors() throws IOException, OperationNotSupportedException {
     this.webDriver.get("file:///" + new File(normalPage).getAbsolutePath());
-    Results result = new AxeBuilder().include(Arrays.asList("title", "p")).analyze(webDriver);
+    Results result = new AxeBuilder().include(Arrays.asList("title")).include(Arrays.asList("p")).analyze(webDriver);
     List<Rule> violations = result.getViolations();
     Assert.assertEquals("No violations found", 0, violations.size());
     AxeReporter

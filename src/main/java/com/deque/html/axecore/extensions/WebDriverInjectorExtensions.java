@@ -34,6 +34,20 @@ public final class WebDriverInjectorExtensions {
   private WebDriverInjectorExtensions() {
   }
 
+
+  /**
+   * Execute an asynchronous JavaScript command.
+   *
+   * @param webDriver for the page to be scanned
+   * @param command The command to be executed.
+   * @param args Additional arguments to be provided to the command.
+   * @return the results that would normally be provided to the asynchronous commands callback.
+   */
+  public static Object executeScript(final WebDriver webDriver, final String command,
+      final Object... args) {
+    return ((JavascriptExecutor) webDriver).executeScript(command, args);
+  }
+
   /**
    * Execute an asynchronous JavaScript command.
    *
