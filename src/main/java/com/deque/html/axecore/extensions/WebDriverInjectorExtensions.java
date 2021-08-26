@@ -36,12 +36,12 @@ public final class WebDriverInjectorExtensions {
 
 
   /**
-   * Execute an asynchronous JavaScript command.
+   * Execute an synchronous JavaScript command.
    *
    * @param webDriver for the page to be scanned
    * @param command The command to be executed.
    * @param args Additional arguments to be provided to the command.
-   * @return the results that would normally be provided to the asynchronous commands callback.
+   * @return the results that would normally be provided to the synchronous commands callback.
    */
   public static Object executeScript(final WebDriver webDriver, final String command,
       final Object... args) {

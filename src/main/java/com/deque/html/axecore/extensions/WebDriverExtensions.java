@@ -112,6 +112,13 @@ public final class WebDriverExtensions {
     return axeBuilder.analyze(webDriver, context);
   }
 
+  /**
+   * Open about:blank in a secure context.
+   *
+   * @param webDriver of the open page
+   *
+   * @return ID of window at before the switch. Pass this to closeAboutBlank
+   */
   public static String openAboutBlank(final WebDriver webDriver) {
     String currentWindow = webDriver.getWindowHandle();
 
@@ -125,6 +132,12 @@ public final class WebDriverExtensions {
     return currentWindow;
   }
 
+  /**
+   * Closes the about:blank window and switches back to the provided window.
+   *
+   * @param webDriver for the open page
+   * @param prevWindow ID for the window returned by openAboutBlank
+   */
   public static void closeAboutBlank(final WebDriver webDriver, final String prevWindow) {
     webDriver.close();
     webDriver.switchTo().window(prevWindow);

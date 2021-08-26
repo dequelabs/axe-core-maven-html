@@ -388,7 +388,12 @@ public class AxeBuilder {
     return this;
   }
 
-  // TODO: Docs
+  /**
+   * Set a custom method of injecting axe into the page.
+   * Will not use the default injection if set.
+   *
+   * @param cb function that will inject axe-core into the page
+   */
   public void setInjectAxe(Consumer<WebDriver> cb) {
     injectAxeCallback = cb;
   }
