@@ -464,6 +464,8 @@ public class AxeBuilder {
    */
   private Results analyzeRawContext(final WebDriver webDriver, final Object rawContextArg) {
     validateNotNullParameter(webDriver);
+    webDriver.manage().timeouts()
+        .setScriptTimeout(timeout, TimeUnit.SECONDS);
 
     if (noSandbox) {
       try {
@@ -477,6 +479,7 @@ public class AxeBuilder {
     injectAxe(webDriver);
 
     boolean hasRunPartial = (Boolean) WebDriverInjectorExtensions.executeScript(webDriver, hasRunPartialScript);
+    System.out.println("HAS RUN PARTIAL = " + hasRunPartial);
     if (hasRunPartial) {
       return analyzePost43x(webDriver, rawContextArg);
     } else {
@@ -591,8 +594,6 @@ public class AxeBuilder {
     } catch (Exception e) {
         throw new RuntimeException("Error when enabling iframe communication", e);
     }
-    webDriver.manage().timeouts()
-        .setScriptTimeout(timeout, TimeUnit.SECONDS);
 
     Object response = null;
     try {

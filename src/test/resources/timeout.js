@@ -2,8 +2,13 @@
 window.axe = {
   configure: function () {},
   run: function (context, options, callback) {
-    setTimeout(function () {
-      callback()
-    }, 1000 * 60 * 5)
+    return new Promise(resolve => {
+      setTimeout(function () {
+        resolve();
+        if (callback) {
+          callback();
+        }
+      }, 1000 * 60 * 5)
+    })
   }
 }
