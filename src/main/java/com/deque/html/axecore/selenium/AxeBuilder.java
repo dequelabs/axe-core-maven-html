@@ -124,6 +124,31 @@ public class AxeBuilder {
     "};" +
     "Promise.all(iframes.map(replaceSandboxedIframe)).then(callback);";
 
+  private static String shadowSelectScript = "return axe.utils.shadowSelect(JSON.parse(arguments[0]))";
+
+  private static String runPartialScript = 
+    "const context = typeof arguments[0] == 'string' ? JSON.parse(arguments[0]) : arguments[0];" +
+    "const options = JSON.parse(arguments[1]);" +
+    "const cb = arguments[arguments.length - 1];" +
+    "window.c = context; window.o = options;" + // FIXME
+    "window.axe.runPartial(context, options).then(cb);";
+
+  private static String frameContextScript = 
+    "const context = typeof arguments[0] == 'string' ? JSON.parse(arguments[0]) : arguments[0];" +
+    "try {" +
+    "  return window.axe.utils.getFrameContexts(context);" +
+    "} catch (err) {" +
+    "  return {" +
+    "    violations: []," +
+    "    passes: []," +
+    "    url: ''," +
+    "    timestamp: new Date().toString()," +
+    "    errorMessage: err.message" +
+    "  };" +
+    "}";
+
+  private static String finishRunScript = "return axe.finishRun(arguments[0])";
+
   /**
    * get the default axe builder options.
    * @return the Axe Builder Options
@@ -466,7 +491,7 @@ public class AxeBuilder {
     }
   }
 
-  private Results buildErrorResults(JavascriptException je) {
+  private Results buildErrorResults(Exception execpt) {
       // Formatted to match what you get if you run `new Date().toString()` in JS
       SimpleDateFormat df = new SimpleDateFormat("E MMM dd yyyy HH:mm:ss 'GMT'XX (zzzz)");
       String dateTime = df.format(new Date());
@@ -475,12 +500,13 @@ public class AxeBuilder {
       results.setPasses(new ArrayList<Rule>());
       results.setUrl("");
       results.setTimestamp(dateTime);
-      results.setErrorMessage(je);
+      results.setErrorMessage(execpt);
       return results;
   }
 
   private ArrayList<Object> runPartialRecursive(final WebDriver webDriver, final Object options, final Object context, final boolean isTopLevel) {
-    if (!isTopLevel) { injectAxe(webDriver);
+    if (!isTopLevel) {
+      injectAxe(webDriver);
     }
 
     try {
@@ -510,49 +536,21 @@ public class AxeBuilder {
         ArrayList<Object> morePartialResults = runPartialRecursive(webDriver, options, frameContext, false);
         partialResults.addAll(morePartialResults);
       }
-      if (!isTopLevel) {
-        webDriver.switchTo().parentFrame();
-      }
       return partialResults;
     } catch (RuntimeException e) {
       if (isTopLevel) {
         throw e;
       } else {
-        return new ArrayList<Object>();
+        ArrayList<Object> ret = new ArrayList<Object>();
+        ret.add(null);
+        return ret;
+      }
+    } finally {
+      if (!isTopLevel) {
+        webDriver.switchTo().parentFrame();
       }
     }
   }
-  private static String shadowSelectScript = "return axe.utils.shadowSelect(JSON.parse(arguments[0]))";
-  private static String runPartialScript = 
-    "const context = typeof arguments[0] == 'string' ? JSON.parse(arguments[0]) : arguments[0];" +
-    "const options = JSON.parse(arguments[1]);" +
-    "const cb = arguments[arguments.length - 1];" +
-    "window.c = context; window.o = options;" + // FIXME
-    "try {" +
-    "  window.axe.runPartial(context, options).then(cb);" +
-    "} catch (err) {" +
-    "  cb({" +
-    "    violations: []," +
-    "    passes: []," +
-    "    url: ''," +
-    "    timestamp: new Date().toString()," +
-    "    errorMessage: err.message" +
-    "  });" +
-    "};";
-  private static String frameContextScript = 
-    "const context = typeof arguments[0] == 'string' ? JSON.parse(arguments[0]) : arguments[0];" +
-    "try {" +
-    "  return window.axe.utils.getFrameContexts(context);" +
-    "} catch (err) {" +
-    "  return {" +
-    "    violations: []," +
-    "    passes: []," +
-    "    url: ''," +
-    "    timestamp: new Date().toString()," +
-    "    errorMessage: err.message" +
-    "  };" +
-    "}";
-  private static String finishRunScript = "return axe.finishRun(arguments[0])";
 
   private Results analyzePost43x(final WebDriver webDriver, final Object rawContextArg) {
     String rawOptionsArg = getOptions().equals("{}")
@@ -561,8 +559,11 @@ public class AxeBuilder {
     ArrayList<Object> partialResults;
     try {
       partialResults = runPartialRecursive(webDriver, rawOptionsArg, rawContextArg, true);
-    } catch (JavascriptException je) {
-      return buildErrorResults(je);
+    } catch (RuntimeException re) {
+      if (re.getMessage().contains("Unable to inject axe script")) {
+        throw re;
+      }
+      return buildErrorResults(re);
     }
 
     String prevWindow = WebDriverExtensions.openAboutBlank(webDriver);
@@ -613,14 +614,13 @@ public class AxeBuilder {
   }
 
   private void injectAxe(final WebDriver webDriver) {
-    if (injectAxeCallback == null) {
-      try {
-        WebDriverInjectorExtensions.executeScript(
-            webDriver, builderOptions.getScriptProvider().getScript());
-      } catch (Exception e) {
-          throw new RuntimeException("Unable to inject axe script", e);
-      }
-    } else {
+    try {
+      WebDriverInjectorExtensions.executeScript(
+          webDriver, builderOptions.getScriptProvider().getScript());
+    } catch (Exception e) {
+        throw new RuntimeException("Unable to inject axe script", e);
+    }
+    if (injectAxeCallback != null) {
       injectAxeCallback.accept(webDriver);
     }
 

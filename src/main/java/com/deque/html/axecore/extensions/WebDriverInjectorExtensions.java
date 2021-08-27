@@ -15,6 +15,8 @@ package com.deque.html.axecore.extensions;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
+
 import javax.naming.OperationNotSupportedException;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
@@ -72,12 +74,26 @@ public final class WebDriverInjectorExtensions {
   public static void inject(final WebDriver driver,
       final IAxeScriptProvider scriptProvider, boolean disableIframeTesting)
       throws OperationNotSupportedException, IOException {
+    inject(driver, scriptProvider, disableIframeTesting, null);
+  }
+
+  /**
+   * Injects Axe script into frames.
+   * If a frame (not top-level) errors when injecting due to not being displayed, the error is ignored.
+   * @param driver WebDriver instance to inject into
+   * @param scriptProvider Provider that get the aXe script to inject
+   * @throws OperationNotSupportedException if the operation errors out
+   * @throws IOException if an IO exception occurs
+   */
+  public static void inject(final WebDriver driver, final IAxeScriptProvider scriptProvider,
+      boolean disableIframeTesting, Consumer<WebDriver> injectCB)
+      throws OperationNotSupportedException, IOException {
     if (scriptProvider == null) {
       throw new NullPointerException("the Script provider is null");
     }
 
     String script = scriptProvider.getScript();
-    inject(driver, script, disableIframeTesting);
+    inject(driver, script, disableIframeTesting, injectCB);
   }
 
   /**
@@ -88,12 +104,26 @@ public final class WebDriverInjectorExtensions {
    */
   public static void inject(final WebDriver driver,
       final String script, boolean disableIframeTesting) {
+    inject(driver, script, disableIframeTesting, null);
+  }
+
+  /**
+   * Injects Axe script into frames.
+   * If a frame (not top-level) errors when injecting due to not being displayed, the error is ignored.
+   * @param driver WebDriver instance to inject into
+   * @param script The script to inject
+   */
+  public static void inject(final WebDriver driver, final String script,
+      boolean disableIframeTesting, Consumer<WebDriver> injectCB) {
     JavascriptExecutor js = (JavascriptExecutor) driver;
 
     driver.switchTo().defaultContent();
     js.executeScript(script);
+    if (injectCB != null) {
+      injectCB.accept(driver);
+    }
     if (!disableIframeTesting) {
-      injectIntoFrames(driver, script);
+      injectIntoFrames(driver, script, injectCB);
     }
   }
 
@@ -121,7 +151,7 @@ public final class WebDriverInjectorExtensions {
    * @param script Script to inject
    */
   private static void injectIntoFrames(final WebDriver driver,
-      final String script) {
+      final String script, Consumer<WebDriver> injectCB) {
     JavascriptExecutor js = (JavascriptExecutor) driver;
     List<WebElement> frames = driver.findElements(By.xpath(".//*[local-name()='frame' or local-name()='iframe']"));
 
@@ -129,8 +159,11 @@ public final class WebDriverInjectorExtensions {
       try {
         driver.switchTo().frame(frame);
         js.executeScript(script);
+        if (injectCB != null) {
+          injectCB.accept(driver);
+        }
 
-        injectIntoFrames(driver, script);
+        injectIntoFrames(driver, script, injectCB);
 
         driver.switchTo().parentFrame();
       } catch (Exception e) {
@@ -156,7 +189,7 @@ public final class WebDriverInjectorExtensions {
     for (WebElement frame : frames) {
       try {
         driver.switchTo().frame(frame);
-        js.executeScript(script);
+        js.executeAsyncScript(script);
 
         injectIntoFramesAsync(driver, script);
 

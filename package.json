@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "axe-core": "^4.3.3",
+    "axe-test-fixtures": "github:dequelabs/axe-test-fixtures#v1",
     "conventional-changelog-cli": "^2.1.0"
   }
 }
