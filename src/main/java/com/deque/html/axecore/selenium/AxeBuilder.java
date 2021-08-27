@@ -91,14 +91,7 @@ public class AxeBuilder {
     "var context = typeof arguments[0] === 'string' ? JSON.parse(arguments[0]) : arguments[0];" +
     "context = context || document;" +
     "var options = JSON.parse(arguments[1]);" +
-    "axe.run(context, options, function (err, results) {" +
-    "  {" +
-    "    if (err) {" +
-    "      throw new Error(err);" +
-    "    }" +
-    "    callback(results);" +
-    "  }" +
-    "});";
+    "axe.run(context, options).then(callback)";
 
   public final String iframeAllowScript = "axe.configure({ allowedOrigins: ['<unsafe_all_origins>'] });";
 
