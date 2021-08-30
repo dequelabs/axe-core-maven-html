@@ -129,17 +129,7 @@ public class AxeBuilder {
 
   private static String frameContextScript = 
     "const context = typeof arguments[0] == 'string' ? JSON.parse(arguments[0]) : arguments[0];" +
-    "try {" +
-    "  return window.axe.utils.getFrameContexts(context);" +
-    "} catch (err) {" +
-    "  return {" +
-    "    violations: []," +
-    "    passes: []," +
-    "    url: ''," +
-    "    timestamp: new Date().toString()," +
-    "    errorMessage: err.message" +
-    "  };" +
-    "}";
+    "return window.axe.utils.getFrameContexts(context);";
 
   private static String finishRunScript = "return axe.finishRun(arguments[0])";
 
