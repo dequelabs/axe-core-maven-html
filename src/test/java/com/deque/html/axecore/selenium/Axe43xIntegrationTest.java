@@ -341,6 +341,7 @@ public class Axe43xIntegrationTest {
     assertNotNull(res.getToolOptions().getReporter());
     assertEquals(fixture("/index.html"), res.getUrl());
   }
+
   /**
    * initiates a web browser for Chrome and Firefox.
    * @param browser the string of the browser to be set.
