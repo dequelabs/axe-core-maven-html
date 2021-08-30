@@ -79,6 +79,7 @@ public class AxeBuilder {
   private boolean disableIframeTesting = false;
 
   private Consumer<WebDriver> injectAxeCallback;
+  private boolean doNotInjectAxe = false;
   /**
    * timeout of how the the scan should run until an error occurs.
    */
@@ -415,6 +416,17 @@ public class AxeBuilder {
   public void setInjectAxe(Consumer<WebDriver> cb) {
     injectAxeCallback = cb;
   }
+  /**
+   * Set a custom method of injecting axe into the page.
+   * Will not use the default injection if set.
+   *
+   * @param cb function that will inject axe-core into the page
+   * @param stillInjectAxe whether or not to still inject axe
+   */
+  public void setInjectAxe(Consumer<WebDriver> cb, boolean stillInjectAxe) {
+    injectAxeCallback = cb;
+    doNotInjectAxe = !stillInjectAxe;
+  }
 
 
   /**
@@ -512,6 +524,9 @@ public class AxeBuilder {
       Object resResponse = WebDriverInjectorExtensions.executeAsyncScript(webDriver, runPartialScript, context, options);
       ArrayList<Object> partialResults = new ArrayList<Object>();
       partialResults.add(resResponse);
+      if (disableIframeTesting) {
+        return partialResults;
+      }
 
       for (FrameContext fc : contexts) {
         Object frameContext = AxeReporter.serialize(fc.getFrameContext());
@@ -577,16 +592,13 @@ public class AxeBuilder {
         ? AxeReporter.serialize(runOptions) : getOptions();
     Object[] rawArgs = new Object[] {rawContextArg, rawOptionsArg};
 
-    if (injectAxeCallback == null) {
       try {
         WebDriverInjectorExtensions.inject(
-            webDriver, builderOptions.getScriptProvider(), disableIframeTesting);
+            webDriver, builderOptions.getScriptProvider().getScript(), disableIframeTesting,
+            injectAxeCallback, doNotInjectAxe);
       } catch (Exception e) {
           throw new RuntimeException("Unable to inject axe script", e);
       }
-    } else {
-      injectAxeCallback.accept(webDriver);
-    }
 
     try {
       WebDriverInjectorExtensions.inject(
@@ -608,16 +620,17 @@ public class AxeBuilder {
   }
 
   private void injectAxe(final WebDriver webDriver) {
-    try {
-      WebDriverInjectorExtensions.executeScript(
-          webDriver, builderOptions.getScriptProvider().getScript());
-    } catch (Exception e) {
-        throw new RuntimeException("Unable to inject axe script", e);
+    if (!doNotInjectAxe) {
+      try {
+        WebDriverInjectorExtensions.executeScript(
+            webDriver, builderOptions.getScriptProvider().getScript());
+      } catch (Exception e) {
+          throw new RuntimeException("Unable to inject axe script", e);
+      }
     }
     if (injectAxeCallback != null) {
       injectAxeCallback.accept(webDriver);
     }
-
   }
 
   /**
