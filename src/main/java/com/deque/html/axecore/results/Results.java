@@ -6,7 +6,7 @@ import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Results {
-    private Object toolOptions;
+    private ToolOptions toolOptions;
     private TestEngine testEngine;
     private TestEnvironment testEnvironment;
     private TestRunner testRunner;
@@ -63,12 +63,20 @@ public class Results {
       return testEngine;
     }
 
+    public void setTestEngine(final TestEngine testEngine) {
+      this.testEngine = testEngine;
+    }
+
     public TestEnvironment getTestEnvironment() {
       return testEnvironment;
     }
 
     public TestRunner getTestRunner() {
       return testRunner;
+    }
+
+    public ToolOptions getToolOptions() {
+        return toolOptions;
     }
 
     public List<Rule> getPasses() {

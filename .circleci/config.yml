@@ -34,6 +34,9 @@ jobs:
       - run:
           command: node src/test/resources/test-app.js
           background: true
+      - run:
+          command: cd node_modules/axe-test-fixtures/fixtures && python2 -m SimpleHTTPServer 8001
+          background: true
       - run: sleep 5 # sleep to allow the server some time to boot
       - run: mvn test
 

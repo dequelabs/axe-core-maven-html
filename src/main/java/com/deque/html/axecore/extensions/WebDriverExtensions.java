@@ -13,9 +13,11 @@
 package com.deque.html.axecore.extensions;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import javax.naming.OperationNotSupportedException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.JavascriptExecutor;
 
 import com.deque.html.axecore.results.Results;
 import com.deque.html.axecore.selenium.AxeBuilder;
@@ -108,5 +110,36 @@ public final class WebDriverExtensions {
     }
     AxeBuilder axeBuilder = new AxeBuilder(axeBuilderOptions);
     return axeBuilder.analyze(webDriver, context);
+  }
+
+  /**
+   * Open about:blank in a secure context.
+   *
+   * @param webDriver of the open page
+   *
+   * @return ID of window at before the switch. Pass this to closeAboutBlank
+   */
+  public static String openAboutBlank(final WebDriver webDriver) {
+    String currentWindow = webDriver.getWindowHandle();
+
+    JavascriptExecutor driver = (JavascriptExecutor) webDriver;
+    driver.executeScript("window.open('about:blank', '_blank')");
+    ArrayList<String> handles = new ArrayList<String>(webDriver.getWindowHandles());
+    String abHandle = handles.get(handles.size() - 1);
+    webDriver.switchTo().window(abHandle);
+    webDriver.get("about:blank");
+
+    return currentWindow;
+  }
+
+  /**
+   * Closes the about:blank window and switches back to the provided window.
+   *
+   * @param webDriver for the open page
+   * @param prevWindow ID for the window returned by openAboutBlank
+   */
+  public static void closeAboutBlank(final WebDriver webDriver, final String prevWindow) {
+    webDriver.close();
+    webDriver.switchTo().window(prevWindow);
   }
 }

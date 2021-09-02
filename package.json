@@ -7,7 +7,8 @@
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0"
   },
   "dependencies": {
-    "axe-core": "^4.2.3",
+    "axe-core": "^4.3.3",
+    "axe-test-fixtures": "github:dequelabs/axe-test-fixtures#v1",
     "conventional-changelog-cli": "^2.1.0"
   }
 }
