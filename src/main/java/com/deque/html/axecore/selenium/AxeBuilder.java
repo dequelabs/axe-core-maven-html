@@ -74,6 +74,8 @@ public class AxeBuilder {
    */
   private AxeBuilderOptions builderOptions = getDefaultAxeBuilderOptions();
 
+  private boolean legacyMode = false;
+
   private boolean noSandbox = false;
 
   private boolean disableIframeTesting = false;
@@ -94,7 +96,10 @@ public class AxeBuilder {
     "var options = JSON.parse(arguments[1]);" +
     "axe.run(context, options).then(callback)";
 
-  public final String iframeAllowScript = "axe.configure({ allowedOrigins: ['<unsafe_all_origins>'] });";
+  public final String unsafeAllOrigins = "<unsafe_all_origins>";
+  public final String sameOrign = "<same_origin>";
+
+  public final String iframeAllowScriptTemplate = "axe.configure({ allowedOrigins: ['%s'] });";
 
   public final String hasRunPartialScript = "return typeof window.axe.runPartial === 'function'";
 
@@ -398,6 +403,28 @@ public class AxeBuilder {
   }
 
   /**
+   * Enables the use of legacy axe analysis path.
+   * Affects cross-domain results.
+   *
+   * @return an Axe Builder
+   */
+  public AxeBuilder setLegacyMode() {
+    return setLegacyMode(true);
+  }
+  /**
+   * Enables the use of legacy axe analysis path.
+   * Affects cross-domain results.
+   *
+   * @param state Whether or not to use legacy mode.
+   *
+   * @return an Axe Builder
+   */
+  public AxeBuilder setLegacyMode(final boolean state) {
+    legacyMode = state;
+    return this;
+  }
+
+  /**
    * Set a custom method of injecting axe into the page.
    * Will not use the default injection if set.
    *
@@ -481,8 +508,7 @@ public class AxeBuilder {
     injectAxe(webDriver);
 
     boolean hasRunPartial = (Boolean) WebDriverInjectorExtensions.executeScript(webDriver, hasRunPartialScript);
-    System.out.println("HAS RUN PARTIAL = " + hasRunPartial);
-    if (hasRunPartial) {
+    if (hasRunPartial && !legacyMode) {
       return analyzePost43x(webDriver, rawContextArg);
     } else {
       return analyzePre43x(webDriver, rawContextArg);
@@ -591,8 +617,9 @@ public class AxeBuilder {
       }
 
     try {
+      String allowedOrigins = legacyMode ? sameOrign : unsafeAllOrigins;
       WebDriverInjectorExtensions.inject(
-          webDriver, iframeAllowScript, disableIframeTesting);
+          webDriver, String.format(iframeAllowScriptTemplate, allowedOrigins), disableIframeTesting);
     } catch (Exception e) {
         throw new RuntimeException("Error when enabling iframe communication", e);
     }

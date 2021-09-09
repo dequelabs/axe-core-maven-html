@@ -67,6 +67,7 @@ public class Axe43xIntegrationTest {
   private static String axeForceLegacyJS;
   private static File integrationTestTargetFile = new File("src/test/resources/html/integration-test-target.html");
   private static String integrationTestTargetUrl = integrationTestTargetFile.getAbsolutePath();
+  private static String runPartialThrows = ";axe.runPartial = () => { throw new Error('No runPartial')}";
 
   private static String fixture(String path) {
     return "http://localhost:8001" + path;
@@ -341,6 +342,40 @@ public class Axe43xIntegrationTest {
     assertNotNull(res.getToolOptions().getReporter());
     assertEquals(fixture("/index.html"), res.getUrl());
   }
+
+  @Test
+  public void runsLegacyModeWhenUsed() throws Exception {
+    webDriver.get(fixture("/external/index.html"));
+    Results res = new AxeBuilder()
+      .setLegacyMode()
+      .setAxeScriptProvider(new StringAxeScriptProvider(axePost43x + runPartialThrows))
+      .analyze(webDriver);
+    assertFalse(res.isErrored());
+  }
+
+  @Test
+  public void legacyModePreventsCrossOriginFrameTesting() throws Exception {
+    webDriver.get(fixture("/cross-origin.html"));
+    Results res = new AxeBuilder()
+      .withRules(Arrays.asList("frame-tested"))
+      .setLegacyMode()
+      .analyze(webDriver);
+    assertFalse(res.getIncomplete().isEmpty());
+  }
+
+  @Test
+  public void legacyModeCanBeDisabledAgain() throws Exception {
+    webDriver.get(fixture("/cross-origin.html"));
+    Results res = new AxeBuilder()
+      .withRules(Arrays.asList("frame-tested"))
+      .setLegacyMode()
+      .setLegacyMode(false)
+      .analyze(webDriver);
+    for (Rule r : res.getIncomplete()) {
+      assertNotEquals("frame-tested", r.getId());
+    }
+  }
+
 
   /**
    * initiates a web browser for Chrome and Firefox.
