@@ -68,6 +68,8 @@ public class Axe43xIntegrationTest {
   private static File integrationTestTargetFile = new File("src/test/resources/html/integration-test-target.html");
   private static String integrationTestTargetUrl = integrationTestTargetFile.getAbsolutePath();
   private static String runPartialThrows = ";axe.runPartial = () => { throw new Error('No runPartial')}";
+  private static String windowOpenThrows = ";window.open = () => { throw new Error('No window.open')}";
+  private static String finishRunThrows = ";axe.finishRun = () => { throw new Error('No finishRun')}";
 
   private static String fixture(String path) {
     return "http://localhost:8001" + path;
@@ -376,6 +378,23 @@ public class Axe43xIntegrationTest {
     }
   }
 
+  @Test
+  public void finishRunThrowsWhenWindowOpenThrows() throws Exception {
+    expectedException.expectMessage("switchToWindow failed");
+    webDriver.get(fixture("/index.html"));
+    new AxeBuilder()
+      .setAxeScriptProvider(new StringAxeScriptProvider(axePost43x + windowOpenThrows))
+      .analyze(webDriver);
+  }
+
+  @Test
+  public void finishRunThrowsWhenFinishRunThrows() throws Exception {
+    expectedException.expectMessage("axe.finishRun failed");
+    webDriver.get(fixture("/index.html"));
+    new AxeBuilder()
+      .setAxeScriptProvider(new StringAxeScriptProvider(axePost43x + finishRunThrows))
+      .analyze(webDriver);
+  }
 
   /**
    * initiates a web browser for Chrome and Firefox.

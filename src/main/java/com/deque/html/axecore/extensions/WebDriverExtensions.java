@@ -122,12 +122,16 @@ public final class WebDriverExtensions {
   public static String openAboutBlank(final WebDriver webDriver) {
     String currentWindow = webDriver.getWindowHandle();
 
-    JavascriptExecutor driver = (JavascriptExecutor) webDriver;
-    driver.executeScript("window.open('about:blank', '_blank')");
-    ArrayList<String> handles = new ArrayList<String>(webDriver.getWindowHandles());
-    String abHandle = handles.get(handles.size() - 1);
-    webDriver.switchTo().window(abHandle);
-    webDriver.get("about:blank");
+    try {
+      JavascriptExecutor driver = (JavascriptExecutor) webDriver;
+      driver.executeScript("window.open('about:blank', '_blank')");
+      ArrayList<String> handles = new ArrayList<String>(webDriver.getWindowHandles());
+      String abHandle = handles.get(handles.size() - 1);
+      webDriver.switchTo().window(abHandle);
+      webDriver.get("about:blank");
+    } catch (Exception e) {
+      throw new RuntimeException("switchToWindow failed. Are you using updated browser drivers?", e);
+    }
 
     return currentWindow;
   }
