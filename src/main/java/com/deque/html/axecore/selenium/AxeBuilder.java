@@ -405,20 +405,26 @@ public class AxeBuilder {
   /**
    * Enables the use of legacy axe analysis path.
    * Affects cross-domain results.
+   * @deprecated
+   * This method will be removed in v5
    *
    * @return an Axe Builder
    */
+  @Deprecated
   public AxeBuilder setLegacyMode() {
     return setLegacyMode(true);
   }
   /**
    * Enables the use of legacy axe analysis path.
    * Affects cross-domain results.
+   * @deprecated
+   * This method will be removed in v5
    *
    * @param state Whether or not to use legacy mode.
    *
    * @return an Axe Builder
    */
+  @Deprecated
   public AxeBuilder setLegacyMode(final boolean state) {
     legacyMode = state;
     return this;
