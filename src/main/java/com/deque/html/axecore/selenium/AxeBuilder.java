@@ -160,7 +160,6 @@ public class AxeBuilder {
 
   /**
    * sets the where we get the axe script from.
-   * @param axeProvider the source of the axe script
    * @return an Axe Builder object
    */
   public IAxeScriptProvider getAxeScriptProvider() {

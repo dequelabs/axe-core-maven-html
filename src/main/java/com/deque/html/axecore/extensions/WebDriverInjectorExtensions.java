@@ -68,6 +68,7 @@ public final class WebDriverInjectorExtensions {
    * If a frame (not top-level) errors when injecting due to not being displayed, the error is ignored.
    * @param driver WebDriver instance to inject into
    * @param scriptProvider Provider that get the aXe script to inject
+   * @param disableIframeTesting Whether or not to inject intto iframes
    * @throws OperationNotSupportedException if the operation errors out
    * @throws IOException if an IO exception occurs
    */
