@@ -11,16 +11,16 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: v1-mvn-deps-{{ checksum "pom.xml" }}
+          key: v2-mvn-deps-{{ checksum "pom.xml" }}
       - restore_cache:
-          key: v1-npm-deps-{{ checksum "package-lock.json" }}
+          key: v2-npm-deps-{{ checksum "package-lock.json" }}
       - run: mvn install -DskipTests
       - save_cache:
-          key: v1-mvn-deps-{{ checksum "pom.xml" }}
+          key: v2-mvn-deps-{{ checksum "pom.xml" }}
           paths:
             - ~/.m2
       - save_cache:
-          key: v1-npm-deps-{{ checksum "package-lock.json" }}
+          key: v2-npm-deps-{{ checksum "package-lock.json" }}
           paths:
             - node_modules
   tests:
@@ -28,9 +28,9 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: v1-mvn-deps-{{ checksum "pom.xml" }}
+          key: v2-mvn-deps-{{ checksum "pom.xml" }}
       - restore_cache:
-          key: v1-npm-deps-{{ checksum "package-lock.json" }}
+          key: v2-npm-deps-{{ checksum "package-lock.json" }}
       - run:
           command: node src/test/resources/test-app.js
           background: true
@@ -45,9 +45,9 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: v1-mvn-deps-{{ checksum "pom.xml" }}
+          key: v2-mvn-deps-{{ checksum "pom.xml" }}
       - restore_cache:
-          key: v1-npm-deps-{{ checksum "package-lock.json" }}
+          key: v2-npm-deps-{{ checksum "package-lock.json" }}
       - run: echo "$GPG_PRIVATE_KEY" | base64 --decode | gpg --import
       - run: echo "default-key 7701193A898A849383D3E8B49F8AFEACBF07F7C4" > ~/.gnupg/gpg.conf
       - run: python .circleci/snapshot.py
@@ -58,9 +58,9 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: v1-mvn-deps-{{ checksum "pom.xml" }}
+          key: v2-mvn-deps-{{ checksum "pom.xml" }}
       - restore_cache:
-          key: v1-npm-deps-{{ checksum "package-lock.json" }}
+          key: v2-npm-deps-{{ checksum "package-lock.json" }}
       - run: echo "$GPG_PRIVATE_KEY" | base64 --decode | gpg --import
       - run: echo "default-key 7701193A898A849383D3E8B49F8AFEACBF07F7C4" > ~/.gnupg/gpg.conf
       - run: .circleci/publish.sh
