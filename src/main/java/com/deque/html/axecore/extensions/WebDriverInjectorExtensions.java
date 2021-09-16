@@ -82,6 +82,7 @@ public final class WebDriverInjectorExtensions {
    * If a frame (not top-level) errors when injecting due to not being displayed, the error is ignored.
    * @param driver WebDriver instance to inject into
    * @param script The script to inject
+   * @param disableIframeTesting Whether or not to inject intto iframes
    */
   public static void inject(final WebDriver driver,
       final String script, boolean disableIframeTesting) {
@@ -93,6 +94,9 @@ public final class WebDriverInjectorExtensions {
    * If a frame (not top-level) errors when injecting due to not being displayed, the error is ignored.
    * @param driver WebDriver instance to inject into
    * @param script The script to inject
+   * @param disableIframeTesting Whether or not to inject intto iframes
+   * @param injectCB Function to call whenever a frame is injected into
+   * @param doNotInjectAxe Whether or not to inject axe
    */
   public static void inject(final WebDriver driver, final String script,
       boolean disableIframeTesting, Consumer<WebDriver> injectCB, boolean doNotInjectAxe) {
@@ -114,6 +118,7 @@ public final class WebDriverInjectorExtensions {
    * Injects script into frames to be run asynchronously.
    * @param driver WebDriver instance to inject into
    * @param script The script to inject
+   * @param disableIframeTesting Whether or not to inject intto iframes
    */
   public static void injectAsync(final WebDriver driver,
       final String script, boolean disableIframeTesting) {
