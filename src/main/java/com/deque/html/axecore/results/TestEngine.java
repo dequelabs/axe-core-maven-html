@@ -9,6 +9,10 @@ public class TestEngine {
     return name;
   }
 
+  public void setName(String name) {
+    this.name = name;
+  }
+
   public String getVersion() {
     return version;
   }

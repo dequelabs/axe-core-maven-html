@@ -14,6 +14,8 @@ package com.deque.html.axecore.providers;
 import org.apache.commons.io.IOUtils;
 import java.net.URL;
 
+import javax.naming.OperationNotSupportedException;
+
 import java.io.IOException;
 
 /**
@@ -23,8 +25,7 @@ public class EmbeddedResourceAxeProvider implements IAxeScriptProvider {
   /**
    * Reads the axe.min.js finder.
    */
-  @Override
-  public String getScript() throws IOException {
+  public String getScript() throws OperationNotSupportedException, IOException {
         URL axeUrl = getClass().getResource("/axe.min.js");
         return IOUtils.toString(axeUrl.openStream());
   }

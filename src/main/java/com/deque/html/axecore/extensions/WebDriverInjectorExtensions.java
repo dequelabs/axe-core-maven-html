@@ -15,6 +15,8 @@ package com.deque.html.axecore.extensions;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
+
 import javax.naming.OperationNotSupportedException;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
@@ -32,6 +34,20 @@ public final class WebDriverInjectorExtensions {
    * initializes the WebDriverInjectorExtensions class.
    */
   private WebDriverInjectorExtensions() {
+  }
+
+
+  /**
+   * Execute an synchronous JavaScript command.
+   *
+   * @param webDriver for the page to be scanned
+   * @param command The command to be executed.
+   * @param args Additional arguments to be provided to the command.
+   * @return the results that would normally be provided to the synchronous commands callback.
+   */
+  public static Object executeScript(final WebDriver webDriver, final String command,
+      final Object... args) {
+    return ((JavascriptExecutor) webDriver).executeScript(command, args);
   }
 
   /**
@@ -52,18 +68,14 @@ public final class WebDriverInjectorExtensions {
    * If a frame (not top-level) errors when injecting due to not being displayed, the error is ignored.
    * @param driver WebDriver instance to inject into
    * @param scriptProvider Provider that get the aXe script to inject
+   * @param disableIframeTesting Whether or not to inject intto iframes
    * @throws OperationNotSupportedException if the operation errors out
    * @throws IOException if an IO exception occurs
    */
   public static void inject(final WebDriver driver,
       final IAxeScriptProvider scriptProvider, boolean disableIframeTesting)
       throws OperationNotSupportedException, IOException {
-    if (scriptProvider == null) {
-      throw new NullPointerException("the Script provider is null");
-    }
-
-    String script = scriptProvider.getScript();
-    inject(driver, script, disableIframeTesting);
+    inject(driver, scriptProvider.getScript(), disableIframeTesting, null, false);
   }
 
   /**
@@ -71,24 +83,35 @@ public final class WebDriverInjectorExtensions {
    * If a frame (not top-level) errors when injecting due to not being displayed, the error is ignored.
    * @param driver WebDriver instance to inject into
    * @param script The script to inject
+   * @param disableIframeTesting Whether or not to inject intto iframes
    */
   public static void inject(final WebDriver driver,
       final String script, boolean disableIframeTesting) {
-    List<WebElement> parents = new ArrayList<>();
+    inject(driver, script, disableIframeTesting, null, false);
+  }
+
+  /**
+   * Injects Axe script into frames.
+   * If a frame (not top-level) errors when injecting due to not being displayed, the error is ignored.
+   * @param driver WebDriver instance to inject into
+   * @param script The script to inject
+   * @param disableIframeTesting Whether or not to inject intto iframes
+   * @param injectCB Function to call whenever a frame is injected into
+   * @param doNotInjectAxe Whether or not to inject axe
+   */
+  public static void inject(final WebDriver driver, final String script,
+      boolean disableIframeTesting, Consumer<WebDriver> injectCB, boolean doNotInjectAxe) {
     JavascriptExecutor js = (JavascriptExecutor) driver;
 
     driver.switchTo().defaultContent();
-    js.executeScript(script);
+    if (!doNotInjectAxe) {
+      js.executeScript(script);
+    }
+    if (injectCB != null) {
+      injectCB.accept(driver);
+    }
     if (!disableIframeTesting) {
-      try {
-        injectIntoFrames(driver, script, parents);
-      } catch (Exception e) {
-        // Ignore all errors except those caused by the injected javascript itself
-        if (e instanceof JavascriptException) {
-          throw e;
-        }
-      }
-      driver.switchTo().defaultContent();
+      injectIntoFrames(driver, script, injectCB, doNotInjectAxe);
     }
   }
 
@@ -96,25 +119,17 @@ public final class WebDriverInjectorExtensions {
    * Injects script into frames to be run asynchronously.
    * @param driver WebDriver instance to inject into
    * @param script The script to inject
+   * @param disableIframeTesting Whether or not to inject intto iframes
    */
   public static void injectAsync(final WebDriver driver,
       final String script, boolean disableIframeTesting) {
-    List<WebElement> parents = new ArrayList<>();
     JavascriptExecutor js = (JavascriptExecutor) driver;
 
     driver.switchTo().defaultContent();
     js.executeAsyncScript(script);
 
     if (!disableIframeTesting) {
-      try {
-        injectIntoFramesAsync(driver, script, parents);
-      } catch (Exception e) {
-        // Ignore all errors except those caused by the injected javascript itself
-        if (e instanceof JavascriptException) {
-          throw e;
-        }
-      }
-      driver.switchTo().defaultContent();
+      injectIntoFramesAsync(driver, script);
     }
   }
 
@@ -123,38 +138,25 @@ public final class WebDriverInjectorExtensions {
    * If a frame errors when injecting due to not being displayed, the error is ignored.
    * @param driver An initialized WebDriver
    * @param script Script to inject
-   * @param parents A list of all top level frames
    */
   private static void injectIntoFrames(final WebDriver driver,
-      final String script, final List<WebElement> parents) {
+      final String script, Consumer<WebDriver> injectCB, boolean doNotInjectAxe) {
     JavascriptExecutor js = (JavascriptExecutor) driver;
-    List<WebElement> frames = driver.findElements(By.tagName("iframe"));
-    frames.addAll(driver.findElements(By.tagName("frame")));
+    List<WebElement> frames = driver.findElements(By.xpath(".//*[local-name()='frame' or local-name()='iframe']"));
 
     for (WebElement frame : frames) {
       try {
-        driver.switchTo().defaultContent();
-        if (parents != null) {
-          for (WebElement parent : parents) {
-            driver.switchTo().frame(parent);
-          }
-        }
-
         driver.switchTo().frame(frame);
-
-        js.executeScript(script);
-
-        List<WebElement> localParents = new ArrayList<>();
-
-        if (parents == null) {
-          localParents.add(null);
-          throw new NullPointerException();
-        } else {
-          localParents.addAll(parents);
-          localParents.add(frame);
+        if (!doNotInjectAxe) {
+          js.executeScript(script);
+        }
+        if (injectCB != null) {
+          injectCB.accept(driver);
         }
 
-        injectIntoFrames(driver, script, localParents);
+        injectIntoFrames(driver, script, injectCB, doNotInjectAxe);
+
+        driver.switchTo().parentFrame();
       } catch (Exception e) {
         // Ignore all errors except those caused by the injected javascript itself
         if (e instanceof JavascriptException) {
@@ -169,39 +171,20 @@ public final class WebDriverInjectorExtensions {
    * If a frame errors when injecting due to not being displayed, the error is ignored.
    * @param driver An initialized WebDriver
    * @param script Script to inject
-   * @param parents A list of all top level frames
    */
   private static void injectIntoFramesAsync(final WebDriver driver,
-      final String script, final List<WebElement> parents) {
+      final String script) {
     JavascriptExecutor js = (JavascriptExecutor) driver;
-    List<WebElement> frames = driver.findElements(By.tagName("iframe"));
-    frames.addAll(driver.findElements(By.tagName("frame")));
+    List<WebElement> frames = driver.findElements(By.xpath(".//*[local-name()='frame' or local-name()='iframe']"));
 
     for (WebElement frame : frames) {
       try {
-        driver.switchTo().defaultContent();
-
-        if (parents != null) {
-          for (WebElement parent : parents) {
-            driver.switchTo().frame(parent);
-          }
-        }
-
         driver.switchTo().frame(frame);
-
         js.executeAsyncScript(script);
 
-        List<WebElement> localParents = new ArrayList<>();
+        injectIntoFramesAsync(driver, script);
 
-        if (parents == null) {
-          localParents.add(null);
-          throw new NullPointerException();
-        } else {
-          localParents.addAll(parents);
-          localParents.add(frame);
-        }
-
-        injectIntoFrames(driver, script, localParents);
+        driver.switchTo().parentFrame();
       } catch (Exception e) {
         // Ignore all errors except those caused by the injected javascript itself
         if (e instanceof JavascriptException) {

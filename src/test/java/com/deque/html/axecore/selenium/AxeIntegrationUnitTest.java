@@ -135,21 +135,16 @@ public class AxeIntegrationUnitTest {
    * @param browser the string of the browser to be set.
    */
   private void initDriver(String browser) {
-    switch (browser.toUpperCase()) {
-      case "CHROME":
+    if (browser.toUpperCase().equals("CHROME")) {
         ChromeOptions options = new ChromeOptions();
         options.setUnhandledPromptBehaviour(UnexpectedAlertBehaviour.ACCEPT);
         options.addArguments("no-sandbox", "--log-level=3", "--silent",
               "--headless", "--disable-gpu", "--window-size=1920,1200","--ignore-certificate-errors");
         ChromeDriverService service = ChromeDriverService.createDefaultService();
         webDriver = new ChromeDriver(service, options);
-      break;
-
-      case "FIREFOX":
+    } else if (browser.toUpperCase().equals("FIREFOX")) {
         webDriver = new FirefoxDriver();
-        break;
-
-      default:
+    } else {
         throw new IllegalArgumentException("Remote browser type " + browser +" is not supported");
     }
     wait = new WebDriverWait(this.webDriver,  20);

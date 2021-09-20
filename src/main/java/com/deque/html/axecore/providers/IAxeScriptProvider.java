@@ -25,5 +25,5 @@ public interface IAxeScriptProvider {
    * @throws OperationNotSupportedException thrown if error is encountered
    * @throws IOException thrown if error is encountered
    */
-  String getScript() throws OperationNotSupportedException, IOException;
+  public String getScript() throws OperationNotSupportedException, IOException;
 }
