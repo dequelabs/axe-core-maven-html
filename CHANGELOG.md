@@ -1,9 +1,24 @@
-## [4.2.2](https://github.com/dequelabs/axe-core-maven-html/compare/v4.2.1...v4.2.2) (2021-06-16)
+# [4.3.0](https://github.com/dequelabs/axe-core-maven-html/compare/v4.2.2...v4.3.0) (2021-09-20)
+
+
+### Features
+
+* add legacy mode option ([#175](https://github.com/dequelabs/axe-core-maven-html/issues/175)) ([fa10f39](https://github.com/dequelabs/axe-core-maven-html/commit/fa10f39d206696b9a55957fbb8e8c059949cb18b))
+
+
+### Performance Improvements
+
+* Optimize iframe recursion ([#168](https://github.com/dequelabs/axe-core-maven-html/issues/168)) ([292ebc9](https://github.com/dequelabs/axe-core-maven-html/commit/292ebc9648a66f5c1b9c24a7fcc97116554621d0))
+
+
+
+## [4.2.2](https://github.com/dequelabs/axe-core-maven-html/compare/v4.2.1...v4.2.2) (2021-06-22)
 
 
 ### Features
 
 * update to use `axe-core@4.2.2` ([#166](https://github.com/dequelabs/axe-core-maven-html/issues/166)) ([7685a72](https://github.com/dequelabs/axe-core-maven-html/commit/7685a72e2dd37c895071309b5f39aabf7744c65b))
+* update to use `axe-core@4.2.3` ([#169](https://github.com/dequelabs/axe-core-maven-html/issues/169)) ([0ef3f52](https://github.com/dequelabs/axe-core-maven-html/commit/0ef3f52eae41375c77b980f05fffbdefcc85927c))
 
 
 
@@ -88,8 +103,8 @@
 ### Features
 
 * add configurable script timeout ([#28](https://github.com/dequelabs/axe-core-maven-html/issues/28)) ([0a7d0b9](https://github.com/dequelabs/axe-core-maven-html/commit/0a7d0b9ef7520f587536caa543323b5a8e65042c)), closes [#17](https://github.com/dequelabs/axe-core-maven-html/issues/17)
-* update axe-core to v3.1.2 ([#23](https://github.com/dequelabs/axe-core-maven-html/issues/23)) ([914a506](https://github.com/dequelabs/axe-core-maven-html/commit/914a50693058c152891202d4fb9a764c8cbcf09b))
 * **aXe 3.0+:** remove references to axe.a11yCheck, bump versions of Selenium webdriver, update axe to 2.6.1 in test/resources ([43145e7](https://github.com/dequelabs/axe-core-maven-html/commit/43145e7e431272807017ea5bd0e29e032a55b456))
+* update axe-core to v3.1.2 ([#23](https://github.com/dequelabs/axe-core-maven-html/issues/23)) ([914a506](https://github.com/dequelabs/axe-core-maven-html/commit/914a50693058c152891202d4fb9a764c8cbcf09b))
 
 
 
