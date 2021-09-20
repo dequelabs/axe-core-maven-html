@@ -1,9 +1,24 @@
-## [4.2.2](https://github.com/dequelabs/axe-core-maven-html/compare/v4.2.1...v4.2.2) (2021-06-16)
+# [4.3.0](https://github.com/dequelabs/axe-core-maven-html/compare/v4.2.2...v4.3.0) (2021-09-20)
+
+
+### Features
+
+* add legacy mode option ([#175](https://github.com/dequelabs/axe-core-maven-html/issues/175)) ([fa10f39](https://github.com/dequelabs/axe-core-maven-html/commit/fa10f39d206696b9a55957fbb8e8c059949cb18b))
+
+
+### Performance Improvements
+
+* Optimize iframe recursion ([#168](https://github.com/dequelabs/axe-core-maven-html/issues/168)) ([292ebc9](https://github.com/dequelabs/axe-core-maven-html/commit/292ebc9648a66f5c1b9c24a7fcc97116554621d0))
+
+
+
+## [4.2.2](https://github.com/dequelabs/axe-core-maven-html/compare/v4.2.1...v4.2.2) (2021-06-22)
 
 
 ### Features
 
 * update to use `axe-core@4.2.2` ([#166](https://github.com/dequelabs/axe-core-maven-html/issues/166)) ([7685a72](https://github.com/dequelabs/axe-core-maven-html/commit/7685a72e2dd37c895071309b5f39aabf7744c65b))
+* update to use `axe-core@4.2.3` ([#169](https://github.com/dequelabs/axe-core-maven-html/issues/169)) ([0ef3f52](https://github.com/dequelabs/axe-core-maven-html/commit/0ef3f52eae41375c77b980f05fffbdefcc85927c))
 
 
 
