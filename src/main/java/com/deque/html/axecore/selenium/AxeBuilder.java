@@ -613,7 +613,7 @@ public class AxeBuilder {
     try {
       resResponse = WebDriverInjectorExtensions.executeScript(webDriver, finishRunScript, partialResults);
     } catch (Exception e) {
-      throw new RuntimeException("axe.finishRun failed. Please check out https://github.com/dequelabs/axe-core-maven-html/error-handling.md`", e);
+      throw new RuntimeException("axe.finishRun failed. Please check out https://github.com/dequelabs/axe-core-maven-html/error-handling.md", e);
     }
     WebDriverExtensions.closeAboutBlank(webDriver, prevWindow);
     Results res = objectMapper.convertValue(resResponse, Results.class);
