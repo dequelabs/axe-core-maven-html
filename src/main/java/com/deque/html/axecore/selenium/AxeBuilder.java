@@ -129,6 +129,8 @@ public class AxeBuilder {
     "const context = typeof arguments[0] == 'string' ? JSON.parse(arguments[0]) : arguments[0];" +
     "const options = JSON.parse(arguments[1]);" +
     "const cb = arguments[arguments.length - 1];" +
+    // JSON passthrough removes propereties that are set to undefined. Fixes an infinite loop in
+    // finishRun
     "window.axe.runPartial(context, options).then(res => JSON.parse(JSON.stringify(res))).then(cb);";
 
   private static String frameContextScript = 
