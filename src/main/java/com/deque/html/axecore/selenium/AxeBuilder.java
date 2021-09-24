@@ -94,7 +94,7 @@ public class AxeBuilder {
     "var context = typeof arguments[0] === 'string' ? JSON.parse(arguments[0]) : arguments[0];" +
     "context = context || document;" +
     "var options = JSON.parse(arguments[1]);" +
-    "axe.run(context, options).then(callback)";
+    "axe.run(context, options).then(res => JSON.parse(JSON.stringify(res))).then(callback)";
 
   public final String unsafeAllOrigins = "<unsafe_all_origins>";
   public final String sameOrign = "<same_origin>";
