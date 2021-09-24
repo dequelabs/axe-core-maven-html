@@ -129,8 +129,7 @@ public class AxeBuilder {
     "const context = typeof arguments[0] == 'string' ? JSON.parse(arguments[0]) : arguments[0];" +
     "const options = JSON.parse(arguments[1]);" +
     "const cb = arguments[arguments.length - 1];" +
-    "window.c = context; window.o = options;" + // FIXME
-    "window.axe.runPartial(context, options).then(cb);";
+    "window.axe.runPartial(context, options).then(res => JSON.parse(JSON.stringify(res))).then(cb);";
 
   private static String frameContextScript = 
     "const context = typeof arguments[0] == 'string' ? JSON.parse(arguments[0]) : arguments[0];" +
