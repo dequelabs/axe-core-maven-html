@@ -130,7 +130,8 @@ public final class WebDriverExtensions {
       webDriver.switchTo().window(abHandle);
       webDriver.get("about:blank");
     } catch (Exception e) {
-      throw new RuntimeException("switchToWindow failed. Are you using updated browser drivers?", e);
+      throw new RuntimeException("switchToWindow failed. Are you using updated browser drivers? Please check out https://github.com/dequelabs/axe-core-maven-html/blob/develop/error-handling.md", e);
+
     }
 
     return currentWindow;

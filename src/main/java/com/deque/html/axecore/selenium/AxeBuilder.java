@@ -94,7 +94,7 @@ public class AxeBuilder {
     "var context = typeof arguments[0] === 'string' ? JSON.parse(arguments[0]) : arguments[0];" +
     "context = context || document;" +
     "var options = JSON.parse(arguments[1]);" +
-    "axe.run(context, options).then(callback)";
+    "axe.run(context, options).then(res => JSON.parse(JSON.stringify(res))).then(callback)";
 
   public final String unsafeAllOrigins = "<unsafe_all_origins>";
   public final String sameOrign = "<same_origin>";
@@ -129,8 +129,9 @@ public class AxeBuilder {
     "const context = typeof arguments[0] == 'string' ? JSON.parse(arguments[0]) : arguments[0];" +
     "const options = JSON.parse(arguments[1]);" +
     "const cb = arguments[arguments.length - 1];" +
-    "window.c = context; window.o = options;" + // FIXME
-    "window.axe.runPartial(context, options).then(cb);";
+    // JSON passthrough removes propereties that are set to undefined. Fixes an infinite loop in
+    // finishRun
+    "window.axe.runPartial(context, options).then(res => JSON.parse(JSON.stringify(res))).then(cb);";
 
   private static String frameContextScript = 
     "const context = typeof arguments[0] == 'string' ? JSON.parse(arguments[0]) : arguments[0];" +
@@ -613,7 +614,8 @@ public class AxeBuilder {
     try {
       resResponse = WebDriverInjectorExtensions.executeScript(webDriver, finishRunScript, partialResults);
     } catch (Exception e) {
-      throw new RuntimeException("axe.finishRun failed. Please check out https://github.com/dequelabs/axe-core-maven-html/error-handling.md`", e);
+      throw new RuntimeException("axe.finishRun failed. Please check out https://github.com/dequelabs/axe-core-maven-html/blob/develop/error-handling.md", e);
+
     }
     WebDriverExtensions.closeAboutBlank(webDriver, prevWindow);
     Results res = objectMapper.convertValue(resResponse, Results.class);
