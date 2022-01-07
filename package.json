@@ -1,6 +1,6 @@
 {
   "name": "axe-core-maven-html",
-  "version": "4.3.0",
+  "version": "4.3.1",
   "description": "[![CircleCI](https://circleci.com/gh/dequelabs/axe-selenium-java.svg?style=svg)](https://circleci.com/gh/dequelabs/axe-selenium-java)",
   "license": "ISC",
   "scripts": {
