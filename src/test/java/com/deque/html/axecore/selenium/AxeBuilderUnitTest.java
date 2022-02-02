@@ -192,7 +192,7 @@ public class AxeBuilderUnitTest {
     AxeBuilder builder = new AxeBuilder().exclude(exclude);
     Results result = builder.analyze(this.webDriver);
     verifyAxeResultsNotNull(result);
-    verifyAxeResult(result);
+    assertViolations(result, "aria-hidden-focus", "color-contrast", "page-has-heading-one");
     verifyDriversNotNull();
   }
 
