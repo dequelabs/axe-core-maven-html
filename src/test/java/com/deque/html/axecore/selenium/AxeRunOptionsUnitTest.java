@@ -16,11 +16,8 @@ import com.deque.html.axecore.axeargs.AxeRuleOptions;
 import com.deque.html.axecore.axeargs.AxeRules;
 import com.deque.html.axecore.axeargs.AxeRunOnlyOptions;
 import com.deque.html.axecore.axeargs.AxeRunOptions;
-import com.deque.html.axecore.selenium.AxeReporter;
-import com.deque.html.axecore.selenium.ResultType;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -29,12 +26,11 @@ import java.util.Map;
 import org.junit.Assert;
 import org.junit.Test;
 
-/**
- * Unit tests for Axe Run Options functionality.
- */
+/** Unit tests for Axe Run Options functionality. */
 public class AxeRunOptionsUnitTest {
   /**
    * tests the run only options class objects and JSON.
+   *
    * @throws JsonProcessingException if there is an error serializing the JSON
    */
   @Test()
@@ -54,6 +50,7 @@ public class AxeRunOptionsUnitTest {
 
   /**
    * Tests the serialization of rule options.
+   *
    * @throws JsonProcessingException if there is an error serializing the JSON
    */
   @Test()
@@ -76,15 +73,18 @@ public class AxeRunOptionsUnitTest {
     AxeRunOptions options = new AxeRunOptions();
     options.setRules(rulesMap);
 
-    String expectedObject = "{\"rules\":{\"enabledRule\":{\"enabled\":true},\"rule3WithoutOptionsData\":{},\"disabledRule\":{\"enabled\":false}}}";
+    String expectedObject =
+        "{\"rules\":{\"enabledRule\":{\"enabled\":true},\"rule3WithoutOptionsData\":{},\"disabledRule\":{\"enabled\":false}}}";
     String serializedObject = AxeReporter.serialize(rules);
 
     Assert.assertEquals(serializedObject, expectedObject);
-    Assert.assertSame(new ObjectMapper().readValue(expectedObject, AxeRules.class).getClass(), rules.getClass());
+    Assert.assertSame(
+        new ObjectMapper().readValue(expectedObject, AxeRules.class).getClass(), rules.getClass());
   }
 
   /**
    * tests serializing the Literal types.
+   *
    * @throws JsonProcessingException if there is an error altering the JSON
    */
   @Test()
@@ -95,13 +95,15 @@ public class AxeRunOptionsUnitTest {
     options.setRestoreScroll(true);
     options.setFrameWaitTimeInMilliseconds(10);
 
-    String expectedObject = "{\"absolutePaths\":true,\"iFrames\":true,\"restoreScroll\":true,\"frameWaitTime\":10}";
+    String expectedObject =
+        "{\"absolutePaths\":true,\"iFrames\":true,\"restoreScroll\":true,\"frameWaitTime\":10}";
     String serializedObject = AxeReporter.serialize(options);
     Assert.assertEquals(serializedObject, expectedObject);
   }
 
   /**
    * tests serializing the result types.
+   *
    * @throws JsonProcessingException if there is an error serializing the JSON
    */
   @Test()
@@ -116,7 +118,8 @@ public class AxeRunOptionsUnitTest {
     options.setResultTypes(resultTypes);
 
     String serializedObject = AxeReporter.serialize(options);
-    String expectedObject = "{\"resultTypes\":[\"inapplicable\",\"incomplete\",\"passes\",\"violations\"]}";
+    String expectedObject =
+        "{\"resultTypes\":[\"inapplicable\",\"incomplete\",\"passes\",\"violations\"]}";
 
     Assert.assertEquals(serializedObject, expectedObject);
   }

@@ -15,17 +15,14 @@ package com.deque.html.axecore.axeargs;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Map;
 
-/**
- * Axe rules JSON configurator.
- */
+/** Axe rules JSON configurator. */
 public class AxeRules {
-  /**
-   * Denotes if the rule has to be enabled for scanning.
-   */
+  /** Denotes if the rule has to be enabled for scanning. */
   private Map<String, AxeRuleOptions> rules;
 
   /**
    * gets the rules.
+   *
    * @return a map of rule names and Axe rule options
    */
   @JsonProperty("rules")
@@ -35,6 +32,7 @@ public class AxeRules {
 
   /**
    * sets the rules.
+   *
    * @param value the new values to bes set
    */
   @JsonProperty("rules")

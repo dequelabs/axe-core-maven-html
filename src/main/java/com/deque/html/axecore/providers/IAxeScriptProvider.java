@@ -15,12 +15,11 @@ package com.deque.html.axecore.providers;
 import java.io.IOException;
 import javax.naming.OperationNotSupportedException;
 
-/**
- * Interface that gets the script for an Accessibility provider.
- */
+/** Interface that gets the script for an Accessibility provider. */
 public interface IAxeScriptProvider {
   /**
    * gets the script.
+   *
    * @return returns the value of the script
    * @throws OperationNotSupportedException thrown if error is encountered
    * @throws IOException thrown if error is encountered

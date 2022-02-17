@@ -12,6 +12,9 @@
 
 package com.deque.html.axecore.selenium;
 
+import com.deque.html.axecore.axeargs.AxeRunOptions;
+import com.deque.html.axecore.results.Results;
+import com.deque.html.axecore.results.Rule;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -19,9 +22,10 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 import javax.naming.OperationNotSupportedException;
-import org.junit.Assert;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
@@ -29,46 +33,35 @@ import org.openqa.selenium.UnexpectedAlertBehaviour;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.chrome.ChromeDriverService;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import java.util.function.Function;
 
-import com.deque.html.axecore.axeargs.AxeRunOptions;
-import com.deque.html.axecore.results.Results;
-import com.deque.html.axecore.results.Rule;
-import com.deque.html.axecore.selenium.AxeBuilder;
-
-/**
- * Unit tests for Axe Integration.
- */
+/** Unit tests for Axe Integration. */
 public class AxeIntegrationUnitTest {
   private WebDriver webDriver;
   private WebDriverWait wait;
 
-  private static File integrationTestTargetFile = new File("src/test/resources/html/integration-test-target.html");
+  private static File integrationTestTargetFile =
+      new File("src/test/resources/html/integration-test-target.html");
   private static String integrationTestTargetUrl = integrationTestTargetFile.getAbsolutePath();
 
-  /**
-   * Sets up the tests and navigates to teh integration test site.
-   */
+  /** Sets up the tests and navigates to teh integration test site. */
   @Before
   public void setup() {
     initDriver("Chrome");
     this.webDriver.get("file:///" + new File(integrationTestTargetUrl).getAbsolutePath());
-    Function<WebDriver, WebElement> waitFunc = new Function<WebDriver, WebElement>() {
-      public WebElement apply(WebDriver driver) {
-        return driver.findElement(By.cssSelector("main"));
-      }
-    };
+    Function<WebDriver, WebElement> waitFunc =
+        new Function<WebDriver, WebElement>() {
+          public WebElement apply(WebDriver driver) {
+            return driver.findElement(By.cssSelector("main"));
+          }
+        };
     wait.until(waitFunc);
   }
 
-  /**
-   * closes and shuts down the web driver.
-   */
+  /** closes and shuts down the web driver. */
   @After
   public void teardown() {
     webDriver.quit();
@@ -76,6 +69,7 @@ public class AxeIntegrationUnitTest {
 
   /**
    * Runs a scan on a web page in Chrome.
+   *
    * @throws IOException if file writing fails
    * @throws OperationNotSupportedException if the operation errors out
    */
@@ -86,10 +80,12 @@ public class AxeIntegrationUnitTest {
     AxeRunOptions runOptions = new AxeRunOptions();
     runOptions.setXPath(true);
 
-    AxeBuilder builder = new AxeBuilder().withOptions(runOptions)
-         .withTags(Arrays.asList("wcag2a", "wcag412"))
-         .disableRules(Collections.singletonList("color-contrast"))
-         .withOutputFile("src/test/java/results/raw-axe-results.json");
+    AxeBuilder builder =
+        new AxeBuilder()
+            .withOptions(runOptions)
+            .withTags(Arrays.asList("wcag2a", "wcag412"))
+            .disableRules(Collections.singletonList("color-contrast"))
+            .withOutputFile("src/test/java/results/raw-axe-results.json");
 
     Results results = builder.analyze(webDriver);
     List<Rule> violations = results.getViolations();
@@ -114,16 +110,18 @@ public class AxeIntegrationUnitTest {
 
   /**
    * Runs a scan on a web element in Chrome.
+   *
    * @throws IOException if file writing fails
    * @throws OperationNotSupportedException if the operation errors out
    */
   @Test()
   public void runScanOnGivenElementChrome() throws IOException, OperationNotSupportedException {
-    Function<WebDriver, WebElement> waitFunc = new Function<WebDriver, WebElement>() {
-      public WebElement apply(WebDriver driver) {
-        return driver.findElement(By.cssSelector("main"));
-      }
-    };
+    Function<WebDriver, WebElement> waitFunc =
+        new Function<WebDriver, WebElement>() {
+          public WebElement apply(WebDriver driver) {
+            return driver.findElement(By.cssSelector("main"));
+          }
+        };
     WebElement mainElement = wait.until(waitFunc);
     AxeBuilder builder = new AxeBuilder();
     Results results = builder.analyze(this.webDriver, mainElement);
@@ -132,22 +130,29 @@ public class AxeIntegrationUnitTest {
 
   /**
    * initiates a web browser for Chrome and Firefox.
+   *
    * @param browser the string of the browser to be set.
    */
   private void initDriver(String browser) {
     if (browser.toUpperCase().equals("CHROME")) {
-        ChromeOptions options = new ChromeOptions();
-        options.setUnhandledPromptBehaviour(UnexpectedAlertBehaviour.ACCEPT);
-        options.addArguments("no-sandbox", "--log-level=3", "--silent",
-              "--headless", "--disable-gpu", "--window-size=1920,1200","--ignore-certificate-errors");
-        ChromeDriverService service = ChromeDriverService.createDefaultService();
-        webDriver = new ChromeDriver(service, options);
+      ChromeOptions options = new ChromeOptions();
+      options.setUnhandledPromptBehaviour(UnexpectedAlertBehaviour.ACCEPT);
+      options.addArguments(
+          "no-sandbox",
+          "--log-level=3",
+          "--silent",
+          "--headless",
+          "--disable-gpu",
+          "--window-size=1920,1200",
+          "--ignore-certificate-errors");
+      ChromeDriverService service = ChromeDriverService.createDefaultService();
+      webDriver = new ChromeDriver(service, options);
     } else if (browser.toUpperCase().equals("FIREFOX")) {
-        webDriver = new FirefoxDriver();
+      webDriver = new FirefoxDriver();
     } else {
-        throw new IllegalArgumentException("Remote browser type " + browser +" is not supported");
+      throw new IllegalArgumentException("Remote browser type " + browser + " is not supported");
     }
-    wait = new WebDriverWait(this.webDriver,  20);
+    wait = new WebDriverWait(this.webDriver, 20);
     webDriver.manage().timeouts().setScriptTimeout(20, TimeUnit.SECONDS);
     webDriver.manage().window().maximize();
   }

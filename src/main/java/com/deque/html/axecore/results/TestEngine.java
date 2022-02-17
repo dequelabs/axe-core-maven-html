@@ -4,7 +4,6 @@ public class TestEngine {
   private String name;
   private String version;
 
-
   public String getName() {
     return name;
   }

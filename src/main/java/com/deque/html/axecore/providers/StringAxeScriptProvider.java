@@ -12,22 +12,17 @@
 
 package com.deque.html.axecore.providers;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import javax.naming.OperationNotSupportedException;
 
-/**
- * An accessibility script provider.
- */
+/** An accessibility script provider. */
 public class StringAxeScriptProvider implements IAxeScriptProvider {
-  /**
-   * the axe source string
-   */
+  /** the axe source string */
   private String axeSource;
 
   /**
    * Sets the new file path for the file script provider.
+   *
    * @param axeSource the string source of axe-core
    */
   public StringAxeScriptProvider(final String axeSource) {
@@ -36,6 +31,7 @@ public class StringAxeScriptProvider implements IAxeScriptProvider {
 
   /**
    * gets the script from the string.
+   *
    * @return the string of the script
    * @throws OperationNotSupportedException if the file doesn't exist yet
    * @throws IOException if the file doesn't exist yet
