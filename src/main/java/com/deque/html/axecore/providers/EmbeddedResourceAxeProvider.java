@@ -11,22 +11,17 @@
  */
 
 package com.deque.html.axecore.providers;
-import org.apache.commons.io.IOUtils;
-import java.net.URL;
-
-import javax.naming.OperationNotSupportedException;
 
 import java.io.IOException;
+import java.net.URL;
+import javax.naming.OperationNotSupportedException;
+import org.apache.commons.io.IOUtils;
 
-/**
- * Class used to access embedded resources for accessibility.
- */
+/** Class used to access embedded resources for accessibility. */
 public class EmbeddedResourceAxeProvider implements IAxeScriptProvider {
-  /**
-   * Reads the axe.min.js finder.
-   */
+  /** Reads the axe.min.js finder. */
   public String getScript() throws OperationNotSupportedException, IOException {
-        URL axeUrl = getClass().getResource("/axe.min.js");
-        return IOUtils.toString(axeUrl.openStream());
+    URL axeUrl = getClass().getResource("/axe.min.js");
+    return IOUtils.toString(axeUrl.openStream());
   }
 }

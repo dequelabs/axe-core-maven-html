@@ -12,37 +12,26 @@
 
 package com.deque.html.axecore.selenium;
 
-/**
- * Result Type placement holder.
- */
+/** Result Type placement holder. */
 public enum ResultType {
-  /**
-   * Check for violations.
-   */
+  /** Check for violations. */
   Violations("violations"),
 
-  /**
-   * Check for passing.
-   */
+  /** Check for passing. */
   Passes("passes"),
 
-  /**
-   * Check for inapplicable.
-   */
+  /** Check for inapplicable. */
   Inapplicable("inapplicable"),
 
-  /**
-   * Check for incomplete.
-   */
+  /** Check for incomplete. */
   Incomplete("incomplete");
 
-  /**
-   * String value of the enum.
-   */
+  /** String value of the enum. */
   private final String key;
 
   /**
    * gets the key value.
+   *
    * @return the string of the Result type
    */
   public String getKey() {
@@ -51,6 +40,7 @@ public enum ResultType {
 
   /**
    * gets the key based on the enum value.
+   *
    * @param newKey the enum value
    */
   ResultType(final String newKey) {

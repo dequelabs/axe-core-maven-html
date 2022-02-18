@@ -12,29 +12,24 @@
 
 package com.deque.html.axecore.extensions;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import javax.naming.OperationNotSupportedException;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.JavascriptExecutor;
-
 import com.deque.html.axecore.results.Results;
 import com.deque.html.axecore.selenium.AxeBuilder;
 import com.deque.html.axecore.selenium.AxeBuilderOptions;
+import java.io.IOException;
+import java.util.ArrayList;
+import javax.naming.OperationNotSupportedException;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 
-/**
- * web driver extension that has extra analyze methods.
- */
+/** web driver extension that has extra analyze methods. */
 public final class WebDriverExtensions {
-  /**
-   * class initializer for web driver extensions.
-   */
-  private WebDriverExtensions() {
-  }
+  /** class initializer for web driver extensions. */
+  private WebDriverExtensions() {}
 
   /**
    * Run axe against the entire page.
+   *
    * @param webDriver for the page to be scanned
    * @return an Results to be formatted
    * @throws IOException if analysis of page reaches an error
@@ -51,14 +46,15 @@ public final class WebDriverExtensions {
 
   /**
    * Run axe against the entire page.
+   *
    * @param webDriver for the page to be scanned
    * @param axeBuilderOptions Builder options
    * @return an Results to be formatted
    * @throws IOException if analysis of page reaches an error
    * @throws OperationNotSupportedException if an unaccepted error occurs
    */
-  public static Results analyze(final WebDriver webDriver,
-      final AxeBuilderOptions axeBuilderOptions)
+  public static Results analyze(
+      final WebDriver webDriver, final AxeBuilderOptions axeBuilderOptions)
       throws OperationNotSupportedException, IOException {
     if (webDriver == null) {
       throw new NullPointerException("the webDriver is null");
@@ -69,14 +65,14 @@ public final class WebDriverExtensions {
 
   /**
    * Run axe against the entire page.
+   *
    * @param webDriver for the page to be scanned
    * @param context A WebElement to test
    * @return an Results to be formatted
    * @throws IOException if analysis of page reaches an error
    * @throws OperationNotSupportedException if an unaccepted error occurs
    */
-  public static Results analyze(final WebDriver webDriver,
-      final WebElement context)
+  public static Results analyze(final WebDriver webDriver, final WebElement context)
       throws IOException, OperationNotSupportedException {
     if (webDriver == null) {
       throw new NullPointerException("the webDriver is null");
@@ -91,6 +87,7 @@ public final class WebDriverExtensions {
 
   /**
    * Run axe against the entire page.
+   *
    * @param webDriver for the page to be scanned
    * @param context A WebElement to test
    * @param axeBuilderOptions Builder options
@@ -98,8 +95,10 @@ public final class WebDriverExtensions {
    * @throws IOException if analysis of page reaches an error
    * @throws OperationNotSupportedException if an unaccepted error occurs
    */
-  public static Results analyze(final WebDriver webDriver,
-      final WebElement context, final AxeBuilderOptions axeBuilderOptions)
+  public static Results analyze(
+      final WebDriver webDriver,
+      final WebElement context,
+      final AxeBuilderOptions axeBuilderOptions)
       throws OperationNotSupportedException, IOException {
     if (webDriver == null) {
       throw new NullPointerException("the web Driver is null");
@@ -116,7 +115,6 @@ public final class WebDriverExtensions {
    * Open about:blank in a secure context.
    *
    * @param webDriver of the open page
-   *
    * @return ID of window at before the switch. Pass this to closeAboutBlank
    */
   public static String openAboutBlank(final WebDriver webDriver) {
@@ -130,8 +128,9 @@ public final class WebDriverExtensions {
       webDriver.switchTo().window(abHandle);
       webDriver.get("about:blank");
     } catch (Exception e) {
-      throw new RuntimeException("switchToWindow failed. Are you using updated browser drivers? Please check out https://github.com/dequelabs/axe-core-maven-html/blob/develop/error-handling.md", e);
-
+      throw new RuntimeException(
+          "switchToWindow failed. Are you using updated browser drivers? Please check out https://github.com/dequelabs/axe-core-maven-html/blob/develop/error-handling.md",
+          e);
     }
 
     return currentWindow;

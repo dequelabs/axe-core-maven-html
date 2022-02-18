@@ -12,32 +12,28 @@
 
 package com.deque.html.axecore.selenium;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.ArrayList;
-import javax.naming.OperationNotSupportedException;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
-
-import com.deque.html.axecore.results.CheckedNode;
-import com.deque.html.axecore.results.Rule;
-
-import org.junit.Test;
-import org.junit.After;
-import org.junit.Before;
-
 import static com.deque.html.axecore.selenium.AxeReporter.getAxeResultString;
 import static com.deque.html.axecore.selenium.AxeReporter.getReadableAxeResults;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-/**
- * The example tests using the updated files.
- */
+import com.deque.html.axecore.results.CheckedNode;
+import com.deque.html.axecore.results.Rule;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import javax.naming.OperationNotSupportedException;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+
+/** The example tests using the updated files. */
 public class AxeReporterTest {
   private WebDriver webDriver;
 
@@ -46,21 +42,18 @@ public class AxeReporterTest {
   private static final String normalPage = "src/test/resources/html/normal.html";
   private static final String scanType = "analyze";
 
-  /**
-   * Instantiate the WebDriver and navigate to the test site
-   */
+  /** Instantiate the WebDriver and navigate to the test site */
   @Before
   public void setUp() {
     // ChromeDriver needed to test for Shadow DOM testing support
     ChromeOptions options = new ChromeOptions();
-    options.addArguments("--headless", "--disable-gpu", "--window-size=1920,1200","--ignore-certificate-errors");
-    webDriver = new ChromeDriver( options);
+    options.addArguments(
+        "--headless", "--disable-gpu", "--window-size=1920,1200", "--ignore-certificate-errors");
+    webDriver = new ChromeDriver(options);
     this.webDriver.get("file:///" + new File(normalPage).getAbsolutePath());
   }
 
-  /**
-   * Ensure we close the WebDriver after finishing
-   */
+  /** Ensure we close the WebDriver after finishing */
   @After
   public void tearDown() {
     webDriver.quit();
@@ -73,9 +66,12 @@ public class AxeReporterTest {
   @Test
   public void testReadableAxeResultsEmpty() throws IOException, OperationNotSupportedException {
     assertFalse(getReadableAxeResults(scanType, webDriver, new ArrayList<Rule>()));
-    String expected = "ACCESSIBILITY CHECK" + newline() + 
-      String.format("%s check for: %s", scanType.toUpperCase(), webDriver.getCurrentUrl()) + newline() +
-      "Found 0 items";
+    String expected =
+        "ACCESSIBILITY CHECK"
+            + newline()
+            + String.format("%s check for: %s", scanType.toUpperCase(), webDriver.getCurrentUrl())
+            + newline()
+            + "Found 0 items";
     assertEquals(expected, getAxeResultString());
   }
 
@@ -116,35 +112,56 @@ public class AxeReporterTest {
     r3.setTags(Arrays.asList("tag31", "tag32"));
     violations.add(r3);
 
-
     assertTrue(getReadableAxeResults(scanType, webDriver, violations));
-    String expected = "ACCESSIBILITY CHECK" + newline() + 
-      String.format("%s check for: %s", scanType.toUpperCase(), webDriver.getCurrentUrl()) + newline() +
-      "Found 3 items" + newline() +
-      newline() +
-      "1: help1" + newline() +
-      "Description: desc1" + newline() +
-      "Help URL: helpUrl1" + newline() +
-      "Impact: critical1" + newline() +
-      "Tags: tag11, tag12, tag13" + newline() +
-      "\t\tHTML element: html11" + newline() +
-      "\t\tSelector: selector11" + newline() +
-      "\t\tHTML element: html21" + newline() +
-      "\t\tSelector: selector21" + newline() +
-      newline() +
-      newline() +
-      "2: help2" + newline() +
-      "Description: desc2" + newline() +
-      "Help URL: helpUrl2" + newline() +
-      "Impact: critical2" + newline() +
-      "Tags: tag21, tag22" + newline() +
-      newline() +
-      newline() +
-      "3: help3" + newline() +
-      "Description: desc3" + newline() +
-      "Help URL: helpUrl3" + newline() +
-      "Impact: critical3" + newline() +
-      "Tags: tag31, tag32";
+    String expected =
+        "ACCESSIBILITY CHECK"
+            + newline()
+            + String.format("%s check for: %s", scanType.toUpperCase(), webDriver.getCurrentUrl())
+            + newline()
+            + "Found 3 items"
+            + newline()
+            + newline()
+            + "1: help1"
+            + newline()
+            + "Description: desc1"
+            + newline()
+            + "Help URL: helpUrl1"
+            + newline()
+            + "Impact: critical1"
+            + newline()
+            + "Tags: tag11, tag12, tag13"
+            + newline()
+            + "\t\tHTML element: html11"
+            + newline()
+            + "\t\tSelector: selector11"
+            + newline()
+            + "\t\tHTML element: html21"
+            + newline()
+            + "\t\tSelector: selector21"
+            + newline()
+            + newline()
+            + newline()
+            + "2: help2"
+            + newline()
+            + "Description: desc2"
+            + newline()
+            + "Help URL: helpUrl2"
+            + newline()
+            + "Impact: critical2"
+            + newline()
+            + "Tags: tag21, tag22"
+            + newline()
+            + newline()
+            + newline()
+            + "3: help3"
+            + newline()
+            + "Description: desc3"
+            + newline()
+            + "Help URL: helpUrl3"
+            + newline()
+            + "Impact: critical3"
+            + newline()
+            + "Tags: tag31, tag32";
 
     assertEquals(expected, getAxeResultString());
   }

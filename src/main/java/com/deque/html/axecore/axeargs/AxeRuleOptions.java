@@ -14,17 +14,14 @@ package com.deque.html.axecore.axeargs;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-/**
- * Used as part of AxeRunOptions to configure rules.
- */
+/** Used as part of AxeRunOptions to configure rules. */
 public class AxeRuleOptions {
-  /**
-   * Denotes if the rule has to be enabled for scanning.
-   */
+  /** Denotes if the rule has to be enabled for scanning. */
   private Boolean enabled;
 
   /**
    * gets the enabled property.
+   *
    * @return if the property is enabled.
    */
   @JsonProperty(value = "enabled")
@@ -34,6 +31,7 @@ public class AxeRuleOptions {
 
   /**
    * sets the enabled value.
+   *
    * @param newEnabled value to be set
    */
   @JsonProperty(value = "enabled")

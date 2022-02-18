@@ -12,6 +12,7 @@
 
 package com.deque.html.axecore.selenium;
 
+import com.deque.html.axecore.extensions.WebDriverExtensions;
 import java.io.File;
 import java.io.IOException;
 import javax.naming.OperationNotSupportedException;
@@ -22,38 +23,28 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.chrome.ChromeDriverService;
+import org.openqa.selenium.chrome.ChromeOptions;
 
-import com.deque.html.axecore.extensions.WebDriverExtensions;
-import com.deque.html.axecore.selenium.AxeBuilder;
-
-/**
- * Unit tests for Analyze methods.
- */
+/** Unit tests for Analyze methods. */
 public class AxeAnalyzeUnitTest {
-  /**
-   * a web driver.
-   */
+  /** a web driver. */
   private WebDriver webDriver;
 
   private static final String htmlPage = "src/test/resources/html/integration-test-target.html";
 
-  /**
-   * sets up the driver before the test.
-   */
+  /** sets up the driver before the test. */
   @Before
   public void testInitialize() {
     ChromeDriverService service = ChromeDriverService.createDefaultService();
     ChromeOptions options = new ChromeOptions();
-    options.addArguments("--headless", "--disable-gpu", "--window-size=1920,1200","--ignore-certificate-errors");
+    options.addArguments(
+        "--headless", "--disable-gpu", "--window-size=1920,1200", "--ignore-certificate-errors");
     this.webDriver = new ChromeDriver(service, options);
     this.webDriver.get("file:///" + new File(htmlPage).getAbsolutePath());
   }
 
-  /**
-   * closes the web driver window.
-   */
+  /** closes the web driver window. */
   @After
   public void teardown() {
     this.webDriver.close();
@@ -62,17 +53,20 @@ public class AxeAnalyzeUnitTest {
 
   /**
    * Analyze when web driver is null.
+   *
    * @throws IOException if analysis of page reaches an error
    * @throws OperationNotSupportedException if an unaccepted error occurs
    */
   @Test(expected = NullPointerException.class)
-  public void shouldThrowWhenWebDriverIsNullAnalyse() throws IOException, OperationNotSupportedException {
+  public void shouldThrowWhenWebDriverIsNullAnalyse()
+      throws IOException, OperationNotSupportedException {
     new AxeBuilder();
     WebDriverExtensions.analyze(null);
   }
 
   /**
    * Analyze when web driver is null with a web element.
+   *
    * @throws IOException if analysis of page reaches an error
    * @throws OperationNotSupportedException if an unaccepted error occurs
    */
@@ -86,6 +80,7 @@ public class AxeAnalyzeUnitTest {
 
   /**
    * Analyze when web driver is null with default axe builder options.
+   *
    * @throws IOException if analysis of page reaches an error
    * @throws OperationNotSupportedException if an unaccepted error occurs
    */
@@ -98,6 +93,7 @@ public class AxeAnalyzeUnitTest {
 
   /**
    * Analyze when web driver is null with an element and Builder options.
+   *
    * @throws IOException if analysis of page reaches an error
    * @throws OperationNotSupportedException if an unaccepted error occurs
    */

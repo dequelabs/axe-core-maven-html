@@ -16,22 +16,17 @@ package com.deque.html.axecore.axeargs;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 
-/**
- * Class object for Axe Run Only Options.
- */
+/** Class object for Axe Run Only Options. */
 public class AxeRunOnlyOptions {
-  /**
-   * Specifies the context for run only option. (can be "rule" or "tag").
-   */
+  /** Specifies the context for run only option. (can be "rule" or "tag"). */
   private String type;
 
-  /**
-   * Has rules / tags that needs to be executed. (context is based on Type).
-   */
+  /** Has rules / tags that needs to be executed. (context is based on Type). */
   private List<String> values;
 
   /**
    * gets the type.
+   *
    * @return the type
    */
   @JsonProperty(value = "type")
@@ -41,6 +36,7 @@ public class AxeRunOnlyOptions {
 
   /**
    * sets the type.
+   *
    * @param newType the new type to be set
    */
   @JsonProperty(value = "type")
@@ -50,6 +46,7 @@ public class AxeRunOnlyOptions {
 
   /**
    * gets the value of the Axe Run Only Options.
+   *
    * @return a list of strings with the value
    */
   @JsonProperty(value = "values")
@@ -59,6 +56,7 @@ public class AxeRunOnlyOptions {
 
   /**
    * sets the values of the Axe Run only options.
+   *
    * @param newValues the new values to be set
    */
   @JsonProperty(value = "values")

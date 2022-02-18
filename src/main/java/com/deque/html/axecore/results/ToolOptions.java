@@ -1,11 +1,9 @@
 package com.deque.html.axecore.results;
 
-import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
-
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 import java.util.HashMap;
 import java.util.Map;
-
 
 public class ToolOptions {
   private String reporter;
@@ -23,6 +21,7 @@ public class ToolOptions {
   public Object getRules() {
     return rules;
   }
+
   public void setRules(Object rules) {
     this.rules = rules;
   }
@@ -31,7 +30,7 @@ public class ToolOptions {
   public Map<String, Object> getProperties() {
     return properties;
   }
- 
+
   @JsonAnySetter
   public void setProperty(String name, Object value) {
     if (properties == null) {
@@ -40,4 +39,3 @@ public class ToolOptions {
     properties.put(name, value);
   }
 }
-

@@ -14,17 +14,14 @@ package com.deque.html.axecore.selenium;
 
 import com.deque.html.axecore.providers.IAxeScriptProvider;
 
-/**
- * provides axe builder options.
- */
+/** provides axe builder options. */
 public class AxeBuilderOptions {
-  /**
-   * the axe script provider.
-   */
+  /** the axe script provider. */
   private IAxeScriptProvider scriptProvider;
 
   /**
    * gets the script provider.
+   *
    * @return the script provider
    */
   public IAxeScriptProvider getScriptProvider() {
@@ -33,7 +30,8 @@ public class AxeBuilderOptions {
 
   /**
    * sets the script provider.
-   * @param newScriptProvider the script provider to  be set
+   *
+   * @param newScriptProvider the script provider to be set
    */
   public void setScriptProvider(final IAxeScriptProvider newScriptProvider) {
     this.scriptProvider = newScriptProvider;

@@ -13,20 +13,18 @@
 package com.deque.html.axecore.selenium;
 
 import com.deque.html.axecore.axeargs.AxeRunContext;
-import com.deque.html.axecore.selenium.AxeReporter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 
-/**
- * Unit tests for Axe Run Context.
- */
+/** Unit tests for Axe Run Context. */
 public class AxeRunContextUnitTest {
 
   /**
    * serializing JSON works and matches a string value.
+   *
    * @throws JsonProcessingException if there is an error serializing the JSON
    */
   @Test()
@@ -38,12 +36,14 @@ public class AxeRunContextUnitTest {
     context.setInclude(includeList);
     context.setExclude(excludeList);
 
-    String expectedContent = "{\"include\":[[\"#if1\",\"#idiv1\"]],\"exclude\":[[\"#ef1\",\"#ediv1\"]]}";
+    String expectedContent =
+        "{\"include\":[[\"#if1\",\"#idiv1\"]],\"exclude\":[[\"#ef1\",\"#ediv1\"]]}";
     Assert.assertEquals(AxeReporter.serialize(context), expectedContent);
   }
 
   /**
    * testing null values and properties while serializing.
+   *
    * @throws JsonProcessingException if there is an error serializing the JSON
    */
   @Test()

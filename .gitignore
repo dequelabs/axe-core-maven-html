@@ -9,3 +9,5 @@ target
 bin
 node_modules
 build
+
+.cache
