@@ -5,7 +5,7 @@
 
     <groupId>com.deque.html.axe-core</groupId>
     <artifactId>selenium</artifactId>
-    <version>4.3.1</version>
+    <version>4.4.0</version>
     <build>
         <resources>
             <resource>
