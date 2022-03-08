@@ -13,7 +13,6 @@
     "prepare": "husky install"
   },
   "devDependencies": {
-    "axe-test-fixtures": "github:dequelabs/axe-test-fixtures#v1",
     "conventional-changelog-cli": "^2.0.5",
     "jfrog-cli-go": "^1.30.4",
     "sync-pom-version-to-package": "^1.6.0",
