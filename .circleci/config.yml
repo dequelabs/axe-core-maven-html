@@ -33,7 +33,7 @@ jobs:
           key: v1-mvn-deps-{{ checksum "pom.xml" }}-{{ checksum "selenium/pom.xml" }}
       - restore_cache:
           key: v1-npm-deps-{{ checksum "package-lock.json" }}-{{ checksum "selenium/package-lock.json" }}
-      - run: sudo apt update || sudo apt install python
+      - run: sudo apt install python2
       - run:
           command: node selenium/src/test/resources/test-app.js
           background: true
