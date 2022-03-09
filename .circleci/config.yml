@@ -2,7 +2,7 @@ version: 2
 
 defaults: &defaults
   docker:
-    - image: cimg/openjdk:11.0-node-browsers
+    - image: cimg/openjdk:11-node-browsers
   working_directory: ~/axe-core-maven-html
 
 jobs:
