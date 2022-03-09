@@ -7,8 +7,7 @@ This repository contains 1 packages, which can be used for automated accessibili
 
 The packages are listed below:
 
-- [`com.deque.html.axe-core/selenium`](selenium/README.md)
-
+- [`Selenium`](selenium/README.md)
 
 ## Development
 
@@ -32,3 +31,23 @@ We believe that automated testing has an important role to play in achieving dig
 4. Automated accessibility testing rules must, themselves, be tested automatically
 
 [axe-core]: https://github.com/dequelabs/axe-core
+
+## Contributing
+
+In order to contribute, you must accept the [contributor licence agreement](https://cla-assistant.io/dequelabs/axe-selenium-java) (CLA). Acceptance of this agreement will be checked automatically and pull requests without a CLA cannot be merged.
+
+## Deployment (Maintainers Only)
+
+This package is deployed to Maven Central via OSSRH. To deploy this package, follow [these instructions on StackOverflow](https://stackoverflow.com/a/42917618).
+
+Additionally add your OSSRH credentials to your `~/.m2/settings.xml` file as such:
+
+```xml
+<servers>
+  <server>
+    <id>ossrh</id>
+    <username>YOUR_OSSRH_JIRA_USERNAME</username>
+    <password>YOUR_OSSRH_JIRA_PASSWORD</password>
+  </server>
+</servers>
+```
