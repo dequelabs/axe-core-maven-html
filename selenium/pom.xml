@@ -11,6 +11,7 @@
         <groupId>com.deque.html.axe-core</groupId>
         <artifactId>virtual-superpackage</artifactId>
         <version>4.4.0</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <build>
@@ -61,7 +62,7 @@
                 </executions>
             </plugin>
         </plugins>
-        </build>
+    </build>
 
     <name>aXe Selenium Integration</name>
     <description>
