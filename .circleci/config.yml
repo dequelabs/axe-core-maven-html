@@ -12,7 +12,6 @@ jobs:
   dependencies:
     <<: *defaults
     steps:
-      - browser-tools/install-browser-tools
       - checkout
       - restore_cache:
           key: v1-mvn-deps-{{ checksum "pom.xml" }}-{{ checksum "selenium/pom.xml" }}
@@ -44,6 +43,11 @@ jobs:
       - run:
           command: cd selenium/node_modules/axe-test-fixtures/fixtures && python2 -m SimpleHTTPServer 8001
           background: true
+      - browser-tools/install-browser-tools
+      - run:
+          command: |
+            google-chrome --version
+            chromedriver --version
       - run: sleep 5 # sleep to allow the server some time to boot
       - run: mvn test
 
