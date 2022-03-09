@@ -107,7 +107,7 @@ workflows:
             - selenium
           filters:
             branches:
-              only: refactor/monorepo
+              only: develop
       - release:
           context: html-tools
           requires:
