@@ -12,8 +12,8 @@ jobs:
   dependencies:
     <<: *defaults
     steps:
-      - checkout
       - browser-tools/install-browser-tools
+      - checkout
       - restore_cache:
           key: v1-mvn-deps-{{ checksum "pom.xml" }}-{{ checksum "selenium/pom.xml" }}
       - restore_cache:
