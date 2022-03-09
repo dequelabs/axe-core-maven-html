@@ -1,13 +1,8 @@
 version: 2
 
-orbs:
-  browser-tools: circleci/browser-tools@1.2.4
-
 defaults: &defaults
   docker:
-    - image: cimg/openjdk:8.0-browsers
-  steps:
-    - browser-tools/install-chromedriver
+    - image: cimg/openjdk:8.0-node
   working_directory: ~/axe-core-maven-html
 
 jobs:
