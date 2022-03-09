@@ -6,8 +6,6 @@ orbs:
 defaults: &defaults
   docker:
     - image: cimg/openjdk:8.0-browsers
-  steps:
-    - browser-tools/install-browser-tools
   working_directory: ~/axe-core-maven-html
 
 jobs:
@@ -15,6 +13,7 @@ jobs:
     <<: *defaults
     steps:
       - checkout
+      - browser-tools/install-browser-tools
       - restore_cache:
           key: v1-mvn-deps-{{ checksum "pom.xml" }}-{{ checksum "selenium/pom.xml" }}
       - restore_cache:
