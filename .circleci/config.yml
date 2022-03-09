@@ -1,8 +1,13 @@
 version: 2
 
+orbs:
+  browser-tools: circleci/browser-tools@1.2.4
+
 defaults: &defaults
   docker:
     - image: cimg/openjdk:8.0-browsers
+  steps:
+    - browser-tools/install-browser-tools
   working_directory: ~/axe-core-maven-html
 
 jobs:
@@ -34,9 +39,6 @@ jobs:
       - restore_cache:
           key: v1-npm-deps-{{ checksum "package-lock.json" }}-{{ checksum "selenium/package-lock.json" }}
       - run: sudo apt update && sudo apt install python2
-      - run:
-          name: Install browser-driver-manager synced Chrome and ChromeDriver
-          command: npx browser-driver-manager@1.0.4 install chrome chromedriver --verbose
       - run:
           command: node selenium/src/test/resources/test-app.js
           background: true
