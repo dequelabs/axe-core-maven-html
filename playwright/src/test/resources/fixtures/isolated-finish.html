@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Test</title>
+    <script>
+      const oldOpen = window.open;
+      window.open = function() {
+        const win = oldOpen(...arguments);
+        win.Object.defineProperties(win, {
+          _my_axe: {
+            value: undefined,
+            writable: true
+          },
+          axe: {
+            get: function() {
+              return this._my_axe;
+            },
+            set: function(axe) {
+              this._my_axe = axe;
+              Object.defineProperties(axe, {
+                finishRun: {
+                  set: function() {},
+                  get: function() {
+                    return () => { throw new Error('PWNED'); }
+                  }
+                }
+              })
+            }
+          }
+        });
+      }
+    </script>
+    <script>
+      Object.defineProperties(window, {
+        _my_axe: {
+          value: undefined,
+          writable: true
+        },
+        axe: {
+          get: function() {
+            return this._my_axe;
+          },
+          set: function(axe) {
+            this._my_axe = axe;
+            Object.defineProperties(axe, {
+              finishRun: {
+                set: function() {},
+                get: function() {
+                  return () => { throw new Error('PWNED'); }
+                }
+              }
+            })
+          }
+        }
+      });
+    </script>
+  </head>
+  <body>
+    <input type="text" />
+  </body>
+</html>
+

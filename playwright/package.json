@@ -1,0 +1,11 @@
+{
+  "name": "axe-core-maven-html-playwright",
+  "version": "4.4.0",
+  "license": "MPL",
+  "private": true,
+  "repository": "dequelabs/axe-core-maven-html",
+  "scripts": {},
+  "dependencies": {
+    "axe-core": "^4.4.1"
+  }
+}

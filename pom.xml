@@ -12,6 +12,7 @@
 
     <modules>
         <module>selenium</module>
+        <module>playwright</module>
     </modules>
 
     <licenses>
