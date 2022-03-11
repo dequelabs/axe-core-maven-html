@@ -604,7 +604,7 @@ public class AxeBuilder {
           WebDriverInjectorExtensions.executeScript(webDriver, finishRunScript, partialResults);
     } catch (Exception e) {
       throw new RuntimeException(
-          "axe.finishRun failed. Please check out https://github.com/dequelabs/axe-core-maven-html/blob/develop/error-handling.md",
+          "axe.finishRun failed. Please check out https://github.com/dequelabs/axe-core-maven-html/blob/develop/selenium/error-handling.md",
           e);
     }
     WebDriverExtensions.closeAboutBlank(webDriver, prevWindow);
