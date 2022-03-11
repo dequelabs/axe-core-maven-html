@@ -16,7 +16,14 @@ public class Reporter {
    * @return this
    */
   public Reporter JSONStringify(AxeResults axeResults, String fileName) {
-    File JSONFile = new File(fileName + ".json");
+    File JSONFile = new File(fileName);
+
+    if (JSONFile.exists() || JSONFile.getName() != null) {
+      String JSONFileExt = JSONFile.getName().substring(JSONFile.getName().lastIndexOf('.'));
+      if (!JSONFileExt.equalsIgnoreCase(".json")) {
+        throw new RuntimeException("Saving axe-results requires a .json file.");
+      }
+    }
     ObjectMapper objectMapper = new ObjectMapper();
     try {
       objectMapper.writer(new DefaultPrettyPrinter());

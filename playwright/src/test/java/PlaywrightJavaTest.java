@@ -1,6 +1,7 @@
 import static org.junit.Assert.*;
 
 import com.deque.html.axecore.playwright.AxeBuilder;
+import com.deque.html.axecore.playwright.Reporter;
 import com.deque.html.axecore.utilities.axeresults.AxeResults;
 import com.deque.html.axecore.utilities.axeresults.CheckedNode;
 import com.deque.html.axecore.utilities.axeresults.Rule;
@@ -11,6 +12,10 @@ import com.microsoft.playwright.BrowserType;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.Playwright;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 import org.junit.After;
@@ -484,5 +489,42 @@ public class PlaywrightJavaTest {
     AxeResults axeResults = axePlaywrightBuilder.analyze();
 
     assertEquals(axeResults.getIncomplete().size(), 0);
+  }
+
+  @Test
+  public void saveAxeResultsToJSONFileTest() throws IOException {
+    page.navigate(getFixturePath() + "context.html");
+
+    AxeBuilder axePlaywrightBuilder = new AxeBuilder(page);
+    AxeResults axeResults = axePlaywrightBuilder.analyze();
+
+    Path path = Files.createTempFile("axe-results", ".json");
+
+    Reporter reporter = new Reporter();
+    reporter.JSONStringify(axeResults, path.toAbsolutePath().toString());
+
+    String readAxeResults =
+        new String(Files.readAllBytes(Paths.get(path.toAbsolutePath().toString())));
+
+    assertTrue(readAxeResults.contains("axe-core"));
+    assertTrue(readAxeResults.contains("passes"));
+    assertTrue(readAxeResults.contains("violations"));
+    assertTrue(readAxeResults.contains("incomplete"));
+    assertTrue(readAxeResults.contains("inapplicable"));
+  }
+
+  @Test
+  public void shouldThrowWhenTryingToSaveUnsupportedExtensionTest() {
+    page.navigate(getFixturePath() + "context.html");
+
+    AxeBuilder axePlaywrightBuilder = new AxeBuilder(page);
+    AxeResults axeResults = axePlaywrightBuilder.analyze();
+
+    Exception exception =
+        assertThrows(
+            RuntimeException.class,
+            () -> new Reporter().JSONStringify(axeResults, "axe-results.txt"));
+
+    assertTrue(exception.getMessage().contains("Saving axe-results requires a .json file"));
   }
 }
