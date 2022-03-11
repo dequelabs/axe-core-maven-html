@@ -3,18 +3,16 @@ import static org.junit.Assert.*;
 import com.deque.html.axecore.playwright.AxeBuilder;
 import com.deque.html.axecore.utilities.axeresults.AxeResults;
 import com.deque.html.axecore.utilities.axeresults.CheckedNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.deque.html.axecore.utilities.axeresults.Rule;
+import com.deque.html.axecore.utilities.axerunoptions.AxeRuleOptions;
+import com.deque.html.axecore.utilities.axerunoptions.AxeRunOptions;
 import com.microsoft.playwright.Browser;
 import com.microsoft.playwright.BrowserType;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.Playwright;
 import java.io.File;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
-import javax.naming.OperationNotSupportedException;
-import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -47,7 +45,8 @@ public class PlaywrightJavaTest {
   }
 
   /**
-   * Utility function that returns all the includes / excludes that have not been passed by the user
+   * Utility function that returns all the includes / excludes passes that have not been passed by
+   * the user
    *
    * @param results axe results to parse
    * @return List of CSS selectors used in analysis
@@ -59,20 +58,18 @@ public class PlaywrightJavaTest {
         .collect(Collectors.toList());
   }
 
-  @Test
-  public void shouldReturnAxeResultsWithDifferentSource() {
-    page.navigate(getFixturePath() + "index.html");
-    File axeLegacySource = new File("src/test/resources/fixtures/axe-core@legacy.js");
-
-    AxeBuilder axePlaywrightBuilder = new AxeBuilder(page).withAxeSource(axeLegacySource);
-    AxeResults axeResults = axePlaywrightBuilder.analyze();
-
-    assertEquals(axeResults.getTestEngine().getVersion(), "4.0.3");
-    assertNotNull(axeResults);
-    assertNotNull(axeResults.getViolations());
-    assertNotNull(axeResults.getInapplicable());
-    assertNotNull(axeResults.getIncomplete());
-    assertNotNull(axeResults.getPasses());
+  /**
+   * Utility function that returns all the includes / excludes of incomplete that have not been
+   * passed by the user
+   *
+   * @param results axe results to parse
+   * @return List of CSS selectors used in analysis
+   */
+  private List<String> getTargetIncomplete(AxeResults results) {
+    return results.getIncomplete().stream()
+        .flatMap(node -> node.getNodes().stream())
+        .map(target -> target.getTarget().toString().replaceAll("(^\\[|]$)", ""))
+        .collect(Collectors.toList());
   }
 
   @Test
@@ -114,82 +111,6 @@ public class PlaywrightJavaTest {
     }
 
     assertNull(runtimeException);
-  }
-
-  @Test
-  public void shouldReportFramesTested() throws IOException {
-    page.navigate(getFixturePath() + "crash-parent.html");
-
-    File axeCrasher = new File("src/test/resources/fixtures/axe-crasher.js");
-    String axeSource =
-        AxeBuilder.getAxeScript() + IOUtils.toString(axeCrasher.toURI(), StandardCharsets.UTF_8);
-
-    AxeBuilder axePlaywrightBuilder =
-        new AxeBuilder(page)
-            .withRules(Arrays.asList("label", "frame-tested"))
-            .withAxeSource(axeSource);
-    AxeResults axeResults = axePlaywrightBuilder.analyze();
-
-    assertEquals(axeResults.getIncomplete().get(0).getId(), "frame-tested");
-    assertEquals(axeResults.getIncomplete().get(0).getNodes().size(), 1);
-    assertEquals(axeResults.getViolations().get(0).getId(), "label");
-    assertEquals(axeResults.getViolations().get(0).getNodes().size(), 2);
-  }
-
-  @Test
-  public void throwsWhenInjectingProblematicSource() {
-    page.navigate(getFixturePath() + "index.html");
-
-    String axeSource = "throw new Error('Problematic Source');";
-
-    Exception exception =
-        assertThrows(
-            RuntimeException.class, () -> new AxeBuilder(page).withAxeSource(axeSource).analyze());
-
-    assertTrue(exception.getMessage().contains("Problematic axe-source, unable to inject."));
-  }
-
-  @Test
-  public void throwsWhenSetupFails() {
-    page.navigate(getFixturePath() + "index.html");
-
-    String axeSource = AxeBuilder.getAxeScript() + "; window.axe.utils = {};";
-    AxeBuilder axePlaywrightBuilder =
-        new AxeBuilder(page).withAxeSource(axeSource).withRules(Collections.singletonList("label"));
-    AxeResults axeResults = axePlaywrightBuilder.analyze();
-
-    assertTrue(axeResults.isErrored());
-  }
-
-  @Test
-  public void ReturnsSameResultsRunPartialAndLegacyRun() throws IOException {
-    page.navigate(getFixturePath() + "nested-iframes.html");
-
-    // @see https://www.deque.com/axe/core-documentation/api-documentation/#allowedorigins
-    // Using <unsafe_all_origins> as we're using file:// and resources dir for testing
-    File axeForceLegacy = new File("src/test/resources/fixtures/axe-force-legacy.js");
-    String axeSource =
-        AxeBuilder.getAxeScript()
-            + "axe.configure({allowedOrigins: ['<unsafe_all_origins>'], "
-            + "branding: { application: 'Playwright Java'}"
-            + "})"
-            + IOUtils.toString(axeForceLegacy.toURI(), StandardCharsets.UTF_8);
-
-    AxeBuilder legacyRun = new AxeBuilder(page).withAxeSource(axeSource);
-    AxeResults legacyResults = legacyRun.analyze();
-
-    AxeBuilder normalRun = new AxeBuilder(page);
-    AxeResults normalResults = normalRun.analyze();
-
-    // set timestamp and name of engine to match legacy to compare results
-    normalResults.setTimestamp(legacyResults.getTimestamp());
-    normalResults.getTestEngine().setName(legacyResults.getTestEngine().getName());
-
-    ObjectMapper mapper = new ObjectMapper();
-    Map<String, String> normal = mapper.convertValue(normalResults, Map.class);
-    Map<String, String> legacy = mapper.convertValue(legacyResults, Map.class);
-    assertEquals(normal, legacy);
-    assertEquals(legacyResults.getTestEngine().getName(), "axe-legacy");
   }
 
   @Test
@@ -515,18 +436,16 @@ public class PlaywrightJavaTest {
     AxeBuilder axePlaywrightBuilder =
         new AxeBuilder(page)
             .include(Collections.singletonList(".include-nested"))
-            .include(Collections.singletonList(".include-nested2"))
             .exclude(Collections.singletonList(".exclude-nested"));
 
     AxeResults axeResults = axePlaywrightBuilder.analyze();
-    List<String> targets = getTargets(axeResults);
+    List<String> targets = getTargetIncomplete(axeResults);
 
     assertTrue(targets.stream().anyMatch(selector -> selector.equalsIgnoreCase(".include-nested")));
     assertTrue(
         targets.stream().anyMatch(selector -> selector.equalsIgnoreCase(".include-nested2")));
     assertTrue(
         targets.stream().noneMatch(selector -> selector.equalsIgnoreCase(".exclude-nested")));
-    assertEquals(axeResults.getPasses().get(0).getNodes().size(), 2);
   }
 
   @Test
@@ -554,56 +473,6 @@ public class PlaywrightJavaTest {
   }
 
   @Test
-  public void axeFinishRunErrors() throws OperationNotSupportedException, IOException {
-    page.navigate(getFixturePath() + "index.html");
-
-    final String finishRunThrows = "axe.finishRun = () => { throw new Error('No finishRun')}";
-
-    Exception exception =
-        assertThrows(
-            RuntimeException.class,
-            () ->
-                new AxeBuilder(page)
-                    .withAxeSource(AxeBuilder.getAxeScript() + finishRunThrows)
-                    .analyze());
-
-    assertTrue(exception.getMessage().contains("Axe finishRun failed."));
-  }
-
-  @Test
-  public void setLegacyMode() {
-    page.navigate(getFixturePath() + "index.html");
-
-    final String runPartialThrows = ";axe.runPartial = () => { throw new Error('No runPartial')}";
-
-    AxeBuilder axePlaywrightBuilder =
-        new AxeBuilder(page)
-            .withAxeSource(AxeBuilder.getAxeScript() + runPartialThrows)
-            .setLegacyMode(true);
-    AxeResults axeResults = axePlaywrightBuilder.analyze();
-
-    assertNotNull(axeResults);
-  }
-
-  @Test
-  public void preventCrossOriginIframeTesting() {
-    page.navigate(getFixturePath() + "cross-origin.html");
-
-    final String runPartialThrows = ";axe.runPartial = () => { throw new Error('No runPartial')}";
-
-    AxeBuilder axePlaywrightBuilder =
-        new AxeBuilder(page)
-            .withAxeSource(AxeBuilder.getAxeScript() + runPartialThrows)
-            .withRules(Collections.singletonList("frame-tested"))
-            .setLegacyMode(true);
-    AxeResults axeResults = axePlaywrightBuilder.analyze();
-
-    String frameTestedRule = axeResults.getIncomplete().get(0).getId();
-
-    assertNotNull(frameTestedRule);
-  }
-
-  @Test
   public void setLegacyModeCanBeDisabledAgain() {
     page.navigate(getFixturePath() + "cross-origin.html");
 
@@ -615,123 +484,5 @@ public class PlaywrightJavaTest {
     AxeResults axeResults = axePlaywrightBuilder.analyze();
 
     assertEquals(axeResults.getIncomplete().size(), 0);
-  }
-
-  // Versions without runPartial
-
-  @Test
-  public void legacyRunAnalyze() {
-    page.navigate(getFixturePath() + "index.html");
-
-    File axeLegacySource = new File("src/test/resources/fixtures/axe-core@legacy.js");
-
-    AxeBuilder axePlaywrightBuilder = new AxeBuilder(page).withAxeSource(axeLegacySource);
-    AxeResults axeResults = axePlaywrightBuilder.analyze();
-
-    assertEquals(axeResults.getTestEngine().getVersion(), "4.0.3");
-    assertNotNull(axeResults);
-    assertNotNull(axeResults.getViolations());
-    assertNotNull(axeResults.getInapplicable());
-    assertNotNull(axeResults.getIncomplete());
-    assertNotNull(axeResults.getPasses());
-  }
-
-  @Test
-  public void throwsErrorOnTopWindow() {
-    page.navigate(getFixturePath() + "crash.html");
-
-    File axeCrasherSource = new File("src/test/resources/fixtures/axe-crasher.js");
-
-    Exception exception =
-        assertThrows(
-            RuntimeException.class,
-            () -> new AxeBuilder(page).withAxeSource(axeCrasherSource).analyze());
-
-    assertTrue(exception.getMessage().contains("Problematic axe-source, unable to inject."));
-  }
-
-  @Test
-  public void legacyRunCrossOriginPages() {
-    page.navigate(getFixturePath() + "cross-origin.html");
-
-    File axeLegacySource = new File("src/test/resources/fixtures/axe-core@legacy.js");
-
-    AxeBuilder axePlaywrightBuilder =
-        new AxeBuilder(page)
-            .withAxeSource(axeLegacySource)
-            .withRules(Collections.singletonList("frame-tested"));
-    AxeResults axeResults = axePlaywrightBuilder.analyze();
-
-    assertEquals(axeResults.getIncomplete().size(), 0);
-  }
-
-  @Test
-  public void legacyRunNestedIframeTests() {
-    page.navigate(getFixturePath() + "nested-iframes.html");
-
-    File axeLegacySource = new File("src/test/resources/fixtures/axe-core@legacy.js");
-
-    AxeBuilder axePlaywrightBuilder =
-        new AxeBuilder(page)
-            .withAxeSource(axeLegacySource)
-            .withRules(Collections.singletonList("label"));
-    AxeResults axeResults = axePlaywrightBuilder.analyze();
-
-    List<CheckedNode> violationNodes = axeResults.getViolations().get(0).getNodes();
-
-    assertEquals(axeResults.getViolations().get(0).getId(), "label");
-    assertEquals(violationNodes.size(), 4);
-    assertEquals(
-        violationNodes.get(0).getTarget(),
-        Arrays.asList("#ifr-foo", "#foo-bar", "#bar-baz", "input"));
-
-    assertEquals(violationNodes.get(1).getTarget(), Arrays.asList("#ifr-foo", "#foo-baz", "input"));
-    assertEquals(violationNodes.get(2).getTarget(), Arrays.asList("#ifr-bar", "#bar-baz", "input"));
-    assertEquals(violationNodes.get(3).getTarget(), Arrays.asList("#ifr-baz", "input"));
-  }
-
-  @Test
-  public void legacyRunNestedIframeSetTests() {
-    page.navigate(getFixturePath() + "nested-frameset.html");
-
-    File axeLegacySource = new File("src/test/resources/fixtures/axe-core@legacy.js");
-
-    AxeBuilder axePlaywrightBuilder =
-        new AxeBuilder(page)
-            .withAxeSource(axeLegacySource)
-            .withRules(Collections.singletonList("label"));
-    AxeResults axeResults = axePlaywrightBuilder.analyze();
-
-    List<CheckedNode> violationNodes = axeResults.getViolations().get(0).getNodes();
-
-    assertEquals(axeResults.getViolations().get(0).getId(), "label");
-    assertEquals(violationNodes.size(), 4);
-    assertEquals(
-        violationNodes.get(0).getTarget(),
-        Arrays.asList("#frm-foo", "#foo-bar", "#bar-baz", "input"));
-
-    assertEquals(violationNodes.get(1).getTarget(), Arrays.asList("#frm-foo", "#foo-baz", "input"));
-    assertEquals(violationNodes.get(2).getTarget(), Arrays.asList("#frm-bar", "#bar-baz", "input"));
-    assertEquals(violationNodes.get(3).getTarget(), Arrays.asList("#frm-baz", "input"));
-  }
-
-  @Test
-  public void legacyRunShadowDOMIFrames() {
-    page.navigate(getFixturePath() + "shadow-frames.html");
-
-    AxeBuilder axePlaywrightBuilder =
-        new AxeBuilder(page).withRules(Collections.singletonList("label"));
-
-    AxeResults axeResults = axePlaywrightBuilder.analyze();
-    List<CheckedNode> checkedNodes = axeResults.getViolations().get(0).getNodes();
-
-    assertEquals(axeResults.getViolations().get(0).getId(), "label");
-    assertEquals(checkedNodes.size(), 3);
-
-    assertEquals(checkedNodes.get(0).getTarget(), Arrays.asList("#light-frame", "input"));
-    assertEquals(
-        checkedNodes.get(1).getTarget(),
-        Arrays.asList(Arrays.asList("#shadow-root", "#shadow-frame"), "input"));
-    assertEquals(checkedNodes.get(2).getTarget(), Arrays.asList("#slotted-frame", "input"));
   }
 }
