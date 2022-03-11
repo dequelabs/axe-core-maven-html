@@ -15,7 +15,7 @@ public class Reporter {
    * @param fileName - Pass in a file name
    * @return this
    */
-  public Reporter JSONStringify(AxeResults axeResults, String fileName) {
+  public Reporter JSONStringify(AxeResults axeResults, String fileName) throws IOException {
     File JSONFile = new File(fileName);
 
     if (JSONFile.exists() || JSONFile.getName() != null) {
@@ -25,12 +25,8 @@ public class Reporter {
       }
     }
     ObjectMapper objectMapper = new ObjectMapper();
-    try {
-      objectMapper.writer(new DefaultPrettyPrinter());
-      objectMapper.writeValue(JSONFile, axeResults);
-    } catch (IOException ioException) {
-      throw new RuntimeException("Unable to write axe-results to file", ioException);
-    }
+    objectMapper.writer(new DefaultPrettyPrinter());
+    objectMapper.writeValue(JSONFile, axeResults);
 
     return this;
   }

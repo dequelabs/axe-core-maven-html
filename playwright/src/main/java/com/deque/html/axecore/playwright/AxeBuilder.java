@@ -86,6 +86,10 @@ public class AxeBuilder {
       runOnlyOptions.setType("rule");
       runOnlyOptions.setValues(rules);
       this.options.setRunOnly(runOnlyOptions);
+    } else {
+      throw new RuntimeException(
+          "withRules list cannot be empty. "
+              + "Please see: https://github.com/dequelabs/axe-core/blob/develop/doc/rule-descriptions.md#rule-descriptions");
     }
     return this;
   }
@@ -103,6 +107,10 @@ public class AxeBuilder {
       runOnlyOptions.setType("tag");
       runOnlyOptions.setValues(tags);
       this.options.setRunOnly(runOnlyOptions);
+    } else {
+      throw new RuntimeException(
+          "withTags list cannot be empty. "
+              + "Please see: https://github.com/dequelabs/axe-core/blob/develop/doc/API.md#axe-core-tags");
     }
     return this;
   }
@@ -123,6 +131,10 @@ public class AxeBuilder {
             disableRulesMap.put(rule, axeRuleOptions);
           });
       this.options.setRules(disableRulesMap);
+    } else {
+      throw new RuntimeException(
+          "disableRules list cannot be empty. "
+              + "Please see: https://github.com/dequelabs/axe-core/blob/develop/doc/rule-descriptions.md#rule-descriptions");
     }
     return this;
   }
