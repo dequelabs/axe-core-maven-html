@@ -51,7 +51,8 @@ jobs:
           background: true
 
       - run: sleep 5 # sleep to allow the server some time to boot
-      - run: mvn test
+      # run only selenium tests in this job
+      - run: mvn test -pl selenium
 
   playwright:
     <<: *defaults
@@ -68,7 +69,8 @@ jobs:
           command: |
             google-chrome --version
             chromedriver --version
-      - run: mvn test
+      # run only playwright tests in this job
+      - run: mvn test -pl playwright
 
   snapshot_release:
     <<: *defaults
