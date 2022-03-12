@@ -69,6 +69,8 @@ jobs:
           command: |
             google-chrome --version
             chromedriver --version
+      # start the test fixture server
+      - run: npm start
       # run only playwright tests in this job
       - run: mvn test -pl playwright
 
