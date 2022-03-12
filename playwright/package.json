@@ -4,8 +4,13 @@
   "license": "MPL",
   "private": true,
   "repository": "dequelabs/axe-core-maven-html",
-  "scripts": {},
+  "scripts": {
+    "start": "http-server ./src/test/resources/fixtures -p 1337"
+  },
   "dependencies": {
     "axe-core": "^4.4.1"
+  },
+  "devDependencies": {
+    "http-server": "^14.1.0"
   }
 }

@@ -258,6 +258,7 @@ public class AxeBuilder {
     if (!legacyMode) {
       this.page.frames().forEach(this::injectAxeSource);
     }
+
     return page.evaluate(
         "([axeContext, axeOptions]) => {"
             + "const context = JSON.parse(axeContext);"
