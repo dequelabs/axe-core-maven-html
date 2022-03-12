@@ -75,7 +75,7 @@ jobs:
           command: cd playwright && npm start
           background: true
       # run only playwright tests in this job
-      - run: mvn test -pl playwright
+      - run: mvn test -q -pl playwright
 
   snapshot_release:
     <<: *defaults
