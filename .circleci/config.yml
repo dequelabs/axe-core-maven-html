@@ -14,12 +14,12 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: v1-mvn-deps-{{ checksum "pom.xml" }}-{{ checksum "selenium/pom.xml" }}--{{ checksum "playwright/pom.xml" }}
+          key: v1-mvn-deps-{{ checksum "pom.xml" }}-{{ checksum "selenium/pom.xml" }}-{{ checksum "playwright/pom.xml" }}
       - restore_cache:
           key: v1-npm-deps-{{ checksum "package-lock.json" }}-{{ checksum "selenium/package-lock.json" }}-{{ checksum "playwright/package-lock.json" }}
       - run: mvn install -DskipTests
       - save_cache:
-          key: v1-mvn-deps-{{ checksum "pom.xml" }}-{{ checksum "selenium/pom.xml" }}--{{ checksum "playwright/pom.xml" }}
+          key: v1-mvn-deps-{{ checksum "pom.xml" }}-{{ checksum "selenium/pom.xml" }}-{{ checksum "playwright/pom.xml" }}
           paths:
             - ~/.m2
       - save_cache:
