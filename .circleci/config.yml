@@ -63,10 +63,12 @@ jobs:
           key: v2-mvn-deps-{{ checksum "pom.xml" }}-{{ checksum "selenium/pom.xml" }}-{{ checksum "playwright/pom.xml" }}
       - restore_cache:
           key: v2-npm-deps-{{ checksum "package-lock.json" }}-{{ checksum "selenium/package-lock.json" }}-{{ checksum "playwright/package-lock.json" }}
+      - browser-tools/install-chrome
+      - browser-tools/install-chromedriver
       - run:
-          name: Install Playwright dependencies
           command: |
-            sudo apt update || sudo mvn exec:java -e -Dexec.mainClass=com.microsoft.playwright.CLI -Dexec.args="install-deps"
+            google-chrome --version
+            chromedriver --version
       # start the test fixture server
       - run:
           name: Start test fixture server
