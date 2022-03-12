@@ -3,7 +3,7 @@
 ## Table of Contents
 
 1. [Having Popup blockers enabled](#having-popup-blockers-enabled)
-2. [AxePlaywrightBuilder.setLegacyMode(legacy: boolean)](#AxeBuilderrsetlegacymodeboolean-legacyMode)
+2. [AxeBuilder.setLegacyMode(legacy: boolean)](#AxeBuildersetlegacymodeboolean-legacyMode)
 
 Version 4.3.0 and above of the axe-core integrations use a new technique when calling `AxeBuilder.analyze()` which opens
 a new window at the end of a run. Many of the issues outlined in this document address common problems with this
