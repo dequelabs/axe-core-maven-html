@@ -64,7 +64,9 @@ jobs:
       - restore_cache:
           key: v1-npm-deps-{{ checksum "package-lock.json" }}-{{ checksum "selenium/package-lock.json" }}-{{ checksum "playwright/package-lock.json" }}
       # start the test fixture server
-      - run: cd playwright && npm start
+      - run:
+          command: cd playwright && npm start
+          background: true
       # run only playwright tests in this job
       - run: mvn test -pl playwright
 
