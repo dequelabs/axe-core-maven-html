@@ -695,6 +695,37 @@ public class PlaywrightJavaTest {
     assertTrue(exception.getMessage().contains("Saving axe-results requires a .json file"));
   }
 
+  @Test
+  public void shouldThrowIfListOfRulesIsEmptyTest() {
+    page.navigate(server + "index.html");
+
+    Exception exception =
+        assertThrows(RuntimeException.class, () -> new AxeBuilder(page).withRules(Arrays.asList()));
+
+    assertTrue(exception.getMessage().contains("withRules list cannot be empty"));
+  }
+
+  @Test
+  public void shouldThrowIfListOfTagsIsEmptyTest() {
+    page.navigate(server + "index.html");
+
+    Exception exception =
+        assertThrows(RuntimeException.class, () -> new AxeBuilder(page).withTags(Arrays.asList()));
+
+    assertTrue(exception.getMessage().contains("withTags list cannot be empty"));
+  }
+
+  @Test
+  public void shouldThrowIfDisableRulesIsEmptyTest() {
+    page.navigate(server + "index.html");
+
+    Exception exception =
+        assertThrows(
+            RuntimeException.class, () -> new AxeBuilder(page).disableRules(Arrays.asList()));
+
+    assertTrue(exception.getMessage().contains("disableRules list cannot be empty"));
+  }
+
   // Versions without runPartial
 
   @Test
