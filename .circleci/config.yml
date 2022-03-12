@@ -27,6 +27,7 @@ jobs:
           paths:
             - node_modules
             - selenium/node_modules
+            - playwright/node_modules
 
   selenium:
     <<: *defaults
