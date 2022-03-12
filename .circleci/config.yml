@@ -62,7 +62,6 @@ jobs:
           key: v1-mvn-deps-{{ checksum "pom.xml" }}-{{ checksum "playwright/pom.xml" }}
       - restore_cache:
           key: v1-npm-deps-{{ checksum "package-lock.json" }}-{{ checksum "playwright/package-lock.json" }}
-      - run: sudo apt update && sudo apt install python2
       - browser-tools/install-chrome
       - browser-tools/install-chromedriver
       - run:
@@ -70,7 +69,7 @@ jobs:
             google-chrome --version
             chromedriver --version
       # start the test fixture server
-      - run: npm start
+      - run: cd plawright && npm start
       # run only playwright tests in this job
       - run: mvn test -pl playwright
 
