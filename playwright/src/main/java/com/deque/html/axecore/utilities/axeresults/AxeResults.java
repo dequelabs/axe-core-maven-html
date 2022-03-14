@@ -108,8 +108,7 @@ public class AxeResults {
   public boolean violationFree() {
     if (this.violations == null) {
       return true;
-    } else {
-      return this.violations.size() == 0;
     }
+    return this.violations.size() == 0;
   }
 }

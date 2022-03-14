@@ -82,16 +82,16 @@ public class AxeBuilder {
    * @return this
    */
   public AxeBuilder withRules(List<String> rules) {
-    if (!rules.isEmpty()) {
-      AxeRunOnlyOptions runOnlyOptions = new AxeRunOnlyOptions();
-      runOnlyOptions.setType("rule");
-      runOnlyOptions.setValues(rules);
-      this.options.setRunOnly(runOnlyOptions);
-    } else {
+    if (rules.isEmpty()) {
       throw new RuntimeException(
           "withRules list cannot be empty. "
               + "Please see: https://github.com/dequelabs/axe-core/blob/develop/doc/rule-descriptions.md#rule-descriptions");
     }
+
+    AxeRunOnlyOptions runOnlyOptions = new AxeRunOnlyOptions();
+    runOnlyOptions.setType("rule");
+    runOnlyOptions.setValues(rules);
+    this.options.setRunOnly(runOnlyOptions);
     return this;
   }
 
@@ -105,16 +105,16 @@ public class AxeBuilder {
    *     Tags</a>
    */
   public AxeBuilder withTags(List<String> tags) {
-    if (!tags.isEmpty()) {
-      AxeRunOnlyOptions runOnlyOptions = new AxeRunOnlyOptions();
-      runOnlyOptions.setType("tag");
-      runOnlyOptions.setValues(tags);
-      this.options.setRunOnly(runOnlyOptions);
-    } else {
+    if (tags.isEmpty()) {
       throw new RuntimeException(
           "withTags list cannot be empty. "
               + "Please see: https://github.com/dequelabs/axe-core/blob/develop/doc/API.md#axe-core-tags");
     }
+
+    AxeRunOnlyOptions runOnlyOptions = new AxeRunOnlyOptions();
+    runOnlyOptions.setType("tag");
+    runOnlyOptions.setValues(tags);
+    this.options.setRunOnly(runOnlyOptions);
     return this;
   }
 
@@ -125,20 +125,20 @@ public class AxeBuilder {
    * @return this
    */
   public AxeBuilder disableRules(List<String> rules) {
-    if (!rules.isEmpty()) {
-      Map<String, AxeRuleOptions> disableRulesMap = new HashMap<>();
-      rules.forEach(
-          (rule) -> {
-            AxeRuleOptions axeRuleOptions = new AxeRuleOptions();
-            axeRuleOptions.setEnabled(false);
-            disableRulesMap.put(rule, axeRuleOptions);
-          });
-      this.options.setRules(disableRulesMap);
-    } else {
+    if (rules.isEmpty()) {
       throw new RuntimeException(
           "disableRules list cannot be empty. "
               + "Please see: https://github.com/dequelabs/axe-core/blob/develop/doc/rule-descriptions.md#rule-descriptions");
     }
+
+    Map<String, AxeRuleOptions> disableRulesMap = new HashMap<>();
+    rules.forEach(
+        (rule) -> {
+          AxeRuleOptions axeRuleOptions = new AxeRuleOptions();
+          axeRuleOptions.setEnabled(false);
+          disableRulesMap.put(rule, axeRuleOptions);
+        });
+    this.options.setRules(disableRulesMap);
     return this;
   }
 
