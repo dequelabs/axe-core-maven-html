@@ -135,7 +135,7 @@ workflows:
             - playwright
           filters:
             branches:
-              only: feat/playwright
+              only: develop
       - release:
           context: html-tools
           requires:
