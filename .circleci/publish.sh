@@ -41,5 +41,3 @@ echo "</settings>" >> ~/.m2/settings.xml
 chmod 0600 ~/.m2/settings.xml
 
 mvn -P release -DskipTests clean install nexus-staging:deploy
-# Release playwright JAR with dependencies
-mvn -P release -DskipTests assembly:single -pl playwright nexus-staging:deploy
