@@ -61,21 +61,6 @@ public class PlaywrightJavaTest {
     browser.close();
   }
 
-  public static String URLReader(URL url, Charset encoding) throws IOException {
-    String content;
-    try (Scanner scanner = new Scanner(url.openStream(), String.valueOf(encoding))) {
-      content = scanner.useDelimiter("\\A").next();
-    }
-    return content;
-  }
-
-  private String getFixturePath() {
-    final String resources = "src/test/resources";
-    File file = new File(resources);
-    String absolutePath = file.getAbsolutePath();
-    return "File://" + absolutePath + "/fixtures/";
-  }
-
   /**
    * Utility function that returns all the includes / excludes passes that have not been passed by
    * the user
@@ -90,7 +75,15 @@ public class PlaywrightJavaTest {
         .collect(Collectors.toList());
   }
 
-  private void overwriteAxeSourceWithFile(File source) throws IOException, URISyntaxException {
+  public static String URLReader(URL url, Charset encoding) throws IOException {
+    String content;
+    try (Scanner scanner = new Scanner(url.openStream(), String.valueOf(encoding))) {
+      content = scanner.useDelimiter("\\A").next();
+    }
+    return content;
+  }
+
+  private void overwriteAxeSourceWithString(File source) throws IOException, URISyntaxException {
     URL axeUrl = AxeBuilder.class.getResource("/axe.min.js");
     Files.write(
         Paths.get(axeUrl.toURI().getPath()),
@@ -98,12 +91,12 @@ public class PlaywrightJavaTest {
         StandardOpenOption.WRITE);
   }
 
-  private void overwriteAxeSourceWithFile(String source) throws IOException, URISyntaxException {
+  private void overwriteAxeSourceWithString(String source) throws IOException, URISyntaxException {
     URL axeUrl = AxeBuilder.class.getResource("/axe.min.js");
     Files.write(Paths.get(axeUrl.toURI().getPath()), source.getBytes(), StandardOpenOption.WRITE);
   }
 
-  private void appendAxeSourceWithFile(String source) throws IOException, URISyntaxException {
+  private void appendAxeSourceWithString(String source) throws IOException, URISyntaxException {
     URL axeUrl = AxeBuilder.class.getResource("/axe.min.js");
     Files.write(Paths.get(axeUrl.toURI().getPath()), source.getBytes(), StandardOpenOption.APPEND);
   }
@@ -127,7 +120,7 @@ public class PlaywrightJavaTest {
     page.navigate(server + "index.html");
     File axeLegacySource = new File("src/test/resources/fixtures/axe-core@legacy.js");
 
-    overwriteAxeSourceWithFile(axeLegacySource);
+    overwriteAxeSourceWithString(axeLegacySource);
 
     AxeBuilder axeBuilder = new AxeBuilder(page);
     AxeResults axeResults = axeBuilder.analyze();
@@ -188,7 +181,7 @@ public class PlaywrightJavaTest {
     File axeCrasher = new File("src/test/resources/fixtures/axe-crasher.js");
     String source =
         AxeBuilder.getAxeScript() + IOUtils.toString(axeCrasher.toURI(), StandardCharsets.UTF_8);
-    overwriteAxeSourceWithFile(source);
+    overwriteAxeSourceWithString(source);
 
     AxeBuilder axeBuilder = new AxeBuilder(page).withRules(Arrays.asList("label", "frame-tested"));
     AxeResults axeResults = axeBuilder.analyze();
@@ -205,7 +198,7 @@ public class PlaywrightJavaTest {
 
     String axeSource = "throw new Error('Problematic Source');";
 
-    overwriteAxeSourceWithFile(axeSource);
+    overwriteAxeSourceWithString(axeSource);
 
     Exception exception =
         assertThrows(RuntimeException.class, () -> new AxeBuilder(page).analyze());
@@ -219,7 +212,7 @@ public class PlaywrightJavaTest {
 
     String axeSource = AxeBuilder.getAxeScript() + "; window.axe.utils = {};";
 
-    overwriteAxeSourceWithFile(axeSource);
+    overwriteAxeSourceWithString(axeSource);
 
     AxeBuilder axeBuilder = new AxeBuilder(page).withRules(Collections.singletonList("label"));
     AxeResults axeResults = axeBuilder.analyze();
@@ -236,7 +229,7 @@ public class PlaywrightJavaTest {
     File forceLegacy = new File("src/test/resources/fixtures/axe-force-legacy.js");
     String axeLegacySource =
         oldSource + IOUtils.toString(forceLegacy.toURI(), StandardCharsets.UTF_8);
-    overwriteAxeSourceWithFile(axeLegacySource);
+    overwriteAxeSourceWithString(axeLegacySource);
     AxeResults legacyResults = legacyRun.analyze();
 
     page.navigate(server + "nested-iframes.html");
@@ -605,7 +598,7 @@ public class PlaywrightJavaTest {
     page.navigate(server + "index.html");
 
     String finishRunThrows = "axe.finishRun = () => { throw new Error('No finishRun')}";
-    appendAxeSourceWithFile(finishRunThrows);
+    appendAxeSourceWithString(finishRunThrows);
 
     Exception exception =
         assertThrows(RuntimeException.class, () -> new AxeBuilder(page).analyze());
@@ -618,7 +611,7 @@ public class PlaywrightJavaTest {
     page.navigate(server + "index.html");
 
     final String runPartialThrows = ";axe.runPartial = () => { throw new Error('No runPartial')}";
-    appendAxeSourceWithFile(runPartialThrows);
+    appendAxeSourceWithString(runPartialThrows);
 
     AxeBuilder axeBuilder = new AxeBuilder(page).setLegacyMode(true);
     AxeResults axeResults = axeBuilder.analyze();
@@ -631,7 +624,7 @@ public class PlaywrightJavaTest {
     page.navigate(server + "cross-origin.html");
 
     final String runPartialThrows = ";axe.runPartial = () => { throw new Error('No runPartial')}";
-    appendAxeSourceWithFile(runPartialThrows);
+    appendAxeSourceWithString(runPartialThrows);
 
     AxeBuilder axeBuilder =
         new AxeBuilder(page)
@@ -734,7 +727,7 @@ public class PlaywrightJavaTest {
 
     File axeLegacySource = new File("src/test/resources/fixtures/axe-core@legacy.js");
 
-    overwriteAxeSourceWithFile(axeLegacySource);
+    overwriteAxeSourceWithString(axeLegacySource);
 
     AxeBuilder axeBuilder = new AxeBuilder(page);
     AxeResults axeResults = axeBuilder.analyze();
@@ -752,7 +745,7 @@ public class PlaywrightJavaTest {
     page.navigate(server + "crash.html");
 
     File axeCrasherSource = new File("src/test/resources/fixtures/axe-crasher.js");
-    overwriteAxeSourceWithFile(axeCrasherSource);
+    overwriteAxeSourceWithString(axeCrasherSource);
 
     Exception exception =
         assertThrows(RuntimeException.class, () -> new AxeBuilder(page).analyze());
@@ -765,7 +758,7 @@ public class PlaywrightJavaTest {
     page.navigate(server + "cross-origin.html");
 
     File axeLegacySource = new File("src/test/resources/fixtures/axe-core@legacy.js");
-    overwriteAxeSourceWithFile(axeLegacySource);
+    overwriteAxeSourceWithString(axeLegacySource);
 
     AxeBuilder axeBuilder =
         new AxeBuilder(page).withRules(Collections.singletonList("frame-tested"));
@@ -779,7 +772,7 @@ public class PlaywrightJavaTest {
     page.navigate(server + "nested-iframes.html");
 
     File axeLegacySource = new File("src/test/resources/fixtures/axe-core@legacy.js");
-    overwriteAxeSourceWithFile(axeLegacySource);
+    overwriteAxeSourceWithString(axeLegacySource);
 
     AxeBuilder axeBuilder = new AxeBuilder(page).withRules(Collections.singletonList("label"));
     AxeResults axeResults = axeBuilder.analyze();
@@ -802,7 +795,7 @@ public class PlaywrightJavaTest {
     page.navigate(server + "nested-frameset.html");
 
     File axeLegacySource = new File("src/test/resources/fixtures/axe-core@legacy.js");
-    overwriteAxeSourceWithFile(axeLegacySource);
+    overwriteAxeSourceWithString(axeLegacySource);
 
     AxeBuilder axeBuilder = new AxeBuilder(page).withRules(Collections.singletonList("label"));
     AxeResults axeResults = axeBuilder.analyze();
