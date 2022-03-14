@@ -21,6 +21,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import org.apache.commons.io.IOUtils;
 
+/** Chainable class: AxeBuilder used to customize and analyze using axe-core */
 public class AxeBuilder {
   private final AxeContext context = new AxeContext();
   private AxeRunOptions options = new AxeRunOptions();
@@ -99,7 +100,9 @@ public class AxeBuilder {
    *
    * @param tags ArrayList of tags to executed
    * @return this
-   * @see https://github.com/dequelabs/axe-core/blob/develop/doc/API.md#axe-core-tags
+   * @see <a
+   *     href="https://github.com/dequelabs/axe-core/blob/develop/doc/API.md#axe-core-tags">axe-core
+   *     Tags</a>
    */
   public AxeBuilder withTags(List<String> tags) {
     if (!tags.isEmpty()) {
@@ -188,7 +191,7 @@ public class AxeBuilder {
   }
 
   /**
-   * Use frameMessenger with <same_origin_only> Disables runPartial() which is called in each iframe
+   * Use frameMessenger with same_origin_only Disables runPartial() which is called in each iframe
    * as well as finishRun(). This uses normal run() instead, cross-origin iframes will not be tested
    *
    * @param legacyMode boolean
@@ -206,7 +209,8 @@ public class AxeBuilder {
    * @param context the current context of the iframe
    * @param isTopLevel is the iframe at the top level (page.mainFrame() is the top level frame)
    * @return All partial results
-   * @see https://github.com/dequelabs/axe-core/blob/master/doc/run-partial.md
+   * @see <a href="https://github.com/dequelabs/axe-core/blob/master/doc/run-partial.md">axe-core
+   *     runPartial</a>
    */
   private ArrayList<Object> runPartialRecursive(Frame frame, String context, boolean isTopLevel) {
     try {
@@ -271,8 +275,9 @@ public class AxeBuilder {
   /**
    * *
    *
-   * @see
-   *     https://github.com/dequelabs/axe-core/blob/master/doc/run-partial.md#axeutilsgetframecontextscontext-framecontext
+   * @see <a
+   *     href="https://github.com/dequelabs/axe-core/blob/master/doc/run-partial.md#axeutilsgetframecontextscontext-framecontext>axe-core
+   *     frameContexts</a>
    * @param frame current iframe
    * @param context current context
    * @return returns array of frameContexts
@@ -310,8 +315,9 @@ public class AxeBuilder {
    *
    * @param partialResults A list of all the partial results
    * @return the final report of the analysis
-   * @see
-   *     https://github.com/dequelabs/axe-core/blob/master/doc/run-partial.md#axefinishrunpartialresults-options-promise
+   * @see <a
+   *     href="https://github.com/dequelabs/axe-core/blob/master/doc/run-partial.md#axefinishrunpartialresults-options-promise>axe-core
+   *     runPartial</a>
    */
   private Object finishRun(ArrayList<Object> partialResults) {
     Browser browser = page.context().browser();
@@ -360,6 +366,7 @@ public class AxeBuilder {
     }
   }
 
+  // get the axe-script from node_modules
   public static String getAxeScript() {
     URL axeUrl = AxeBuilder.class.getResource("/axe.min.js");
     String axeSource = "";
