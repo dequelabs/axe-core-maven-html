@@ -1,4 +1,4 @@
-# @axe-core-maven-html-playwright
+# axe-core-maven-html-playwright
 
 > A Playwright Java chainable API integration for axe-core
 
@@ -29,7 +29,7 @@ Add Playwright Java to your `pom.xml` if you have not already:
 
 ```
 
-Add `@axe-core-maven-playwright` dependency to your `pom.xml`:
+Add `axe-core-maven-html-playwright` dependency to your `pom.xml`:
 
 ```xml
 
@@ -113,7 +113,7 @@ public class MyPlaywrightTestSuite {
 
 ## AxeBuilder(Page page)
 
-Constructor for the PlaywrightBuilder. You must pass an instance of Playwright Page.
+Constructor for AxeBuilder. You must pass an instance of a Playwright Page.
 
 ```java
 // Example Page
