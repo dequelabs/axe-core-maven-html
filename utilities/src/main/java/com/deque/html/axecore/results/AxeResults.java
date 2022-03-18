@@ -106,9 +106,12 @@ public class AxeResults {
   }
 
   public boolean violationFree() {
-    if (this.violations == null) {
+    // If the violations list has not been initialized, there
+    // are no violations. This prevents a `NullPointerException` when
+    // calling this method if `.isErrored() == true`.
+    if (violations == null) {
       return true;
     }
-    return this.violations.size() == 0;
+    return violations.size() == 0;
   }
 }
