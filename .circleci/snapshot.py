@@ -39,7 +39,7 @@ def make_version_snapshot(pom_dir):
     tree.write(pom_path, xml_declaration = True, encoding = 'utf-8', method = 'xml')
     print 'Added %s to version' % ss
 
-pom_dirs = ['', 'selenium', 'playwright']
+pom_dirs = ['', 'selenium', 'playwright', 'utilities']
 
 for dir in pom_dirs:
     make_version_snapshot(dir)
