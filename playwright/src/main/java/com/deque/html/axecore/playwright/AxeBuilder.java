@@ -351,7 +351,7 @@ public class AxeBuilder {
         String.format(
             ";axe.configure({"
                 + "allowedOrigins: [%s], "
-                + "branding: { application: 'Playwright Java'}"
+                + "branding: { application: 'PlaywrightJava'}"
                 + "})",
             origins);
 
