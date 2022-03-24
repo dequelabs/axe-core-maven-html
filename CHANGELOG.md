@@ -1,6 +1,4 @@
 ## [4.4.2](https://github.com/dequelabs/axe-core-maven-html/compare/v4.3.1...v4.4.2) (2022-09-28)
-## [4.4.1](https://github.com/dequelabs/axe-core-maven-html/compare/v4.3.1...v4.4.1) (2022-03-24)
->>>>>>> d9eb68f (chore: release v4.4.1)
 
 
 ### Bug Fixes
@@ -8,6 +6,10 @@
 * add missing plugins to superpackage, playwright and utilities required for publishing ([#216](https://github.com/dequelabs/axe-core-maven-html/issues/216)) ([f4cf7ed](https://github.com/dequelabs/axe-core-maven-html/commit/f4cf7ed9e7baa0f782686e077a5543e2b02a9171))
 * improve result toString implementation to be more actionable ([#233](https://github.com/dequelabs/axe-core-maven-html/issues/233)) ([0417d13](https://github.com/dequelabs/axe-core-maven-html/commit/0417d1355d0dbadf430c42aefc842f75ef2e8a14))
 * **selenium,playwright:** only set `allowedOrigin` when needed ([#237](https://github.com/dequelabs/axe-core-maven-html/issues/237)) ([4467b4d](https://github.com/dequelabs/axe-core-maven-html/commit/4467b4dd308b5a4e09eeb875230af816009f08ec))
+
+## [4.4.1](https://github.com/dequelabs/axe-core-maven-html/compare/v4.3.1...v4.4.1) (2022-03-24)
+
+### Bug Fixes
 
 * **playwright:** update application branding ([#211](https://github.com/dequelabs/axe-core-maven-html/issues/211)) ([d9ff448](https://github.com/dequelabs/axe-core-maven-html/commit/d9ff448b7d6be73e881bf689c052550b96e8d2c8))
 
