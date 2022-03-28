@@ -36,7 +36,7 @@ Add `axe-core-maven-html-playwright` dependency to your `pom.xml`:
 <dependency>
     <groupId>com.deque.html.axe-core</groupId>
     <artifactId>playwright</artifactId>
-    <version>4.4.0-SNAPSHOT</version>
+    <version>4.4.1</version>
 </dependency>
 ```
 
