@@ -1,9 +1,12 @@
-version: 2
+version: 2.1
+
+orbs:
+  browser-tools: circleci/browser-tools@1.2.4
 
 defaults: &defaults
-    docker:
-      - image: circleci/openjdk:11-node-browsers
-    working_directory: ~/axe-selenium-java
+  docker:
+    - image: cimg/openjdk:8.0-browsers
+  working_directory: ~/axe-core-maven-html
 
 jobs:
   dependencies:
@@ -11,45 +14,80 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: v1-mvn-deps-{{ checksum "pom.xml" }}
+          key: v2-mvn-deps-{{ checksum "pom.xml" }}-{{ checksum "selenium/pom.xml" }}-{{ checksum "playwright/pom.xml" }}
       - restore_cache:
-          key: v1-npm-deps-{{ checksum "package-lock.json" }}
+          key: v2-npm-deps-{{ checksum "package-lock.json" }}-{{ checksum "selenium/package-lock.json" }}-{{ checksum "playwright/package-lock.json" }}
       - run: mvn install -DskipTests
       - save_cache:
-          key: v1-mvn-deps-{{ checksum "pom.xml" }}
+          key: v2-mvn-deps-{{ checksum "pom.xml" }}-{{ checksum "selenium/pom.xml" }}-{{ checksum "playwright/pom.xml" }}
           paths:
             - ~/.m2
       - save_cache:
-          key: v1-npm-deps-{{ checksum "package-lock.json" }}
+          key: v2-npm-deps-{{ checksum "package-lock.json" }}-{{ checksum "selenium/package-lock.json" }}-{{ checksum "playwright/package-lock.json" }}
           paths:
             - node_modules
-  tests:
+            - selenium/node_modules
+            - playwright/node_modules
+
+  selenium:
     <<: *defaults
     steps:
       - checkout
       - restore_cache:
-          key: v1-mvn-deps-{{ checksum "pom.xml" }}
+          key: v2-mvn-deps-{{ checksum "pom.xml" }}-{{ checksum "selenium/pom.xml" }}
       - restore_cache:
-          key: v1-npm-deps-{{ checksum "package-lock.json" }}
+          key: v2-npm-deps-{{ checksum "package-lock.json" }}-{{ checksum "selenium/package-lock.json" }}
+      - run: sudo apt update && sudo apt install python2
+      - browser-tools/install-chrome
+      - browser-tools/install-chromedriver
       - run:
-          command: node src/test/resources/test-app.js
+          command: |
+            google-chrome --version
+            chromedriver --version
+      - run:
+          command: node selenium/src/test/resources/test-app.js
           background: true
       - run:
-          command: cd node_modules/axe-test-fixtures/fixtures && python2 -m SimpleHTTPServer 8001
+          command: cd selenium/node_modules/axe-test-fixtures/fixtures && python2 -m SimpleHTTPServer 8001
           background: true
+
       - run: sleep 5 # sleep to allow the server some time to boot
-      - run: mvn test
+      # run only selenium tests in this job
+      - run: mvn test -pl selenium
+
+  playwright:
+    <<: *defaults
+    steps:
+      - checkout
+      - restore_cache:
+          key: v2-mvn-deps-{{ checksum "pom.xml" }}-{{ checksum "selenium/pom.xml" }}-{{ checksum "playwright/pom.xml" }}
+      - restore_cache:
+          key: v2-npm-deps-{{ checksum "package-lock.json" }}-{{ checksum "selenium/package-lock.json" }}-{{ checksum "playwright/package-lock.json" }}
+      - browser-tools/install-chrome
+      - browser-tools/install-chromedriver
+      - run:
+          command: |
+            google-chrome --version
+            chromedriver --version
+      # start the test fixture server
+      - run:
+          name: Start test fixture server
+          command: cd playwright && npm start
+          background: true
+      # run only playwright tests in this job
+      - run: mvn test -q -pl playwright
 
   snapshot_release:
     <<: *defaults
     steps:
       - checkout
       - restore_cache:
-          key: v1-mvn-deps-{{ checksum "pom.xml" }}
+          key: v2-mvn-deps-{{ checksum "pom.xml" }}-{{ checksum "selenium/pom.xml" }}-{{ checksum "playwright/pom.xml" }}
       - restore_cache:
-          key: v1-npm-deps-{{ checksum "package-lock.json" }}
+          key: v2-npm-deps-{{ checksum "package-lock.json" }}-{{ checksum "selenium/package-lock.json" }}-{{ checksum "playwright/package-lock.json" }}
       - run: echo "$GPG_PRIVATE_KEY" | base64 --decode | gpg --import
       - run: echo "default-key 7701193A898A849383D3E8B49F8AFEACBF07F7C4" > ~/.gnupg/gpg.conf
+      - run: sudo apt update && sudo apt install python
       - run: python .circleci/snapshot.py
       - run: .circleci/publish.sh
 
@@ -58,16 +96,16 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: v1-mvn-deps-{{ checksum "pom.xml" }}
+          key: v2-mvn-deps-{{ checksum "pom.xml" }}-{{ checksum "selenium/pom.xml" }}-{{ checksum "playwright/pom.xml" }}
       - restore_cache:
-          key: v1-npm-deps-{{ checksum "package-lock.json" }}
+          key: v2-npm-deps-{{ checksum "package-lock.json" }}-{{ checksum "selenium/package-lock.json" }}-{{ checksum "playwright/package-lock.json" }}
       - run: echo "$GPG_PRIVATE_KEY" | base64 --decode | gpg --import
       - run: echo "default-key 7701193A898A849383D3E8B49F8AFEACBF07F7C4" > ~/.gnupg/gpg.conf
       - run: .circleci/publish.sh
 
   github_release:
     docker:
-      - image: circleci/golang:1.10
+      - image: cimg/go:1.17.8
     steps:
       - checkout
       - run: go get gopkg.in/aktau/github-release.v0
@@ -78,20 +116,23 @@ jobs:
             chmod +x ./java-github-release.sh
             ./java-github-release.sh
 
-
 workflows:
   version: 2
-  build:
+  build_and_test:
     jobs:
       - dependencies
-      - tests:
+      - selenium:
+          requires:
+            - dependencies
+      - playwright:
           requires:
             - dependencies
       - snapshot_release:
           context: html-tools
           requires:
             - dependencies
-            - tests
+            - selenium
+            - playwright
           filters:
             branches:
               only: develop
@@ -99,7 +140,8 @@ workflows:
           context: html-tools
           requires:
             - dependencies
-            - tests
+            - selenium
+            - playwright
           filters:
             branches:
               only: master

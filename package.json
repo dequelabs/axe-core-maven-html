@@ -1,14 +1,23 @@
 {
   "name": "axe-core-maven-html",
-  "version": "4.4.0",
-  "description": "[![CircleCI](https://circleci.com/gh/dequelabs/axe-selenium-java.svg?style=svg)](https://circleci.com/gh/dequelabs/axe-selenium-java)",
+  "version": "4.4.1",
   "license": "ISC",
+  "repository": "dequelabs/axe-core-maven-html",
   "scripts": {
-    "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0"
+    "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0",
+    "prechangelog": "sync-pom-version",
+    "docs:clean": "del 'dist-docs'",
+    "docs:copy": "copyfiles -u 1 'docs/assets/*' 'docs/nav.json' 'dist-docs'",
+    "predocs": "npm run docs:clean && npm run docs:copy",
+    "docs": "./md-to-html.sh docs dist-docs",
+    "prepare": "husky install"
   },
-  "dependencies": {
-    "axe-core": "^4.4.1",
-    "axe-test-fixtures": "github:dequelabs/axe-test-fixtures#v1",
-    "conventional-changelog-cli": "^2.1.0"
+  "devDependencies": {
+    "conventional-changelog-cli": "^2.0.5",
+    "jfrog-cli-go": "^1.30.4",
+    "sync-pom-version-to-package": "^1.6.0",
+    "copyfiles": "^2.1.0",
+    "del-cli": "^3.0.1",
+    "husky": "^7.0.0"
   }
 }
