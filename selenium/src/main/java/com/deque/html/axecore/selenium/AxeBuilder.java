@@ -80,7 +80,8 @@ public class AxeBuilder {
   public final String unsafeAllOrigins = "<unsafe_all_origins>";
   public final String sameOrign = "<same_origin>";
 
-  public final String iframeAllowScriptTemplate = "axe.configure({ allowedOrigins: ['%s'] });";
+  public final String iframeAllowScriptTemplate =
+      "axe.configure({ allowedOrigins: ['%s'], branding: { application: 'SeleniumJava' } });";
 
   public final String hasRunPartialScript = "return typeof window.axe.runPartial === 'function'";
 
