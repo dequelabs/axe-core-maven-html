@@ -253,6 +253,13 @@
     </profiles>
 
     <dependencies>
+
+        <dependency>
+            <groupId>com.deque.html.axe-core</groupId>
+            <artifactId>dequeutilites</artifactId>
+            <version>4.4.1</version>
+        </dependency>
+
         <!-- https://mvnrepository.com/artifact/com.microsoft.playwright/playwright -->
         <dependency>
             <groupId>com.microsoft.playwright</groupId>
