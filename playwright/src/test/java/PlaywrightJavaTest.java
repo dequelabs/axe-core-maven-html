@@ -1,12 +1,12 @@
 import static org.junit.Assert.*;
 
+import com.deque.html.axecore.args.AxeRuleOptions;
+import com.deque.html.axecore.args.AxeRunOptions;
 import com.deque.html.axecore.playwright.AxeBuilder;
 import com.deque.html.axecore.playwright.Reporter;
-import com.deque.html.axecore.utilities.axeresults.AxeResults;
-import com.deque.html.axecore.utilities.axeresults.CheckedNode;
-import com.deque.html.axecore.utilities.axeresults.Rule;
-import com.deque.html.axecore.utilities.axerunoptions.AxeRuleOptions;
-import com.deque.html.axecore.utilities.axerunoptions.AxeRunOptions;
+import com.deque.html.axecore.results.AxeResults;
+import com.deque.html.axecore.results.CheckedNode;
+import com.deque.html.axecore.results.Rule;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microsoft.playwright.Browser;
 import com.microsoft.playwright.BrowserType;

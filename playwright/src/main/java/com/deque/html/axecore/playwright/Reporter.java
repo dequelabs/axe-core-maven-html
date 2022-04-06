@@ -1,6 +1,6 @@
 package com.deque.html.axecore.playwright;
 
-import com.deque.html.axecore.utilities.axeresults.AxeResults;
+import com.deque.html.axecore.results.AxeResults;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;

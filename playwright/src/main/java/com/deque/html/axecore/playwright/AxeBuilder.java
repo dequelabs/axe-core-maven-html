@@ -1,11 +1,11 @@
 package com.deque.html.axecore.playwright;
 
-import com.deque.html.axecore.utilities.axeresults.AxeResults;
-import com.deque.html.axecore.utilities.axeresults.FrameContext;
-import com.deque.html.axecore.utilities.axerunoptions.AxeContext;
-import com.deque.html.axecore.utilities.axerunoptions.AxeRuleOptions;
-import com.deque.html.axecore.utilities.axerunoptions.AxeRunOnlyOptions;
-import com.deque.html.axecore.utilities.axerunoptions.AxeRunOptions;
+import com.deque.html.axecore.args.AxeRuleOptions;
+import com.deque.html.axecore.args.AxeRunContext;
+import com.deque.html.axecore.args.AxeRunOnlyOptions;
+import com.deque.html.axecore.args.AxeRunOptions;
+import com.deque.html.axecore.results.AxeResults;
+import com.deque.html.axecore.results.FrameContext;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -23,7 +23,7 @@ import org.apache.commons.io.IOUtils;
 
 /** Chainable class: AxeBuilder used to customize and analyze using axe-core */
 public class AxeBuilder {
-  private final AxeContext context = new AxeContext();
+  private final AxeRunContext context = new AxeRunContext();
   private AxeRunOptions options = new AxeRunOptions();
 
   private boolean legacyMode = false;
