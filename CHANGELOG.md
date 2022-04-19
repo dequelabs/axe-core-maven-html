@@ -1,3 +1,20 @@
+## [4.4.1](https://github.com/dequelabs/axe-core-maven-html/compare/v4.3.1...v4.4.1) (2022-03-24)
+
+
+### Bug Fixes
+
+* **playwright:** update application branding ([#211](https://github.com/dequelabs/axe-core-maven-html/issues/211)) ([d9ff448](https://github.com/dequelabs/axe-core-maven-html/commit/d9ff448b7d6be73e881bf689c052550b96e8d2c8))
+
+
+### Features
+
+* add playwright integration ([#206](https://github.com/dequelabs/axe-core-maven-html/issues/206)) ([cedf831](https://github.com/dequelabs/axe-core-maven-html/commit/cedf83156773f1fcd5662837c10be114647769d5))
+* new submodule: `utilities` to contain all the commonly used JSON mapped Java classes ([#208](https://github.com/dequelabs/axe-core-maven-html/issues/208)) ([9fe1bc6](https://github.com/dequelabs/axe-core-maven-html/commit/9fe1bc68a25173ce8db3938b6e66269ace7a1ff0))
+* update axe-core to v4.3.5 ([10f0960](https://github.com/dequelabs/axe-core-maven-html/commit/10f09601d1a9c53da59c62e399d8f995dc0df731))
+* upgrade axe-core to 4.4.0 ([#198](https://github.com/dequelabs/axe-core-maven-html/issues/198)) ([65e69ff](https://github.com/dequelabs/axe-core-maven-html/commit/65e69ff5bf41ec949a9fea6a907e6cc37aaabd7d))
+
+
+
 ## [4.4.0](https://dequelabs/compare/v4.3.1...v4.4.0) (2022-02-08)
 
 
