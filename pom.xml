@@ -5,7 +5,7 @@
 
     <groupId>com.deque.html.axe-core</groupId>
     <artifactId>virtual-superpackage</artifactId>
-    <version>4.4.0</version>
+    <version>4.4.1</version>
     <packaging>pom</packaging>
 
     <name>Axe-core-maven-html Superpackage</name>
