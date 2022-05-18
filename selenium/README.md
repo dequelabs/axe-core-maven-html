@@ -49,5 +49,5 @@ and run the `analyze` method to get results.
 - `withOptions` takes an options object to be passed to the `axe.run` call.
 - `withTags` limits rules run to those that match specified tags.
 - `withOnlyRules` limites rules run to those specified.
-- `disabledRules` disables rules.
+- `disableRules` disables rules.
 - `analyze` executes axe with any configuration you have previously defined. If you want to test one or more `WebElement`s, you may pass them into `analyze` instead of using `include` and `exclude`.
