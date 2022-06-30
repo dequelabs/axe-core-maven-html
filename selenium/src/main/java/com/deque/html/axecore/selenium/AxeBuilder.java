@@ -121,7 +121,18 @@ public class AxeBuilder {
       "const context = typeof arguments[0] == 'string' ? JSON.parse(arguments[0]) : arguments[0];"
           + "return window.axe.utils.getFrameContexts(context);";
 
-  private static String finishRunScript = "return axe.finishRun(arguments[0])";
+  private static final String finishRunScript =
+      "arguments[0].forEach(res => {"
+          + "    if (typeof res.frames === 'string') {"
+          + "        console.log('TRUE FRAME STRING');"
+          + "        res.frames = JSON.parse(res.frames);"
+          + "    }"
+          + "    if (typeof res.results === 'string') {"
+          + "        console.log('TRUE RESULTS STRING');"
+          + "        res.results = JSON.parse(res.results);"
+          + "    }"
+          + "}); console.log(arguments[0]);"
+          + "return await axe.finishRun(arguments[0]);";
 
   /**
    * get the default axe builder options.
@@ -400,7 +411,6 @@ public class AxeBuilder {
   /**
    * Enables the use of legacy axe analysis path. Affects cross-domain results.
    *
-   * @deprecated This method will be removed in v5
    * @return an Axe Builder
    */
   @Deprecated
@@ -410,7 +420,6 @@ public class AxeBuilder {
   /**
    * Enables the use of legacy axe analysis path. Affects cross-domain results.
    *
-   * @deprecated This method will be removed in v5
    * @param state Whether or not to use legacy mode.
    * @return an Axe Builder
    */
@@ -476,6 +485,7 @@ public class AxeBuilder {
     String rawContext = runContextHasData ? AxeReporter.serialize(runContext) : "{ 'exclude': [] }";
     return analyzeRawContext(webDriver, rawContext);
   }
+
   /**
    * Runs axe via axeRunScript at a specific context, which will be passed as-is to Selenium for
    * scan.js to interpret, and parses/handles the scan.js output per the current builder options.
@@ -600,8 +610,10 @@ public class AxeBuilder {
     injectAxe(webDriver);
     Object resResponse;
     try {
-      resResponse =
-          WebDriverInjectorExtensions.executeScript(webDriver, finishRunScript, partialResults);
+      //      resResponse =
+      //          WebDriverInjectorExtensions.executeAsyncScript(
+      //              webDriver, finishRunScript, partialResults);
+      resResponse = ((JavascriptExecutor) webDriver).executeScript(finishRunScript, partialResults);
     } catch (Exception e) {
       throw new RuntimeException(
           "axe.finishRun failed. Please check out https://github.com/dequelabs/axe-core-maven-html/blob/develop/selenium/error-handling.md",
