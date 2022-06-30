@@ -121,7 +121,18 @@ public class AxeBuilder {
       "const context = typeof arguments[0] == 'string' ? JSON.parse(arguments[0]) : arguments[0];"
           + "return window.axe.utils.getFrameContexts(context);";
 
-  private static String finishRunScript = "return axe.finishRun(arguments[0])";
+  private static final String finishRunScript =
+      "arguments[0].forEach(res => {"
+          + "    if (typeof res.frames === 'string') {"
+          + "        console.log('TRUE FRAME STRING');"
+          + "        res.frames = JSON.parse(res.frames);"
+          + "    }"
+          + "    if (typeof res.results === 'string') {"
+          + "        console.log('TRUE RESULTS STRING');"
+          + "        res.results = JSON.parse(res.results);"
+          + "    }"
+          + "}); console.log(arguments[0]);"
+          + "return await axe.finishRun(arguments[0]);";
 
   /**
    * get the default axe builder options.
@@ -600,8 +611,7 @@ public class AxeBuilder {
     injectAxe(webDriver);
     Object resResponse;
     try {
-      resResponse =
-          WebDriverInjectorExtensions.executeScript(webDriver, finishRunScript, partialResults);
+      resResponse = ((JavascriptExecutor) webDriver).executeScript(finishRunScript, partialResults);
     } catch (Exception e) {
       throw new RuntimeException(
           "axe.finishRun failed. Please check out https://github.com/dequelabs/axe-core-maven-html/blob/develop/selenium/error-handling.md",
