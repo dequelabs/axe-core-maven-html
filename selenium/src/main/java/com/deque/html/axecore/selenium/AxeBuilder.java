@@ -123,15 +123,16 @@ public class AxeBuilder {
 
   private static final String finishRunScript =
       "arguments[0].forEach(res => {"
-          + "    if (typeof res.frames === 'string') {"
-          + "        console.log('TRUE FRAME STRING');"
-          + "        res.frames = JSON.parse(res.frames);"
-          + "    }"
-          + "    if (typeof res.results === 'string') {"
-          + "        console.log('TRUE RESULTS STRING');"
-          + "        res.results = JSON.parse(res.results);"
-          + "    }"
-          + "}); console.log(arguments[0]);"
+          + "if (!res) { "
+          + "   return;"
+          + "};"
+          + "if (typeof res.frames === 'string') {"
+          + "   res.frames = JSON.parse(res.frames);"
+          + "}"
+          + "if (typeof res.results === 'string') {"
+          + "   res.results = JSON.parse(res.results);"
+          + "}"
+          + "});"
           + "return await axe.finishRun(arguments[0]);";
 
   /**
