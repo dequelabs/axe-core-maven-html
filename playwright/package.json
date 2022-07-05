@@ -8,9 +8,9 @@
     "start": "http-server ./src/test/resources/fixtures -p 1337"
   },
   "dependencies": {
-    "axe-core": "^4.4.1"
+    "axe-core": "^4.4.2"
   },
   "devDependencies": {
-    "http-server": "^14.1.0"
+    "http-server": "^14.1.1"
   }
 }
