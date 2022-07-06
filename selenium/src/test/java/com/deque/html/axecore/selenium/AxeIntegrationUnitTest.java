@@ -17,6 +17,7 @@ import com.deque.html.axecore.results.Results;
 import com.deque.html.axecore.results.Rule;
 import java.io.File;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -152,7 +153,7 @@ public class AxeIntegrationUnitTest {
     } else {
       throw new IllegalArgumentException("Remote browser type " + browser + " is not supported");
     }
-    wait = new WebDriverWait(this.webDriver, 20);
+    wait = new WebDriverWait(this.webDriver, Duration.ofSeconds(20));
     webDriver.manage().timeouts().setScriptTimeout(20, TimeUnit.SECONDS);
     webDriver.manage().window().maximize();
   }
