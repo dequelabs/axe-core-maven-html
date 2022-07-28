@@ -417,4 +417,22 @@ public class AxeExampleUnitTest {
     Assert.assertTrue("Json file was not deleted.", jsonFile.delete());
     Assert.assertTrue("Txt file was not deleted.", txtFile.delete());
   }
+
+  /** Test that violations.toString() includes enough information to be actionable */
+  @Test
+  public void testViolationToStringActionability()
+      throws IOException, OperationNotSupportedException {
+    this.webDriver.get("file:///" + new File(includeExcludePage).getAbsolutePath());
+    Results result = new AxeBuilder().analyze(webDriver);
+
+    List<Rule> violations = result.getViolations();
+    String violationsString = violations.toString();
+
+    Assert.assertTrue(violationsString.contains("[img]"));
+    Assert.assertTrue(violationsString.contains("<img src=\"\">"));
+    Assert.assertTrue(violationsString.contains("image-alt"));
+    Assert.assertTrue(violationsString.contains("critical"));
+    Assert.assertTrue(violationsString.contains("Element does not have an alt attribute"));
+    Assert.assertTrue(violationsString.contains("WCAG 1.1.1"));
+  }
 }
