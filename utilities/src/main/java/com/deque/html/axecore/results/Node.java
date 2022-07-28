@@ -19,4 +19,16 @@ public class Node {
   public void setTarget(final Object target) {
     this.target = target;
   }
+
+  @Override
+  public String toString() {
+    return "Node{"
+        + "target='"
+        + target
+        + '\''
+        + ", html='"
+        + html
+        + '\''
+        + '}';
+  }
 }

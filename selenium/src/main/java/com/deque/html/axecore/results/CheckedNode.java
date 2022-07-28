@@ -49,4 +49,31 @@ public class CheckedNode extends Node {
   public void setFailureSummary(final String failureSummary) {
     this.failureSummary = failureSummary;
   }
+
+  @Override
+  public String toString() {
+    return "CheckedNode{"
+        + "target='"
+        + getTarget()
+        + '\''
+        + ", html='"
+        + getHtml()
+        + '\''
+        + ", impact='"
+        + impact
+        + '\''
+        + ", failureSummary='"
+        + failureSummary
+        + '\''
+        + ", any='"
+        + any
+        + '\''
+        + ", all='"
+        + all
+        + '\''
+        + ", none='"
+        + none
+        + '\''
+        + '}';
+  }
 }
