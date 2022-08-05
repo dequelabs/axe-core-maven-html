@@ -831,4 +831,23 @@ public class PlaywrightJavaTest {
         Arrays.asList(Arrays.asList("#shadow-root", "#shadow-frame"), "input"));
     assertEquals(checkedNodes.get(2).getTarget(), Arrays.asList("#slotted-frame", "input"));
   }
+
+  /** Test that violations.toString() includes enough information to be actionable */
+  @Test
+  public void testViolationToStringActionability()
+      throws IOException, OperationNotSupportedException {
+    page.navigate(server + "context.html");
+    AxeBuilder axeBuilder = new AxeBuilder(page);
+    AxeResults axeResults = axeBuilder.analyze();
+
+    List<Rule> violations = axeResults.getViolations();
+    String violationsString = violations.toString();
+
+    Assert.assertTrue(violationsString.contains("[img]"));
+    Assert.assertTrue(violationsString.contains("<img src=\"\">"));
+    Assert.assertTrue(violationsString.contains("image-alt"));
+    Assert.assertTrue(violationsString.contains("critical"));
+    Assert.assertTrue(violationsString.contains("Element does not have an alt attribute"));
+    Assert.assertTrue(violationsString.contains("WCAG 1.1.1"));
+  }
 }
