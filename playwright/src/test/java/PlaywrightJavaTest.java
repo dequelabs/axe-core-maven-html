@@ -836,18 +836,18 @@ public class PlaywrightJavaTest {
   @Test
   public void testViolationToStringActionability()
       throws IOException, OperationNotSupportedException {
-    page.navigate(server + "context.html");
+    page.navigate(server + "index.html");
     AxeBuilder axeBuilder = new AxeBuilder(page);
     AxeResults axeResults = axeBuilder.analyze();
 
     List<Rule> violations = axeResults.getViolations();
     String violationsString = violations.toString();
 
-    Assert.assertTrue(violationsString.contains("[img]"));
-    Assert.assertTrue(violationsString.contains("<img src=\"\">"));
-    Assert.assertTrue(violationsString.contains("image-alt"));
-    Assert.assertTrue(violationsString.contains("critical"));
-    Assert.assertTrue(violationsString.contains("Element does not have an alt attribute"));
-    Assert.assertTrue(violationsString.contains("WCAG 1.1.1"));
+    assertTrue(violationsString.contains("[html]"));
+    assertTrue(violationsString.contains("<html lang=\"en\">"));
+    assertTrue(violationsString.contains("landmark-one-main"));
+    assertTrue(violationsString.contains("moderate"));
+    assertTrue(violationsString.contains("Document does not have a main landmark"));
+    assertTrue(violationsString.contains("best-practice"));
   }
 }
