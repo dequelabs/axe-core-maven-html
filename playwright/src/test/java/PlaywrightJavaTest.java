@@ -843,11 +843,18 @@ public class PlaywrightJavaTest {
     List<Rule> violations = axeResults.getViolations();
     String violationsString = violations.toString();
 
-    assertTrue(violationsString.contains("[html]"));
-    assertTrue(violationsString.contains("<html lang=\"en\">"));
-    assertTrue(violationsString.contains("landmark-one-main"));
-    assertTrue(violationsString.contains("moderate"));
-    assertTrue(violationsString.contains("Document does not have a main landmark"));
-    assertTrue(violationsString.contains("best-practice"));
+    List<String> expectedSubstrings = Arrays.asList(
+      "landmark-one-main",
+      "best-practice",
+      "moderate",
+      "[html]",
+      "<html lang=\"en\">",
+      "Document does not have a main landmark");
+    
+    for (String expectedSubstring : expectedSubstrings) {
+      assertTrue(
+       String.format("axeResults.violations.toString() should contain substring \"%s\", found \"%s\"", expectedSubstring, violationsString),
+       violationsString.contains(expectedSubstring));
+    }
   }
 }
