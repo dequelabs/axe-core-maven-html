@@ -422,17 +422,24 @@ public class AxeExampleUnitTest {
   @Test
   public void testViolationToStringActionability()
       throws IOException, OperationNotSupportedException {
-    this.webDriver.get("file:///" + new File(includeExcludePage).getAbsolutePath());
+    this.webDriver.get("file:///" + new File(violationPage).getAbsolutePath());
     Results result = new AxeBuilder().analyze(webDriver);
 
     List<Rule> violations = result.getViolations();
     String violationsString = violations.toString();
 
-    Assert.assertTrue(violationsString.contains("[img]"));
-    Assert.assertTrue(violationsString.contains("<img src=\"\">"));
-    Assert.assertTrue(violationsString.contains("image-alt"));
-    Assert.assertTrue(violationsString.contains("critical"));
-    Assert.assertTrue(violationsString.contains("Element does not have an alt attribute"));
-    Assert.assertTrue(violationsString.contains("WCAG 1.1.1"));
+    List<String> expectedSubstrings = Arrays.asList(
+        "image-alt",
+        "wcag111",
+        "critical",
+        "[img]",
+        "<img src=\"\">",
+        "Element does not have an alt attribute");
+      
+    for (String expectedSubstring : expectedSubstrings) {
+    Assert.assertTrue(
+        String.format("axeResults.violations.toString() should contain substring \"%s\", found \"%s\"", expectedSubstring, violationsString),
+        violationsString.contains(expectedSubstring));
+    }
   }
 }
