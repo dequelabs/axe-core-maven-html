@@ -831,4 +831,30 @@ public class PlaywrightJavaTest {
         Arrays.asList(Arrays.asList("#shadow-root", "#shadow-frame"), "input"));
     assertEquals(checkedNodes.get(2).getTarget(), Arrays.asList("#slotted-frame", "input"));
   }
+
+  /** Test that violations.toString() includes enough information to be actionable */
+  @Test
+  public void testViolationToStringActionability()
+      throws IOException, OperationNotSupportedException {
+    page.navigate(server + "index.html");
+    AxeBuilder axeBuilder = new AxeBuilder(page);
+    AxeResults axeResults = axeBuilder.analyze();
+
+    List<Rule> violations = axeResults.getViolations();
+    String violationsString = violations.toString();
+
+    List<String> expectedSubstrings = Arrays.asList(
+      "landmark-one-main",
+      "best-practice",
+      "moderate",
+      "[html]",
+      "<html lang=\"en\">",
+      "Document does not have a main landmark");
+    
+    for (String expectedSubstring : expectedSubstrings) {
+      assertTrue(
+       String.format("axeResults.violations.toString() should contain substring \"%s\", found \"%s\"", expectedSubstring, violationsString),
+       violationsString.contains(expectedSubstring));
+    }
+  }
 }

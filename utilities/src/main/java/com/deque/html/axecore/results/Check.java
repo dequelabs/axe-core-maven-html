@@ -49,4 +49,25 @@ public class Check {
   public void setRelatedNodes(final List<Node> relatedNodes) {
     this.relatedNodes = relatedNodes;
   }
+
+  @Override
+  public String toString() {
+    return "CheckedNode{"
+        + "id='"
+        + id
+        + '\''
+        + ", impact='"
+        + impact
+        + '\''
+        + ", message='"
+        + message
+        + '\''
+        + ", data='"
+        + data
+        + '\''
+        + ", relatedNodes='"
+        + relatedNodes
+        + '\''
+        + '}';
+  }
 }
