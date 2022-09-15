@@ -346,7 +346,8 @@ public class AxeBuilder {
   }
 
   private String getAxeSource() {
-    final String origins = this.legacyMode ? "'<unsafe_all_origins>'" : "'<same_origin>'";
+
+    final String origins = !this.legacyMode && !hasRunPartial(page) ? "'<unsafe_all_origins>'" : "";
     final String axeConfigure =
         String.format(
             ";axe.configure({"
