@@ -342,7 +342,7 @@ public class AxeBuilder {
   }
 
   private boolean hasRunPartial(Page page) {
-    return (boolean) page.evaluate("typeof window.axe.runPartial === 'function'");
+    return (boolean) page.evaluate("typeof window.axe?.runPartial === 'function'");
   }
 
   private String getAxeSource() {
@@ -353,7 +353,7 @@ public class AxeBuilder {
             ";axe.configure({"
                 + "allowedOrigins: [%s], "
                 + "branding: { application: 'PlaywrightJava'}"
-                + "})",
+                + "});",
             origins);
 
     return getAxeScript() + axeConfigure;

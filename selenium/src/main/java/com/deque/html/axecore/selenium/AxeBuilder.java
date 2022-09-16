@@ -81,7 +81,7 @@ public class AxeBuilder {
 
   public final String iframeAllowScriptTemplate = "axe.configure({ allowedOrigins: ['%s'] });";
 
-  public final String hasRunPartialScript = "return typeof window.axe.runPartial === 'function'";
+  public final String hasRunPartialScript = "return typeof window.axe?.runPartial === 'function'";
 
   public final String sandboxBusterScript =
       "const callback = arguments[arguments.length - 1];"
