@@ -27,6 +27,7 @@ public class AxeBuilder {
   private AxeRunOptions options = new AxeRunOptions();
 
   private boolean legacyMode = false;
+  private boolean hasRunPartial = false;
   private final ObjectMapper objectMapper;
   private final Page page;
 
@@ -148,7 +149,6 @@ public class AxeBuilder {
    * @return Array of results containing incomplete, inapplicable, passes, and violations
    */
   public AxeResults analyze() {
-    String axeSource = getAxeSource();
 
     // We need to serialize the context and options passed by the user (if any)
     // to Strings to be able to parse them via Playwright
@@ -156,13 +156,14 @@ public class AxeBuilder {
     String axeOptions = serialize(this.options);
 
     try {
-      this.page.evaluate(axeSource);
+      /* this is to run the source as an expression rather than expecting an object returned */
+      this.page.evaluate("() => {" + getAxeScript() + "}");
     } catch (RuntimeException runtimeException) {
       throw new RuntimeException("Problematic axe-source, unable to inject. ", runtimeException);
     }
 
     // Check if client has axe version>= 4.3
-    boolean hasRunPartial = hasRunPartial(page);
+    this.hasRunPartial = hasRunPartial(page);
     if (!hasRunPartial || legacyMode) {
       Object results = run(axeContext, axeOptions);
       return this.objectMapper.convertValue(results, AxeResults.class);
@@ -322,7 +323,7 @@ public class AxeBuilder {
   private Object finishRun(ArrayList<Object> partialResults) {
     Browser browser = page.context().browser();
     Page blankPage = browser.newPage();
-    blankPage.evaluate(getAxeSource());
+    blankPage.evaluate(getAxeScript() + getAxeConfigure(hasRunPartial));
 
     Object results;
 
@@ -345,23 +346,21 @@ public class AxeBuilder {
     return (boolean) page.evaluate("typeof window.axe?.runPartial === 'function'");
   }
 
-  private String getAxeSource() {
+  private String getAxeConfigure(boolean hasRunPartial) {
+    final String origins =
+        !this.legacyMode && !hasRunPartial ? "'<unsafe_all_origins>'" : "'<same_origin>'";
 
-    final String origins = !this.legacyMode && !hasRunPartial(page) ? "'<unsafe_all_origins>'" : "";
-    final String axeConfigure =
-        String.format(
-            ";axe.configure({"
-                + "allowedOrigins: [%s], "
-                + "branding: { application: 'PlaywrightJava'}"
-                + "});",
-            origins);
-
-    return getAxeScript() + axeConfigure;
+    return String.format(
+        ";axe.configure({"
+            + "allowedOrigins: [%s], "
+            + "branding: { application: 'PlaywrightJava'}"
+            + "});",
+        origins);
   }
 
   private void injectAxeSource(Frame frame) {
     try {
-      frame.evaluate(getAxeSource());
+      frame.evaluate(getAxeScript() + getAxeConfigure(hasRunPartial));
     } catch (RuntimeException runtimeException) {
       throw new RuntimeException("Unable to inject axe-source. ", runtimeException);
     }

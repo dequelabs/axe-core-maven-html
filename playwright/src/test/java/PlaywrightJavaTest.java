@@ -705,6 +705,7 @@ public class PlaywrightJavaTest {
   @Test
   public void legacyRunCrossOriginPages() throws Exception {
     page.navigate(server + "cross-origin.html");
+
     overwriteAxeSourceWithString(downloadFromURL(server + "axe-core@legacy.js"));
 
     AxeBuilder axeBuilder =
