@@ -343,7 +343,7 @@ public class AxeBuilder {
   }
 
   private boolean hasRunPartial(Page page) {
-    return (boolean) page.evaluate("typeof window.axe?.runPartial === 'function'");
+    return (boolean) page.evaluate("typeof window.axe.runPartial === 'function'");
   }
 
   private String getAxeConfigure(boolean hasRunPartial) {
