@@ -17,6 +17,11 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 
 public class AllowedOriginsTest {
+
+  private WebDriver webDriver;
+  private String axeSource;
+  private String axeForceLegacy;
+
   private String addr() {
     return "http://localhost:8001";
   }
@@ -27,10 +32,6 @@ public class AllowedOriginsTest {
       return new Scanner(stream, "UTF-8").useDelimiter("\\A").next();
     }
   }
-
-  private WebDriver webDriver;
-  private String axeSource;
-  private String axeForceLegacy;
 
   private Object getAllowedOrigins() {
     JavascriptExecutor javascriptExecutor = (JavascriptExecutor) webDriver;
