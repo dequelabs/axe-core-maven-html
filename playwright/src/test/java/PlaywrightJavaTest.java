@@ -130,7 +130,7 @@ public class PlaywrightJavaTest {
     AxeBuilder axeBuilder = new AxeBuilder(page);
     AxeResults axeResults = axeBuilder.analyze();
 
-    assertEquals(axeResults.getTestEngine().getVersion(), "4.2.0");
+    assertEquals(axeResults.getTestEngine().getVersion(), "4.2.3");
     assertNotNull(axeResults);
     assertNotNull(axeResults.getViolations());
     assertNotNull(axeResults.getInapplicable());
@@ -683,7 +683,7 @@ public class PlaywrightJavaTest {
     AxeBuilder axeBuilder = new AxeBuilder(page);
     AxeResults axeResults = axeBuilder.analyze();
 
-    assertEquals(axeResults.getTestEngine().getVersion(), "4.2.0");
+    assertEquals(axeResults.getTestEngine().getVersion(), "4.2.3");
     assertNotNull(axeResults);
     assertNotNull(axeResults.getViolations());
     assertNotNull(axeResults.getInapplicable());
