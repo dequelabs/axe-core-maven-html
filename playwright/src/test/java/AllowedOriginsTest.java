@@ -137,6 +137,8 @@ public class AllowedOriginsTest {
     new AxeBuilder(page).analyze();
     ArrayList<?> allowedOrigins = (ArrayList<?>) getAllowedOrigins();
 
-    assertEquals(allowedOrigins.get(0), "*");
+    ArrayList<String> origins = new ArrayList<>();
+    origins.add("*");
+    assertTrue(Objects.deepEquals(allowedOrigins, origins));
   }
 }
