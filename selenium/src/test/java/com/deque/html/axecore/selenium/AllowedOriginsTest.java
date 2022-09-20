@@ -94,6 +94,8 @@ public class AllowedOriginsTest {
         .analyze(webDriver);
     ArrayList<?> allowedOrigins = (ArrayList<?>) getAllowedOrigins();
 
-    assertEquals(allowedOrigins.get(0), "*");
+    ArrayList<String> origins = new ArrayList<>();
+    origins.add("*");
+    assertTrue(Objects.deepEquals(allowedOrigins, origins));
   }
 }
