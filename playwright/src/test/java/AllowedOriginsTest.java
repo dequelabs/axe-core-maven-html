@@ -115,7 +115,7 @@ public class AllowedOriginsTest {
   @Test
   public void shouldNotSetWhenRunningLegacySourceAndLegacyMode() throws Exception {
     page.navigate(addr() + "/index.html");
-    overwriteAxeSourceWithString(downloadFromURL(addr() + "/axe-core@legacy.js") + axeForceLegacy);
+    overwriteAxeSourceWithString(downloadFromURL(addr() + "/axe-core@legacy.js"));
 
     new AxeBuilder(page).setLegacyMode(true).analyze();
     ArrayList<?> allowedOrigins = (ArrayList<?>) getAllowedOrigins();
