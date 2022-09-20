@@ -7,8 +7,8 @@ import com.deque.html.axecore.providers.StringAxeScriptProvider;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Scanner;
 import java.util.Objects;
+import java.util.Scanner;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,6 +22,7 @@ public class AllowedOriginsTest {
   private WebDriver webDriver;
   private String axeSource;
   private String axeForceLegacy;
+  private String legacySource;
 
   private String addr() {
     return "http://localhost:8001";
@@ -44,6 +45,7 @@ public class AllowedOriginsTest {
     webDriver = new ChromeDriver(new ChromeOptions().setHeadless(true));
     axeSource = new EmbeddedResourceAxeProvider().getScript();
     axeForceLegacy = downloadFromURL(addr() + "/axe-force-legacy.js");
+    legacySource = downloadFromURL(addr() + "axe-core@legacy.js");
   }
 
   @After
@@ -78,7 +80,7 @@ public class AllowedOriginsTest {
     webDriver.get(addr() + "/index.html");
     new AxeBuilder()
         .setLegacyMode(true)
-        .setAxeScriptProvider(new StringAxeScriptProvider(axeSource + axeForceLegacy))
+        .setAxeScriptProvider(new StringAxeScriptProvider(legacySource))
         .analyze(webDriver);
     ArrayList<?> allowedOrigins = (ArrayList<?>) getAllowedOrigins();
 
@@ -91,7 +93,7 @@ public class AllowedOriginsTest {
   public void shouldSetWhenRunningLegacySourceAndNoLegacyMode() {
     webDriver.get(addr() + "/index.html");
     new AxeBuilder()
-        .setAxeScriptProvider(new StringAxeScriptProvider(axeSource + axeForceLegacy))
+        .setAxeScriptProvider(new StringAxeScriptProvider(legacySource))
         .analyze(webDriver);
     ArrayList<?> allowedOrigins = (ArrayList<?>) getAllowedOrigins();
 
