@@ -30,7 +30,6 @@ public class AllowedOriginsTest {
   private Browser browser;
 
   private static String axeSource;
-  private String axeForceLegacy;
 
   private String addr() {
     return "http://localhost:1337";
@@ -80,8 +79,6 @@ public class AllowedOriginsTest {
             Objects.requireNonNull(AxeBuilder.class.getResource("/axe.min.js")),
             StandardCharsets.UTF_8);
 
-    axeForceLegacy = downloadFromURL(addr() + "/axe-force-legacy.js");
-
     page = browser.newPage();
   }
 
@@ -100,7 +97,7 @@ public class AllowedOriginsTest {
     ArrayList<?> allowedOrigins = (ArrayList<?>) getAllowedOrigins();
 
     ArrayList<String> origins = new ArrayList<>();
-    origins.add(attr());
+    origins.add(addr());
     assertTrue(Objects.deepEquals(allowedOrigins, origins));
   }
 
@@ -112,7 +109,7 @@ public class AllowedOriginsTest {
     ArrayList<?> allowedOrigins = (ArrayList<?>) getAllowedOrigins();
 
     ArrayList<String> origins = new ArrayList<>();
-    origins.add(attr());
+    origins.add(addr());
     assertTrue(Objects.deepEquals(allowedOrigins, origins));
   }
 
@@ -125,7 +122,7 @@ public class AllowedOriginsTest {
     ArrayList<?> allowedOrigins = (ArrayList<?>) getAllowedOrigins();
 
     ArrayList<String> origins = new ArrayList<>();
-    origins.add(attr());
+    origins.add(addr());
     assertTrue(Objects.deepEquals(allowedOrigins, origins));
   }
 
