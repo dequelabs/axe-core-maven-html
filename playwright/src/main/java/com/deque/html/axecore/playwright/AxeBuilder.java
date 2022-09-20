@@ -156,7 +156,9 @@ public class AxeBuilder {
     String axeOptions = serialize(this.options);
 
     try {
-      /* this is to run the source as an expression rather than expecting an object returned */
+      /**
+       * this allows Playwright to run the script to be used later rather than invoking it instantly
+       * @see https://github.com/microsoft/playwright-java/issues/1070 */
       this.page.evaluate("() => {" + getAxeScript() + "}");
     } catch (RuntimeException runtimeException) {
       throw new RuntimeException("Problematic axe-source, unable to inject. ", runtimeException);
