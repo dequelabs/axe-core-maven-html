@@ -2,7 +2,6 @@ package com.deque.html.axecore.selenium;
 
 import static org.junit.Assert.*;
 
-import com.deque.html.axecore.providers.EmbeddedResourceAxeProvider;
 import com.deque.html.axecore.providers.StringAxeScriptProvider;
 import java.io.InputStream;
 import java.net.URL;
@@ -20,8 +19,6 @@ import org.openqa.selenium.chrome.ChromeOptions;
 public class AllowedOriginsTest {
 
   private WebDriver webDriver;
-  private String axeSource;
-  private String axeForceLegacy;
   private String legacySource;
 
   private String addr() {
@@ -43,8 +40,6 @@ public class AllowedOriginsTest {
   @Before
   public void setup() throws Exception {
     webDriver = new ChromeDriver(new ChromeOptions().setHeadless(true));
-    axeSource = new EmbeddedResourceAxeProvider().getScript();
-    axeForceLegacy = downloadFromURL(addr() + "/axe-force-legacy.js");
     legacySource = downloadFromURL(addr() + "axe-core@legacy.js");
   }
 
@@ -60,7 +55,7 @@ public class AllowedOriginsTest {
     ArrayList<?> allowedOrigins = (ArrayList<?>) getAllowedOrigins();
 
     ArrayList<String> origins = new ArrayList<>();
-    origins.add(attr());
+    origins.add(addr());
     assertTrue(Objects.deepEquals(allowedOrigins, origins));
   }
 
@@ -71,7 +66,7 @@ public class AllowedOriginsTest {
     ArrayList<?> allowedOrigins = (ArrayList<?>) getAllowedOrigins();
 
     ArrayList<String> origins = new ArrayList<>();
-    origins.add(attr());
+    origins.add(addr());
     assertTrue(Objects.deepEquals(allowedOrigins, origins));
   }
 
@@ -85,7 +80,7 @@ public class AllowedOriginsTest {
     ArrayList<?> allowedOrigins = (ArrayList<?>) getAllowedOrigins();
 
     ArrayList<String> origins = new ArrayList<>();
-    origins.add(attr());
+    origins.add(addr());
     assertTrue(Objects.deepEquals(allowedOrigins, origins));
   }
 

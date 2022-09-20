@@ -56,11 +56,6 @@ public class AllowedOriginsTest {
     }
   }
 
-  private void appendAxeSourceWithString(String source) throws IOException, URISyntaxException {
-    URL axeUrl = AxeBuilder.class.getResource("/axe.min.js");
-    Files.write(Paths.get(axeUrl.toURI().getPath()), source.getBytes(), StandardOpenOption.APPEND);
-  }
-
   private void overwriteAxeSourceWithString(String source) throws IOException, URISyntaxException {
     URL axeUrl = AxeBuilder.class.getResource("/axe.min.js");
     Files.write(Paths.get(axeUrl.toURI().getPath()), source.getBytes(), StandardOpenOption.WRITE);
