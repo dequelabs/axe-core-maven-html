@@ -14,6 +14,7 @@ import com.microsoft.playwright.Page;
 import com.microsoft.playwright.Playwright;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.Charset;
@@ -25,7 +26,6 @@ import java.nio.file.StandardOpenOption;
 import java.util.*;
 import java.util.stream.Collectors;
 import javax.naming.OperationNotSupportedException;
-import org.apache.commons.io.IOUtils;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
 
@@ -101,6 +101,13 @@ public class PlaywrightJavaTest {
     Files.write(Paths.get(axeUrl.toURI().getPath()), source.getBytes(), StandardOpenOption.APPEND);
   }
 
+  private String downloadFromURL(String url) throws Exception {
+    // https://stackoverflow.com/a/13632114
+    try (InputStream stream = new URL(url).openStream()) {
+      return new Scanner(stream, "UTF-8").useDelimiter("\\A").next();
+    }
+  }
+
   /**
    * Utility function that returns all the includes / excludes of incomplete that have not been
    * passed by the user
@@ -116,16 +123,14 @@ public class PlaywrightJavaTest {
   }
 
   @Test
-  public void shouldReturnAxeResultsWithDifferentSource() throws IOException, URISyntaxException {
+  public void shouldReturnAxeResultsWithDifferentSource() throws Exception {
     page.navigate(server + "index.html");
-    File axeLegacySource = new File("src/test/resources/fixtures/axe-core@legacy.js");
-
-    overwriteAxeSourceWithString(axeLegacySource);
+    overwriteAxeSourceWithString(downloadFromURL(server + "axe-core@legacy.js"));
 
     AxeBuilder axeBuilder = new AxeBuilder(page);
     AxeResults axeResults = axeBuilder.analyze();
 
-    assertEquals(axeResults.getTestEngine().getVersion(), "4.0.3");
+    assertEquals(axeResults.getTestEngine().getVersion(), "4.2.3");
     assertNotNull(axeResults);
     assertNotNull(axeResults.getViolations());
     assertNotNull(axeResults.getInapplicable());
@@ -175,12 +180,9 @@ public class PlaywrightJavaTest {
   }
 
   @Test
-  public void shouldReportFramesTested() throws IOException, URISyntaxException {
+  public void shouldReportFramesTested() throws Exception {
     page.navigate(server + "crash-parent.html");
-
-    File axeCrasher = new File("src/test/resources/fixtures/axe-crasher.js");
-    String source =
-        AxeBuilder.getAxeScript() + IOUtils.toString(axeCrasher.toURI(), StandardCharsets.UTF_8);
+    String source = AxeBuilder.getAxeScript() + downloadFromURL(server + "axe-crasher.js");
     overwriteAxeSourceWithString(source);
 
     AxeBuilder axeBuilder = new AxeBuilder(page).withRules(Arrays.asList("label", "frame-tested"));
@@ -221,15 +223,11 @@ public class PlaywrightJavaTest {
   }
 
   @Test
-  public void ReturnsSameResultsRunPartialAndLegacyRun() throws IOException, URISyntaxException {
-
+  public void ReturnsSameResultsRunPartialAndLegacyRun() throws Exception {
     page.navigate(server + "nested-iframes.html");
 
     AxeBuilder legacyRun = new AxeBuilder(page);
-    File forceLegacy = new File("src/test/resources/fixtures/axe-force-legacy.js");
-    String axeLegacySource =
-        oldSource + IOUtils.toString(forceLegacy.toURI(), StandardCharsets.UTF_8);
-    overwriteAxeSourceWithString(axeLegacySource);
+    overwriteAxeSourceWithString(oldSource + downloadFromURL(server + "axe-force-legacy.js"));
     AxeResults legacyResults = legacyRun.analyze();
 
     page.navigate(server + "nested-iframes.html");
@@ -492,7 +490,7 @@ public class PlaywrightJavaTest {
 
   @Test
   public void withOnlyOneExclude() {
-    page.navigate(server + "context.html");
+    page.navigate(server + "context-include-exclude.html");
 
     AxeBuilder axeBuilder = new AxeBuilder(page).exclude(Collections.singletonList(".exclude"));
     AxeResults axeResults = axeBuilder.analyze();
@@ -504,7 +502,7 @@ public class PlaywrightJavaTest {
 
   @Test
   public void withMultipleExcludes() {
-    page.navigate(server + "context.html");
+    page.navigate(server + "context-include-exclude.html");
 
     AxeBuilder axeBuilder =
         new AxeBuilder(page)
@@ -520,7 +518,7 @@ public class PlaywrightJavaTest {
 
   @Test
   public void withOnlyOneInclude() {
-    page.navigate(server + "context.html");
+    page.navigate(server + "context-include-exclude.html");
 
     AxeBuilder axeBuilder = new AxeBuilder(page).include(Collections.singletonList(".include"));
     AxeResults axeResults = axeBuilder.analyze();
@@ -533,7 +531,7 @@ public class PlaywrightJavaTest {
 
   @Test
   public void withMultipleIncludes() {
-    page.navigate(server + "context.html");
+    page.navigate(server + "context-include-exclude.html");
 
     AxeBuilder axeBuilder =
         new AxeBuilder(page)
@@ -546,50 +544,6 @@ public class PlaywrightJavaTest {
     assertTrue(targets.stream().anyMatch(selector -> selector.equalsIgnoreCase(".include")));
     assertTrue(targets.stream().anyMatch(selector -> selector.equalsIgnoreCase(".include2")));
     assertEquals(axeResults.getPasses().get(0).getNodes().size(), 2);
-  }
-
-  @Test
-  public void withIncludeAndExclude() {
-    page.navigate(server + "context.html");
-
-    AxeBuilder axeBuilder =
-        new AxeBuilder(page)
-            .include(Collections.singletonList(".include-nested"))
-            .include(Collections.singletonList(".include-nested2"))
-            .exclude(Collections.singletonList(".exclude-nested"));
-    AxeResults axeResults = axeBuilder.analyze();
-
-    List<String> targets = getTargetIncomplete(axeResults);
-
-    assertTrue(targets.stream().anyMatch(selector -> selector.equalsIgnoreCase(".include-nested")));
-    assertTrue(
-        targets.stream().anyMatch(selector -> selector.equalsIgnoreCase(".include-nested2")));
-    assertTrue(
-        targets.stream().noneMatch(selector -> selector.equalsIgnoreCase(".exclude-nested")));
-  }
-
-  @Test
-  public void withIncludeAndExcludeIframes() {
-    page.navigate(server + "context.html");
-
-    AxeBuilder axeBuilder =
-        new AxeBuilder(page)
-            .include(Collections.singletonList("#ifr-incl-excl"))
-            .exclude(Arrays.asList("#ifr-incl-excl", "#foo-baz"))
-            .include(Arrays.asList("#foo-baz", "html"));
-    AxeResults axeResults = axeBuilder.analyze();
-
-    List<String> targets = getTargets(axeResults);
-
-    assertTrue(
-        targets.stream()
-            .anyMatch(
-                selector ->
-                    selector.equalsIgnoreCase("#ifr-incl-excl, #foo-bar, #bar-baz, input")));
-    assertTrue(
-        targets.stream()
-            .noneMatch(selector -> selector.equalsIgnoreCase("#ifr-incl-excl, #foo-baz")));
-    assertEquals(axeResults.getViolations().get(1).getId(), "label");
   }
 
   @Test
@@ -653,7 +607,7 @@ public class PlaywrightJavaTest {
 
   @Test
   public void saveAxeResultsToJSONFileTest() throws IOException {
-    page.navigate(server + "context.html");
+    page.navigate(server + "context-include-exclude.html");
 
     AxeBuilder axePlaywrightBuilder = new AxeBuilder(page);
     AxeResults axeResults = axePlaywrightBuilder.analyze();
@@ -675,7 +629,7 @@ public class PlaywrightJavaTest {
 
   @Test
   public void shouldThrowWhenTryingToSaveUnsupportedExtensionTest() {
-    page.navigate(server + "context.html");
+    page.navigate(server + "context-include-exclude.html");
 
     AxeBuilder axePlaywrightBuilder = new AxeBuilder(page);
     AxeResults axeResults = axePlaywrightBuilder.analyze();
@@ -722,17 +676,14 @@ public class PlaywrightJavaTest {
   // Versions without runPartial
 
   @Test
-  public void legacyRunAnalyze() throws URISyntaxException, IOException {
+  public void legacyRunAnalyze() throws Exception {
     page.navigate(server + "index.html");
-
-    File axeLegacySource = new File("src/test/resources/fixtures/axe-core@legacy.js");
-
-    overwriteAxeSourceWithString(axeLegacySource);
+    overwriteAxeSourceWithString(downloadFromURL(server + "axe-core@legacy.js"));
 
     AxeBuilder axeBuilder = new AxeBuilder(page);
     AxeResults axeResults = axeBuilder.analyze();
 
-    assertEquals(axeResults.getTestEngine().getVersion(), "4.0.3");
+    assertEquals(axeResults.getTestEngine().getVersion(), "4.2.3");
     assertNotNull(axeResults);
     assertNotNull(axeResults.getViolations());
     assertNotNull(axeResults.getInapplicable());
@@ -741,11 +692,9 @@ public class PlaywrightJavaTest {
   }
 
   @Test
-  public void throwsErrorOnTopWindow() throws IOException, URISyntaxException {
+  public void throwsErrorOnTopWindow() throws Exception {
     page.navigate(server + "crash.html");
-
-    File axeCrasherSource = new File("src/test/resources/fixtures/axe-crasher.js");
-    overwriteAxeSourceWithString(axeCrasherSource);
+    overwriteAxeSourceWithString(downloadFromURL(server + "axe-crasher.js"));
 
     Exception exception =
         assertThrows(RuntimeException.class, () -> new AxeBuilder(page).analyze());
@@ -754,11 +703,10 @@ public class PlaywrightJavaTest {
   }
 
   @Test
-  public void legacyRunCrossOriginPages() throws URISyntaxException, IOException {
+  public void legacyRunCrossOriginPages() throws Exception {
     page.navigate(server + "cross-origin.html");
 
-    File axeLegacySource = new File("src/test/resources/fixtures/axe-core@legacy.js");
-    overwriteAxeSourceWithString(axeLegacySource);
+    overwriteAxeSourceWithString(downloadFromURL(server + "axe-core@legacy.js"));
 
     AxeBuilder axeBuilder =
         new AxeBuilder(page).withRules(Collections.singletonList("frame-tested"));
@@ -768,11 +716,10 @@ public class PlaywrightJavaTest {
   }
 
   @Test
-  public void legacyRunNestedIframeTests() throws IOException, URISyntaxException {
+  public void legacyRunNestedIframeTests() throws Exception {
     page.navigate(server + "nested-iframes.html");
 
-    File axeLegacySource = new File("src/test/resources/fixtures/axe-core@legacy.js");
-    overwriteAxeSourceWithString(axeLegacySource);
+    overwriteAxeSourceWithString(downloadFromURL(server + "axe-core@legacy.js"));
 
     AxeBuilder axeBuilder = new AxeBuilder(page).withRules(Collections.singletonList("label"));
     AxeResults axeResults = axeBuilder.analyze();
@@ -791,11 +738,10 @@ public class PlaywrightJavaTest {
   }
 
   @Test
-  public void legacyRunNestedIframeSetTests() throws IOException, URISyntaxException {
+  public void legacyRunNestedIframeSetTests() throws Exception {
     page.navigate(server + "nested-frameset.html");
 
-    File axeLegacySource = new File("src/test/resources/fixtures/axe-core@legacy.js");
-    overwriteAxeSourceWithString(axeLegacySource);
+    overwriteAxeSourceWithString(downloadFromURL(server + "axe-core@legacy.js"));
 
     AxeBuilder axeBuilder = new AxeBuilder(page).withRules(Collections.singletonList("label"));
     AxeResults axeResults = axeBuilder.analyze();
@@ -843,18 +789,21 @@ public class PlaywrightJavaTest {
     List<Rule> violations = axeResults.getViolations();
     String violationsString = violations.toString();
 
-    List<String> expectedSubstrings = Arrays.asList(
-      "landmark-one-main",
-      "best-practice",
-      "moderate",
-      "[html]",
-      "<html lang=\"en\">",
-      "Document does not have a main landmark");
-    
+    List<String> expectedSubstrings =
+        Arrays.asList(
+            "landmark-one-main",
+            "best-practice",
+            "moderate",
+            "[html]",
+            "<html lang=\"en\">",
+            "Document does not have a main landmark");
+
     for (String expectedSubstring : expectedSubstrings) {
       assertTrue(
-       String.format("axeResults.violations.toString() should contain substring \"%s\", found \"%s\"", expectedSubstring, violationsString),
-       violationsString.contains(expectedSubstring));
+          String.format(
+              "axeResults.violations.toString() should contain substring \"%s\", found \"%s\"",
+              expectedSubstring, violationsString),
+          violationsString.contains(expectedSubstring));
     }
   }
 }
