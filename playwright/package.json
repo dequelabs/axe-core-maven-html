@@ -5,12 +5,13 @@
   "private": true,
   "repository": "dequelabs/axe-core-maven-html",
   "scripts": {
-    "start": "http-server ./src/test/resources/fixtures -p 1337"
+    "start": "http-server ./node_modules/axe-test-fixtures/fixtures -p 1337"
   },
   "dependencies": {
     "axe-core": "^4.4.3"
   },
   "devDependencies": {
-    "http-server": "^14.1.1"
+    "http-server": "^14.1.1",
+    "axe-test-fixtures": "github:dequelabs/axe-test-fixtures"
   }
 }
