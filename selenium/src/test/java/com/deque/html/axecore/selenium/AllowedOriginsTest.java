@@ -39,7 +39,7 @@ public class AllowedOriginsTest {
 
   @Before
   public void setup() throws Exception {
-    webDriver = new ChromeDriver(new ChromeOptions().setHeadless(true));
+    webDriver = new ChromeDriver(new ChromeOptions().setHeadless(false));
     legacySource = downloadFromURL(addr() + "/axe-core@legacy.js");
   }
 
@@ -86,7 +86,7 @@ public class AllowedOriginsTest {
 
   @Test
   public void shouldSetWhenRunningLegacySourceAndNoLegacyMode() {
-    webDriver.get(addr() + "/index.html");
+    webDriver.get("http://localhost:8080/parent.html");
     new AxeBuilder()
         .setAxeScriptProvider(new StringAxeScriptProvider(legacySource))
         .analyze(webDriver);
