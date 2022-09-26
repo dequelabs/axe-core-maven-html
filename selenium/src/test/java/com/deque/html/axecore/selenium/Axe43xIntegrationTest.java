@@ -332,6 +332,23 @@ public class Axe43xIntegrationTest {
         .analyze(webDriver);
   }
 
+  @Test
+  public void legacyRunAnalyze() {
+    webDriver.get(fixture("/index.html"));
+
+    Results axeResults =
+        new AxeBuilder()
+            .setAxeScriptProvider(new StringAxeScriptProvider(axePre43x))
+            .analyze(webDriver);
+
+    assertEquals(axeResults.getTestEngine().getVersion(), "4.2.3");
+    assertNotNull(axeResults);
+    assertNotNull(axeResults.getViolations());
+    assertNotNull(axeResults.getInapplicable());
+    assertNotNull(axeResults.getIncomplete());
+    assertNotNull(axeResults.getPasses());
+  }
+
   /**
    * initiates a web browser for Chrome and Firefox.
    *
