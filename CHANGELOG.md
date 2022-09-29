@@ -7,7 +7,9 @@
 * improve result toString implementation to be more actionable ([#233](https://github.com/dequelabs/axe-core-maven-html/issues/233)) ([0417d13](https://github.com/dequelabs/axe-core-maven-html/commit/0417d1355d0dbadf430c42aefc842f75ef2e8a14))
 * **selenium,playwright:** only set `allowedOrigin` when needed ([#237](https://github.com/dequelabs/axe-core-maven-html/issues/237)) ([4467b4d](https://github.com/dequelabs/axe-core-maven-html/commit/4467b4dd308b5a4e09eeb875230af816009f08ec))
 
+
 ## [4.4.1](https://github.com/dequelabs/axe-core-maven-html/compare/v4.3.1...v4.4.1) (2022-03-24)
+
 
 ### Bug Fixes
 
