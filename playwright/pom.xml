@@ -5,13 +5,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>playwright</artifactId>
-    <version>4.4.1</version>
+    <version>4.4.2</version>
     <packaging>jar</packaging>
 
     <parent>
         <groupId>com.deque.html.axe-core</groupId>
         <artifactId>virtual-superpackage</artifactId>
-        <version>4.4.1</version>
+        <version>4.4.2</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -314,7 +314,7 @@
         <dependency>
             <groupId>com.deque.html.axe-core</groupId>
             <artifactId>dequeutilites</artifactId>
-            <version>4.4.1</version>
+            <version>4.4.2</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>
