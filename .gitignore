@@ -5,7 +5,6 @@ target
 .classpath
 .project
 .settings
-.vscode
 bin
 node_modules
 build

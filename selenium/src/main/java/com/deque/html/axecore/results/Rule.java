@@ -90,6 +90,15 @@ public class Rule {
 
   @Override
   public String toString() {
+    StringBuilder nodeString = new StringBuilder();
+    nodeString.append("[");
+    for (int i = 0; i < nodes.size(); i++) {
+      if (i > 0) {
+        nodeString.append(", ");
+      }
+      nodeString.append(nodes.get(i).toString());
+    }
+    nodeString.append("]");
     return "Rule{"
         + "id='"
         + id
@@ -109,7 +118,7 @@ public class Rule {
         + ", tags="
         + tags
         + ", nodes="
-        + nodes
+        + nodeString
         + ", url='"
         + url
         + '\''

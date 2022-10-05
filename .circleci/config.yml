@@ -14,12 +14,12 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: v2-mvn-deps-{{ checksum "pom.xml" }}-{{ checksum "selenium/pom.xml" }}-{{ checksum "playwright/pom.xml" }}
+          key: v2-mvn-deps-{{ checksum "pom.xml" }}-{{ checksum "selenium/pom.xml" }}-{{ checksum "playwright/pom.xml" }}-{{ checksum "utilities/pom.xml" }}
       - restore_cache:
           key: v2-npm-deps-{{ checksum "package-lock.json" }}-{{ checksum "selenium/package-lock.json" }}-{{ checksum "playwright/package-lock.json" }}
-      - run: mvn install -DskipTests
+      - run: mvn clean install -DskipTests
       - save_cache:
-          key: v2-mvn-deps-{{ checksum "pom.xml" }}-{{ checksum "selenium/pom.xml" }}-{{ checksum "playwright/pom.xml" }}
+          key: v2-mvn-deps-{{ checksum "pom.xml" }}-{{ checksum "selenium/pom.xml" }}-{{ checksum "playwright/pom.xml" }}-{{ checksum "utilities/pom.xml" }}
           paths:
             - ~/.m2
       - save_cache:
@@ -34,7 +34,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: v2-mvn-deps-{{ checksum "pom.xml" }}-{{ checksum "selenium/pom.xml" }}
+          key: v2-mvn-deps-{{ checksum "pom.xml" }}-{{ checksum "selenium/pom.xml" }}-{{ checksum "playwright/pom.xml" }}-{{ checksum "utilities/pom.xml" }}
       - restore_cache:
           key: v2-npm-deps-{{ checksum "package-lock.json" }}-{{ checksum "selenium/package-lock.json" }}
       - run: sudo apt update && sudo apt install python2
@@ -60,7 +60,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: v2-mvn-deps-{{ checksum "pom.xml" }}-{{ checksum "selenium/pom.xml" }}-{{ checksum "playwright/pom.xml" }}
+          key: v2-mvn-deps-{{ checksum "pom.xml" }}-{{ checksum "selenium/pom.xml" }}-{{ checksum "playwright/pom.xml" }}-{{ checksum "utilities/pom.xml" }}
       - restore_cache:
           key: v2-npm-deps-{{ checksum "package-lock.json" }}-{{ checksum "selenium/package-lock.json" }}-{{ checksum "playwright/package-lock.json" }}
       - browser-tools/install-chrome
@@ -82,7 +82,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: v2-mvn-deps-{{ checksum "pom.xml" }}-{{ checksum "selenium/pom.xml" }}-{{ checksum "playwright/pom.xml" }}
+          key: v2-mvn-deps-{{ checksum "pom.xml" }}-{{ checksum "selenium/pom.xml" }}-{{ checksum "playwright/pom.xml" }}-{{ checksum "utilities/pom.xml" }}
       - restore_cache:
           key: v2-npm-deps-{{ checksum "package-lock.json" }}-{{ checksum "selenium/package-lock.json" }}-{{ checksum "playwright/package-lock.json" }}
       - run: echo "$GPG_PRIVATE_KEY" | base64 --decode | gpg --import
@@ -96,7 +96,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: v2-mvn-deps-{{ checksum "pom.xml" }}-{{ checksum "selenium/pom.xml" }}-{{ checksum "playwright/pom.xml" }}
+          key: v2-mvn-deps-{{ checksum "pom.xml" }}-{{ checksum "selenium/pom.xml" }}-{{ checksum "playwright/pom.xml" }}-{{ checksum "utilities/pom.xml" }}
       - restore_cache:
           key: v2-npm-deps-{{ checksum "package-lock.json" }}-{{ checksum "selenium/package-lock.json" }}-{{ checksum "playwright/package-lock.json" }}
       - run: echo "$GPG_PRIVATE_KEY" | base64 --decode | gpg --import

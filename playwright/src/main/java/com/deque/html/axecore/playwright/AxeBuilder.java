@@ -1,11 +1,11 @@
 package com.deque.html.axecore.playwright;
 
-import com.deque.html.axecore.utilities.axeresults.AxeResults;
-import com.deque.html.axecore.utilities.axeresults.FrameContext;
-import com.deque.html.axecore.utilities.axerunoptions.AxeContext;
-import com.deque.html.axecore.utilities.axerunoptions.AxeRuleOptions;
-import com.deque.html.axecore.utilities.axerunoptions.AxeRunOnlyOptions;
-import com.deque.html.axecore.utilities.axerunoptions.AxeRunOptions;
+import com.deque.html.axecore.args.AxeRuleOptions;
+import com.deque.html.axecore.args.AxeRunContext;
+import com.deque.html.axecore.args.AxeRunOnlyOptions;
+import com.deque.html.axecore.args.AxeRunOptions;
+import com.deque.html.axecore.results.AxeResults;
+import com.deque.html.axecore.results.FrameContext;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -23,10 +23,11 @@ import org.apache.commons.io.IOUtils;
 
 /** Chainable class: AxeBuilder used to customize and analyze using axe-core */
 public class AxeBuilder {
-  private final AxeContext context = new AxeContext();
+  private final AxeRunContext context = new AxeRunContext();
   private AxeRunOptions options = new AxeRunOptions();
 
   private boolean legacyMode = false;
+  private boolean hasRunPartial = false;
   private final ObjectMapper objectMapper;
   private final Page page;
 
@@ -148,7 +149,6 @@ public class AxeBuilder {
    * @return Array of results containing incomplete, inapplicable, passes, and violations
    */
   public AxeResults analyze() {
-    String axeSource = getAxeSource();
 
     // We need to serialize the context and options passed by the user (if any)
     // to Strings to be able to parse them via Playwright
@@ -156,13 +156,16 @@ public class AxeBuilder {
     String axeOptions = serialize(this.options);
 
     try {
-      this.page.evaluate(axeSource);
+      /**
+       * this allows Playwright to run the script to be used later rather than invoking it instantly
+       * @see https://github.com/microsoft/playwright-java/issues/1070 */
+      this.page.evaluate("() => {" + getAxeScript() + "}");
     } catch (RuntimeException runtimeException) {
       throw new RuntimeException("Problematic axe-source, unable to inject. ", runtimeException);
     }
 
     // Check if client has axe version>= 4.3
-    boolean hasRunPartial = hasRunPartial(page);
+    this.hasRunPartial = hasRunPartial(page);
     if (!hasRunPartial || legacyMode) {
       Object results = run(axeContext, axeOptions);
       return this.objectMapper.convertValue(results, AxeResults.class);
@@ -322,7 +325,7 @@ public class AxeBuilder {
   private Object finishRun(ArrayList<Object> partialResults) {
     Browser browser = page.context().browser();
     Page blankPage = browser.newPage();
-    blankPage.evaluate(getAxeSource());
+    blankPage.evaluate(getAxeScript() + getAxeConfigure(hasRunPartial));
 
     Object results;
 
@@ -345,22 +348,21 @@ public class AxeBuilder {
     return (boolean) page.evaluate("typeof window.axe.runPartial === 'function'");
   }
 
-  private String getAxeSource() {
-    final String origins = this.legacyMode ? "'<unsafe_all_origins>'" : "'<same_origin>'";
-    final String axeConfigure =
-        String.format(
-            ";axe.configure({"
-                + "allowedOrigins: [%s], "
-                + "branding: { application: 'PlaywrightJava'}"
-                + "})",
-            origins);
+  private String getAxeConfigure(boolean hasRunPartial) {
+    final String origins =
+        !this.legacyMode && !hasRunPartial ? "'<unsafe_all_origins>'" : "'<same_origin>'";
 
-    return getAxeScript() + axeConfigure;
+    return String.format(
+        ";axe.configure({"
+            + "allowedOrigins: [%s], "
+            + "branding: { application: 'PlaywrightJava'}"
+            + "});",
+        origins);
   }
 
   private void injectAxeSource(Frame frame) {
     try {
-      frame.evaluate(getAxeSource());
+      frame.evaluate(getAxeScript() + getAxeConfigure(hasRunPartial));
     } catch (RuntimeException runtimeException) {
       throw new RuntimeException("Unable to inject axe-source. ", runtimeException);
     }
