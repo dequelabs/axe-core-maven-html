@@ -258,7 +258,7 @@
         <dependency>
             <groupId>com.microsoft.playwright</groupId>
             <artifactId>playwright</artifactId>
-            <version>1.23.0</version>
+            <version>1.27.0</version>
         </dependency>
 
         <!-- Overrides commons-codec used in httpclient for security reasons -->
