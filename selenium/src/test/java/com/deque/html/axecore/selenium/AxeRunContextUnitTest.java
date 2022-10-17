@@ -12,7 +12,7 @@
 
 package com.deque.html.axecore.selenium;
 
-import com.deque.html.axecore.axeargs.AxeRunContext;
+import com.deque.html.axecore.args.AxeRunContext;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.Arrays;
 import java.util.List;

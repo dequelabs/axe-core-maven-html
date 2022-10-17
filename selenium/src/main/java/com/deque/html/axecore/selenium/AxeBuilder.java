@@ -12,10 +12,10 @@
 
 package com.deque.html.axecore.selenium;
 
-import com.deque.html.axecore.axeargs.AxeRuleOptions;
-import com.deque.html.axecore.axeargs.AxeRunContext;
-import com.deque.html.axecore.axeargs.AxeRunOnlyOptions;
-import com.deque.html.axecore.axeargs.AxeRunOptions;
+import com.deque.html.axecore.args.AxeRuleOptions;
+import com.deque.html.axecore.args.AxeRunContext;
+import com.deque.html.axecore.args.AxeRunOnlyOptions;
+import com.deque.html.axecore.args.AxeRunOptions;
 import com.deque.html.axecore.extensions.WebDriverExtensions;
 import com.deque.html.axecore.extensions.WebDriverInjectorExtensions;
 import com.deque.html.axecore.providers.EmbeddedResourceAxeProvider;
