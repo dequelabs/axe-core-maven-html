@@ -20,8 +20,8 @@ import com.deque.html.axecore.extensions.WebDriverExtensions;
 import com.deque.html.axecore.extensions.WebDriverInjectorExtensions;
 import com.deque.html.axecore.providers.EmbeddedResourceAxeProvider;
 import com.deque.html.axecore.providers.IAxeScriptProvider;
+import com.deque.html.axecore.results.AxeResults;
 import com.deque.html.axecore.results.FrameContext;
-import com.deque.html.axecore.results.Results;
 import com.deque.html.axecore.results.Rule;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -446,7 +446,7 @@ public class AxeBuilder {
    * @param context WebElement(s) to test
    * @return An axe results document
    */
-  public Results analyze(final WebDriver webDriver, final WebElement... context) {
+  public AxeResults analyze(final WebDriver webDriver, final WebElement... context) {
     return analyzeRawContext(webDriver, context);
   }
 
@@ -456,7 +456,7 @@ public class AxeBuilder {
    * @param webDriver for the page to be scanned
    * @return An axe results document
    */
-  public Results analyze(final WebDriver webDriver) {
+  public AxeResults analyze(final WebDriver webDriver) {
     boolean runContextHasData =
         this.runContext.getInclude() != null || this.runContext.getExclude() != null;
     String rawContext = runContextHasData ? AxeReporter.serialize(runContext) : "{ 'exclude': [] }";
@@ -470,7 +470,7 @@ public class AxeBuilder {
    * @param injectAxe whether or not to inject axe into the page
    * @return An axe results document
    */
-  public Results analyze(final WebDriver webDriver, boolean injectAxe) {
+  public AxeResults analyze(final WebDriver webDriver, boolean injectAxe) {
     boolean runContextHasData =
         this.runContext.getInclude() != null || this.runContext.getExclude() != null;
     String rawContext = runContextHasData ? AxeReporter.serialize(runContext) : "{ 'exclude': [] }";
@@ -484,7 +484,7 @@ public class AxeBuilder {
    *     argument
    * @return an Axe Result
    */
-  private Results analyzeRawContext(final WebDriver webDriver, final Object rawContextArg) {
+  private AxeResults analyzeRawContext(final WebDriver webDriver, final Object rawContextArg) {
     validateNotNullParameter(webDriver);
     webDriver.manage().timeouts().setScriptTimeout(timeout, TimeUnit.SECONDS);
 
@@ -508,11 +508,11 @@ public class AxeBuilder {
     }
   }
 
-  private Results buildErrorResults(Exception execpt) {
+  private AxeResults buildErrorResults(Exception execpt) {
     // Formatted to match what you get if you run `new Date().toString()` in JS
     SimpleDateFormat df = new SimpleDateFormat("E MMM dd yyyy HH:mm:ss 'GMT'XX (zzzz)");
     String dateTime = df.format(new Date());
-    Results results = new Results();
+    AxeResults results = new AxeResults();
     results.setViolations(new ArrayList<Rule>());
     results.setPasses(new ArrayList<Rule>());
     results.setUrl("");
@@ -582,7 +582,7 @@ public class AxeBuilder {
     }
   }
 
-  private Results analyzePost43x(final WebDriver webDriver, final Object rawContextArg) {
+  private AxeResults analyzePost43x(final WebDriver webDriver, final Object rawContextArg) {
     String rawOptionsArg =
         getOptions().equals("{}") ? AxeReporter.serialize(runOptions) : getOptions();
 
@@ -608,12 +608,12 @@ public class AxeBuilder {
           e);
     }
     WebDriverExtensions.closeAboutBlank(webDriver, prevWindow);
-    Results res = objectMapper.convertValue(resResponse, Results.class);
+    AxeResults res = objectMapper.convertValue(resResponse, AxeResults.class);
 
     return res;
   }
 
-  private Results analyzePre43x(final WebDriver webDriver, final Object rawContextArg) {
+  private AxeResults analyzePre43x(final WebDriver webDriver, final Object rawContextArg) {
     String rawOptionsArg =
         getOptions().equals("{}") ? AxeReporter.serialize(runOptions) : getOptions();
     Object[] rawArgs = new Object[] {rawContextArg, rawOptionsArg};
@@ -649,7 +649,7 @@ public class AxeBuilder {
       return buildErrorResults(je);
     }
 
-    Results results = objectMapper.convertValue(response, Results.class);
+    AxeResults results = objectMapper.convertValue(response, AxeResults.class);
     return results;
   }
 

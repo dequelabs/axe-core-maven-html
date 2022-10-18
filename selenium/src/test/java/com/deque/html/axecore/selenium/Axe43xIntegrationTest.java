@@ -16,8 +16,8 @@ import static org.junit.Assert.*;
 
 import com.deque.html.axecore.providers.EmbeddedResourceAxeProvider;
 import com.deque.html.axecore.providers.StringAxeScriptProvider;
+import com.deque.html.axecore.results.AxeResults;
 import com.deque.html.axecore.results.CheckedNode;
-import com.deque.html.axecore.results.Results;
 import com.deque.html.axecore.results.Rule;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
@@ -118,7 +118,7 @@ public class Axe43xIntegrationTest {
   public void errorsIfTopLevelError() throws Exception {
     webDriver.get(fixture("/crash.html"));
 
-    Results res =
+    AxeResults res =
         new AxeBuilder()
             .setAxeScriptProvider(new StringAxeScriptProvider(axePost43x + axeCrasherJS))
             .analyze(webDriver);
@@ -132,7 +132,7 @@ public class Axe43xIntegrationTest {
     expectedException.expect(RuntimeException.class);
     webDriver.get(fixture("/crash.html"));
 
-    Results res =
+    AxeResults res =
         new AxeBuilder()
             .setAxeScriptProvider(new StringAxeScriptProvider("throw new Error()"))
             .analyze(webDriver);
@@ -142,7 +142,7 @@ public class Axe43xIntegrationTest {
   public void errorsWhenSetupFails() throws Exception {
     webDriver.get(fixture("/index.html"));
 
-    Results res =
+    AxeResults res =
         new AxeBuilder()
             .setAxeScriptProvider(
                 new StringAxeScriptProvider(axePost43x + "; window.axe.utils = {}"))
@@ -154,7 +154,7 @@ public class Axe43xIntegrationTest {
   public void isolatesFinishRun() throws Exception {
     webDriver.get(fixture("/isolated-finish.html"));
 
-    Results res = new AxeBuilder().analyze(webDriver);
+    AxeResults res = new AxeBuilder().analyze(webDriver);
     assertFalse(res.isErrored());
   }
 
@@ -162,7 +162,7 @@ public class Axe43xIntegrationTest {
   public void injectsIntoNestedIframes() throws Exception {
     webDriver.get(fixture("/nested-iframes.html"));
 
-    Results res = new AxeBuilder().withOnlyRules(Arrays.asList("label")).analyze(webDriver);
+    AxeResults res = new AxeBuilder().withOnlyRules(Arrays.asList("label")).analyze(webDriver);
 
     List<Rule> violations = res.getViolations();
     Rule rule = violations.get(0);
@@ -181,7 +181,7 @@ public class Axe43xIntegrationTest {
   public void injectsIntoNestedFrameset() throws Exception {
     webDriver.get(fixture("/nested-frameset.html"));
 
-    Results res = new AxeBuilder().withOnlyRules(Arrays.asList("label")).analyze(webDriver);
+    AxeResults res = new AxeBuilder().withOnlyRules(Arrays.asList("label")).analyze(webDriver);
 
     List<Rule> violations = res.getViolations();
     Rule rule = violations.get(0);
@@ -200,7 +200,7 @@ public class Axe43xIntegrationTest {
   public void worksOnShadowDOMIframes() throws Exception {
     webDriver.get(fixture("/shadow-frames.html"));
 
-    Results res = new AxeBuilder().withOnlyRules(Arrays.asList("label")).analyze(webDriver);
+    AxeResults res = new AxeBuilder().withOnlyRules(Arrays.asList("label")).analyze(webDriver);
 
     List<Rule> violations = res.getViolations();
     Rule rule = violations.get(0);
@@ -219,7 +219,7 @@ public class Axe43xIntegrationTest {
   public void reportsErrorFrames() throws Exception {
     webDriver.get(fixture("/crash-parent.html"));
 
-    Results res =
+    AxeResults res =
         new AxeBuilder()
             .setAxeScriptProvider(new StringAxeScriptProvider(axePost43x + axeCrasherJS))
             .withOnlyRules(Arrays.asList("label", "frame-tested"))
@@ -243,7 +243,7 @@ public class Axe43xIntegrationTest {
   @Test
   public void returnsSameResultsRunPartialAndRun() throws Exception {
     webDriver.get(fixture("/nested-iframes"));
-    Results legacyResults =
+    AxeResults legacyResults =
         new AxeBuilder()
             .setAxeScriptProvider(new StringAxeScriptProvider(axePost43x + axeForceLegacyJS))
             .analyze(webDriver);
@@ -251,7 +251,7 @@ public class Axe43xIntegrationTest {
     assertEquals("axe-legacy", legacyResults.getTestEngine().getName());
 
     webDriver.get(fixture("/nested-iframes"));
-    Results normalResults = new AxeBuilder().analyze(webDriver);
+    AxeResults normalResults = new AxeBuilder().analyze(webDriver);
 
     normalResults.setTimestamp(legacyResults.getTimestamp());
     normalResults.getTestEngine().setName(legacyResults.getTestEngine().getName());
@@ -264,7 +264,7 @@ public class Axe43xIntegrationTest {
   @Test
   public void returnsCorrectRsultsMetadata() throws Exception {
     webDriver.get(fixture("/index.html"));
-    Results res = new AxeBuilder().analyze(webDriver);
+    AxeResults res = new AxeBuilder().analyze(webDriver);
 
     assertNotNull(res.getTestEngine().getName());
     assertNotNull(res.getTestEngine().getVersion());
@@ -281,7 +281,7 @@ public class Axe43xIntegrationTest {
   @Test
   public void runsLegacyModeWhenUsed() throws Exception {
     webDriver.get(fixture("/external/index.html"));
-    Results res =
+    AxeResults res =
         new AxeBuilder()
             .setLegacyMode()
             .setAxeScriptProvider(new StringAxeScriptProvider(axePost43x + runPartialThrows))
@@ -292,7 +292,7 @@ public class Axe43xIntegrationTest {
   @Test
   public void legacyModePreventsCrossOriginFrameTesting() throws Exception {
     webDriver.get(fixture("/cross-origin.html"));
-    Results res =
+    AxeResults res =
         new AxeBuilder()
             .withRules(Arrays.asList("frame-tested"))
             .setLegacyMode()
@@ -303,7 +303,7 @@ public class Axe43xIntegrationTest {
   @Test
   public void legacyModeCanBeDisabledAgain() throws Exception {
     webDriver.get(fixture("/cross-origin.html"));
-    Results res =
+    AxeResults res =
         new AxeBuilder()
             .withRules(Arrays.asList("frame-tested"))
             .setLegacyMode()
@@ -336,7 +336,7 @@ public class Axe43xIntegrationTest {
   public void legacyRunAnalyze() {
     webDriver.get(fixture("/index.html"));
 
-    Results axeResults =
+    AxeResults axeResults =
         new AxeBuilder()
             .setAxeScriptProvider(new StringAxeScriptProvider(axePre43x))
             .analyze(webDriver);

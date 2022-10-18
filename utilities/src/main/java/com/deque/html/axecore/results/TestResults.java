@@ -6,7 +6,7 @@ public class TestResults {
   private String id;
   private Platform platform = new Platform();
   private TestSubject testSubject = new TestSubject();
-  private Results findings;
+  private AxeResults findings;
   private String endTime;
 
   public String getType() {
@@ -49,11 +49,11 @@ public class TestResults {
     this.testSubject = testSubject;
   }
 
-  public Results getFindings() {
+  public AxeResults getFindings() {
     return findings;
   }
 
-  public void setFindings(Results findings) {
+  public void setFindings(AxeResults findings) {
     this.findings = findings;
   }
 

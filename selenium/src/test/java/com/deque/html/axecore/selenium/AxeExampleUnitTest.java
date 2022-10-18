@@ -25,9 +25,9 @@ import java.util.Collections;
 import java.util.List;
 import javax.naming.OperationNotSupportedException;
 
+import com.deque.html.axecore.results.AxeResults;
 import com.deque.html.axecore.results.CheckedNode;
 import com.deque.html.axecore.results.ResultType;
-import com.deque.html.axecore.results.Results;
 import com.deque.html.axecore.results.Rule;
 import org.junit.After;
 import org.junit.Assert;
@@ -69,7 +69,7 @@ public class AxeExampleUnitTest {
   @Test
   public void testAccessibility() throws IOException, OperationNotSupportedException {
     this.webDriver.get("file:///" + new File(normalPage).getAbsolutePath());
-    Results result = new AxeBuilder().analyze(webDriver);
+    AxeResults result = new AxeBuilder().analyze(webDriver);
     List<Rule> violations = result.getViolations();
     Assert.assertEquals("No violations found", 0, violations.size());
     AxeReporter.writeResultsToJsonFile("src/test/java/results/testAccessibility", result);
@@ -88,7 +88,7 @@ public class AxeExampleUnitTest {
   @Test
   public void testAccessibilityWithSkipFrames() throws IOException, OperationNotSupportedException {
     this.webDriver.get("file:///" + new File(normalPage).getAbsolutePath());
-    Results result = new AxeBuilder().analyze(webDriver);
+    AxeResults result = new AxeBuilder().analyze(webDriver);
     List<Rule> violations = result.getViolations();
     Assert.assertEquals("No violations found", 0, violations.size());
     AxeReporter.writeResultsToJsonFile(
@@ -108,7 +108,7 @@ public class AxeExampleUnitTest {
   @Test
   public void testInjectsIntoNestedIframes() throws IOException, OperationNotSupportedException {
     this.webDriver.get("file:///" + new File(nestedIframePage).getAbsolutePath());
-    Results result =
+    AxeResults result =
         new AxeBuilder().withOnlyRules(Arrays.asList("frame-title")).analyze(webDriver);
     List<Rule> violations = result.getViolations();
     Assert.assertEquals("'frame-title' passed", 1, violations.size());
@@ -130,7 +130,7 @@ public class AxeExampleUnitTest {
   @Test
   public void testInjectsIntoNestedFrames() throws IOException, OperationNotSupportedException {
     this.webDriver.get("file:///" + new File(nestedFramePage).getAbsolutePath());
-    Results result =
+    AxeResults result =
         new AxeBuilder().withOnlyRules(Arrays.asList("frame-title")).analyze(webDriver);
     List<Rule> violations = result.getViolations();
     Assert.assertEquals("'frame-title' passed", 1, violations.size());
@@ -154,7 +154,7 @@ public class AxeExampleUnitTest {
     this.webDriver.get("file:///" + new File(violationPage).getAbsolutePath());
     AxeBuilder builder = new AxeBuilder();
     builder.setOptions("{ \"rules\": { \"object-alt\": { \"enabled\": false } } }");
-    Results result = builder.analyze(webDriver);
+    AxeResults result = builder.analyze(webDriver);
     List<Rule> violations = result.getViolations();
     Assert.assertEquals("violations found", 1, violations.size());
   }
@@ -165,7 +165,7 @@ public class AxeExampleUnitTest {
     this.webDriver.get("file:///" + new File(violationPage).getAbsolutePath());
     AxeBuilder builder = new AxeBuilder();
     builder.setOptions("{ \"rules\": { \"image-alt\": { \"enabled\": false } } }");
-    Results result = builder.analyze(webDriver);
+    AxeResults result = builder.analyze(webDriver);
     List<Rule> violations = result.getViolations();
     Assert.assertEquals("No violations found", 0, violations.size());
     AxeReporter.writeResultsToJsonFile(
@@ -206,7 +206,7 @@ public class AxeExampleUnitTest {
   @Test
   public void testAccessibilityWithSelector() throws IOException, OperationNotSupportedException {
     this.webDriver.get("file:///" + new File(normalPage).getAbsolutePath());
-    Results result = new AxeBuilder().include(Collections.singletonList("p")).analyze(webDriver);
+    AxeResults result = new AxeBuilder().include(Collections.singletonList("p")).analyze(webDriver);
     List<Rule> violations = result.getViolations();
     Assert.assertEquals("No violations found", 0, violations.size());
     AxeReporter.writeResultsToJsonFile(
@@ -226,7 +226,7 @@ public class AxeExampleUnitTest {
   @Test
   public void testAccessibilityWithSelectors() throws IOException, OperationNotSupportedException {
     this.webDriver.get("file:///" + new File(normalPage).getAbsolutePath());
-    Results result =
+    AxeResults result =
         new AxeBuilder()
             .include(Arrays.asList("title"))
             .include(Arrays.asList("p"))
@@ -251,7 +251,7 @@ public class AxeExampleUnitTest {
   public void testAccessibilityWithIncludesAndExcludes()
       throws IOException, OperationNotSupportedException {
     this.webDriver.get("file:///" + new File(includeExcludePage).getAbsolutePath());
-    Results result =
+    AxeResults result =
         new AxeBuilder()
             .include(Collections.singletonList("body"))
             .exclude(Collections.singletonList("li"))
@@ -276,7 +276,7 @@ public class AxeExampleUnitTest {
   @Test
   public void testAccessibilityWithWebElement() throws IOException, OperationNotSupportedException {
     this.webDriver.get("file:///" + new File(normalPage).getAbsolutePath());
-    Results result = new AxeBuilder().analyze(webDriver, webDriver.findElement(By.tagName("p")));
+    AxeResults result = new AxeBuilder().analyze(webDriver, webDriver.findElement(By.tagName("p")));
     List<Rule> violations = result.getViolations();
     Assert.assertEquals("No violations found", 0, violations.size());
     AxeReporter.writeResultsToJsonFile(
@@ -297,7 +297,7 @@ public class AxeExampleUnitTest {
   public void testAccessibilityWithWebElements()
       throws IOException, OperationNotSupportedException {
     this.webDriver.get("file:///" + new File(includeExcludePage).getAbsolutePath());
-    Results result =
+    AxeResults result =
         new AxeBuilder()
             .analyze(
                 webDriver,
@@ -329,7 +329,7 @@ public class AxeExampleUnitTest {
   public void testAccessibilityWithShadowElement()
       throws IOException, OperationNotSupportedException {
     this.webDriver.get("file:///" + new File(shadowErrorPage).getAbsolutePath());
-    Results result = new AxeBuilder().analyze(webDriver);
+    AxeResults result = new AxeBuilder().analyze(webDriver);
     List<Rule> violations = result.getViolations();
     Rule resultItem = violations.get(0);
     List<CheckedNode> nodes = resultItem.getNodes();
@@ -358,7 +358,7 @@ public class AxeExampleUnitTest {
     FileAxeScriptProvider axeScriptProvider = new FileAxeScriptProvider(errorFilePath);
     builder.setAxeScriptProvider(axeScriptProvider);
 
-    Results res = builder.analyze(webDriver);
+    AxeResults res = builder.analyze(webDriver);
     Assert.assertTrue("Did raise axe-core error", res.isErrored());
   }
 
@@ -366,7 +366,7 @@ public class AxeExampleUnitTest {
   @Test
   public void testAccessibilityWithFewInclude() throws IOException, OperationNotSupportedException {
     this.webDriver.get("file:///" + new File(includeExcludePage).getAbsolutePath());
-    Results result =
+    AxeResults result =
         new AxeBuilder()
             .include(Collections.singletonList("div"))
             .include(Collections.singletonList("p"))
@@ -391,7 +391,7 @@ public class AxeExampleUnitTest {
   public void testAccessibilityWithIncludesAndExcludesWithViolation()
       throws IOException, OperationNotSupportedException {
     this.webDriver.get("file:///" + new File(includeExcludePage).getAbsolutePath());
-    Results result =
+    AxeResults result =
         new AxeBuilder()
             .include(Collections.singletonList("body"))
             .exclude(Collections.singletonList("div"))
@@ -426,7 +426,7 @@ public class AxeExampleUnitTest {
   public void testViolationToStringActionability()
       throws IOException, OperationNotSupportedException {
     this.webDriver.get("file:///" + new File(violationPage).getAbsolutePath());
-    Results result = new AxeBuilder().analyze(webDriver);
+    AxeResults result = new AxeBuilder().analyze(webDriver);
 
     List<Rule> violations = result.getViolations();
     String violationsString = violations.toString();

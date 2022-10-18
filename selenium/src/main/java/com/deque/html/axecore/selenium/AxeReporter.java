@@ -13,8 +13,8 @@
 package com.deque.html.axecore.selenium;
 
 import com.deque.html.axecore.args.AxeRunOptions;
+import com.deque.html.axecore.results.AxeResults;
 import com.deque.html.axecore.results.Node;
-import com.deque.html.axecore.results.Results;
 import com.deque.html.axecore.results.Rule;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -78,7 +78,7 @@ public final class AxeReporter {
    * @param output Object to write. Most useful if you pass in either the Builder.analyze() response
    *     or the violations array it contains.
    */
-  public static void writeResultsToJsonFile(final String outputFilePath, final Results output) {
+  public static void writeResultsToJsonFile(final String outputFilePath, final AxeResults output) {
 
     try (Writer writer =
         new BufferedWriter(

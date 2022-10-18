@@ -24,7 +24,7 @@ import java.util.function.Function;
 import javax.naming.OperationNotSupportedException;
 
 import com.deque.html.axecore.args.AxeRunOptions;
-import com.deque.html.axecore.results.Results;
+import com.deque.html.axecore.results.AxeResults;
 import com.deque.html.axecore.results.Rule;
 import org.junit.After;
 import org.junit.Assert;
@@ -89,7 +89,7 @@ public class AxeIntegrationUnitTest {
             .disableRules(Collections.singletonList("color-contrast"))
             .withOutputFile("src/test/java/results/raw-axe-results.json");
 
-    Results results = builder.analyze(webDriver);
+    AxeResults results = builder.analyze(webDriver);
     List<Rule> violations = results.getViolations();
 
     Assert.assertNotNull(violations.get(0).getId());
@@ -126,7 +126,7 @@ public class AxeIntegrationUnitTest {
         };
     WebElement mainElement = wait.until(waitFunc);
     AxeBuilder builder = new AxeBuilder();
-    Results results = builder.analyze(this.webDriver, mainElement);
+    AxeResults results = builder.analyze(this.webDriver, mainElement);
     Assert.assertEquals(3, results.getViolations().size());
   }
 

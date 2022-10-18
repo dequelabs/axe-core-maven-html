@@ -12,7 +12,7 @@
 
 package com.deque.html.axecore.extensions;
 
-import com.deque.html.axecore.results.Results;
+import com.deque.html.axecore.results.AxeResults;
 import com.deque.html.axecore.selenium.AxeBuilder;
 import com.deque.html.axecore.selenium.AxeBuilderOptions;
 import java.io.IOException;
@@ -35,7 +35,7 @@ public final class WebDriverExtensions {
    * @throws IOException if analysis of page reaches an error
    * @throws OperationNotSupportedException if an unaccepted error occurs
    */
-  public static Results analyze(final WebDriver webDriver)
+  public static AxeResults analyze(final WebDriver webDriver)
       throws IOException, OperationNotSupportedException {
     if (webDriver == null) {
       throw new NullPointerException("the webDriver is null");
@@ -53,7 +53,7 @@ public final class WebDriverExtensions {
    * @throws IOException if analysis of page reaches an error
    * @throws OperationNotSupportedException if an unaccepted error occurs
    */
-  public static Results analyze(
+  public static AxeResults analyze(
       final WebDriver webDriver, final AxeBuilderOptions axeBuilderOptions)
       throws OperationNotSupportedException, IOException {
     if (webDriver == null) {
@@ -72,7 +72,7 @@ public final class WebDriverExtensions {
    * @throws IOException if analysis of page reaches an error
    * @throws OperationNotSupportedException if an unaccepted error occurs
    */
-  public static Results analyze(final WebDriver webDriver, final WebElement context)
+  public static AxeResults analyze(final WebDriver webDriver, final WebElement context)
       throws IOException, OperationNotSupportedException {
     if (webDriver == null) {
       throw new NullPointerException("the webDriver is null");
@@ -95,7 +95,7 @@ public final class WebDriverExtensions {
    * @throws IOException if analysis of page reaches an error
    * @throws OperationNotSupportedException if an unaccepted error occurs
    */
-  public static Results analyze(
+  public static AxeResults analyze(
       final WebDriver webDriver,
       final WebElement context,
       final AxeBuilderOptions axeBuilderOptions)
