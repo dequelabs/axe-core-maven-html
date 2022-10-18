@@ -26,7 +26,7 @@ import com.deque.html.axecore.args.AxeRuleOptions;
 import com.deque.html.axecore.args.AxeRunContext;
 import com.deque.html.axecore.args.AxeRunOnlyOptions;
 import com.deque.html.axecore.args.AxeRunOptions;
-import com.deque.html.axecore.results.AxeResults;
+import com.deque.html.axecore.results.Results;
 import com.deque.html.axecore.results.Rule;
 import org.junit.After;
 import org.junit.Assert;
@@ -45,7 +45,7 @@ public class AxeBuilderUnitTest {
   private JavascriptExecutor javascriptExecutor;
   private WebDriver.TargetLocator targetLocator;
 
-  private void assertViolations(AxeResults results, String... expectedsList) {
+  private void assertViolations(Results results, String... expectedsList) {
     HashSet<String> actuals = new HashSet<String>();
     for (Rule r : results.getViolations()) {
       actuals.add(r.getId());
@@ -133,7 +133,7 @@ public class AxeBuilderUnitTest {
   public void shouldHandleIfOptionsAndContextNotSet()
       throws IOException, OperationNotSupportedException {
     AxeBuilder builder = new AxeBuilder();
-    AxeResults result = builder.analyze(this.webDriver);
+    Results result = builder.analyze(this.webDriver);
     verifyAxeResultsNotNull(result);
     assertViolations(
         result,
@@ -154,7 +154,7 @@ public class AxeBuilderUnitTest {
   @Test()
   public void shouldHandleRemovingSandboxes() throws IOException, OperationNotSupportedException {
     AxeBuilder builder = new AxeBuilder();
-    AxeResults result = builder.withoutIframeSandboxes().analyze(this.webDriver);
+    Results result = builder.withoutIframeSandboxes().analyze(this.webDriver);
     verifyAxeResultsNotNull(result);
     assertViolations(
         result,
@@ -178,7 +178,7 @@ public class AxeBuilderUnitTest {
     runContext.setInclude(Collections.singletonList("li:nth-child(1)"));
 
     AxeBuilder builder = new AxeBuilder().include(Collections.singletonList("li:nth-child(1)"));
-    AxeResults result = builder.analyze(this.webDriver);
+    Results result = builder.analyze(this.webDriver);
 
     verifyAxeResultsNotNull(result);
 
@@ -200,7 +200,7 @@ public class AxeBuilderUnitTest {
     runContext.setExclude(exclude);
 
     AxeBuilder builder = new AxeBuilder().exclude(exclude);
-    AxeResults result = builder.analyze(this.webDriver);
+    Results result = builder.analyze(this.webDriver);
     verifyAxeResultsNotNull(result);
     assertViolations(result, "aria-hidden-focus", "color-contrast", "page-has-heading-one");
     verifyDriversNotNull();
@@ -225,7 +225,7 @@ public class AxeBuilderUnitTest {
     runContext.setExclude(excludeList);
 
     AxeBuilder builder = new AxeBuilder().include(includeList).exclude(excludeList);
-    AxeResults result = builder.analyze(this.webDriver);
+    Results result = builder.analyze(this.webDriver);
     verifyAxeResultsNotNull(result);
 
     assertViolations(result, "aria-roles");
@@ -245,7 +245,7 @@ public class AxeBuilderUnitTest {
     // List<String> expectedTags = Arrays.asList("title", "li:nth-child(1)");
     List<String> expectedTags = Arrays.asList("wcag2a", "wcag412");
     AxeBuilder builder = new AxeBuilder().withTags(expectedTags);
-    AxeResults result = builder.analyze(this.webDriver);
+    Results result = builder.analyze(this.webDriver);
     verifyAxeResultsNotNull(result);
     assertViolations(result, "aria-roles", "aria-hidden-focus", "list");
     verifyDriversNotNull();
@@ -322,7 +322,7 @@ public class AxeBuilderUnitTest {
     List<String> expectedTags = Arrays.asList("tag1", "tag2");
 
     AxeBuilder builder = new AxeBuilder().withTags(expectedTags);
-    AxeResults res = builder.analyze(this.webDriver);
+    Results res = builder.analyze(this.webDriver);
     Assert.assertTrue(res.isErrored());
   }
 
@@ -351,7 +351,7 @@ public class AxeBuilderUnitTest {
     runOptions.setRules(rules);
 
     AxeBuilder builder = new AxeBuilder().disableRules(disableRules).withOnlyRules(expectedRules);
-    AxeResults res = builder.analyze(this.webDriver);
+    Results res = builder.analyze(this.webDriver);
     Assert.assertTrue(res.isErrored());
   }
 
@@ -360,7 +360,7 @@ public class AxeBuilderUnitTest {
    *
    * @param result the Axe Result to be compared
    */
-  private void verifyAxeResult(AxeResults result) {
+  private void verifyAxeResult(Results result) {
     assertViolations(result, "aria-hidden-focus", "list", "color-contrast", "page-has-heading-one");
   }
 
@@ -369,7 +369,7 @@ public class AxeBuilderUnitTest {
    *
    * @param result the Axe Result to be compared
    */
-  private void verifyAxeResultsNotNull(AxeResults result) {
+  private void verifyAxeResultsNotNull(Results result) {
     Assert.assertNotNull(result);
     Assert.assertNotNull(result.getInapplicable());
     Assert.assertNotNull(result.getIncomplete());
