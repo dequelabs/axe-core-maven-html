@@ -17,15 +17,15 @@ import static com.deque.html.axecore.selenium.AxeReporter.getReadableAxeResults;
 import static org.junit.Assert.assertEquals;
 
 import com.deque.html.axecore.providers.FileAxeScriptProvider;
-import com.deque.html.axecore.results.CheckedNode;
-import com.deque.html.axecore.results.Results;
-import com.deque.html.axecore.results.Rule;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import javax.naming.OperationNotSupportedException;
+
+import com.deque.html.axecore.results.*;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
