@@ -93,7 +93,7 @@ workflows:
             - tests
           filters:
             branches:
-              only: chore/release/4.3.2
+              only: develop
       - release:
           context: html-tools
           requires:
@@ -101,7 +101,7 @@ workflows:
             - tests
           filters:
             branches:
-              only: master
+              only: chore/release/4.3.2
       - github_release:
           context: html-tools
           requires:
