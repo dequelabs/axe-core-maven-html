@@ -101,7 +101,7 @@ workflows:
             - tests
           filters:
             branches:
-              only: chore/release/4.3.2
+              only: master
       - github_release:
           context: html-tools
           requires:
