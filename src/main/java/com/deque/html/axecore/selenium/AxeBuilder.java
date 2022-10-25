@@ -97,9 +97,9 @@ public class AxeBuilder {
     "axe.run(context, options).then(res => JSON.parse(JSON.stringify(res))).then(callback)";
 
   public final String unsafeAllOrigins = "<unsafe_all_origins>";
-  public final String sameOrign = "<same_origin>";
+  public final String sameOrigin = "<same_origin>";
 
-  public final String iframeAllowScriptTemplate = "axe.configure({ allowedOrigins: ['%s'] });";
+  public final String iframeAllowScriptTemplate = "axe.configure({ allowedOrigins: ['%s'] })";
 
   public final String hasRunPartialScript = "return typeof window.axe.runPartial === 'function'";
 
@@ -638,7 +638,10 @@ public class AxeBuilder {
       }
 
     try {
-      String allowedOrigins = legacyMode ? sameOrign : unsafeAllOrigins;
+      boolean hasRunPartial =
+          (Boolean) WebDriverInjectorExtensions.executeScript(webDriver, hasRunPartialScript);
+      final String allowedOrigins = !legacyMode && !hasRunPartial ? unsafeAllOrigins : sameOrigin;
+
       WebDriverInjectorExtensions.inject(
           webDriver, String.format(iframeAllowScriptTemplate, allowedOrigins), disableIframeTesting);
     } catch (Exception e) {
