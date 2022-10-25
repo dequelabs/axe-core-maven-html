@@ -24,6 +24,13 @@
 * upgrade axe-core to 4.4.0 ([#198](https://dequelabs/issues/198)) ([65e69ff](https://dequelabs/commits/65e69ff5bf41ec949a9fea6a907e6cc37aaabd7d))
 
 
+## [4.3.2](https://github.com/dequelabs/axe-core-maven-html/compare/v4.3.1...v4.3.2) (2022-10-25)
+
+
+### Bug Fixes
+
+* **selenium:** only set allowedOrigin when needed ([0c4daa5](https://github.com/dequelabs/axe-core-maven-html/commit/0c4daa5983eddc60a9c9c307a579bae1dad2d50b))
+
 
 ## [4.3.1](https://dequelabs/compare/v4.3.0...v4.3.1) (2021-09-27)
 
