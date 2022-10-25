@@ -1,9 +1,9 @@
 version: 2
 
 defaults: &defaults
-    docker:
-      - image: circleci/openjdk:11-node-browsers
-    working_directory: ~/axe-selenium-java
+  docker:
+    - image: circleci/openjdk:11-node-browsers
+  working_directory: ~/axe-selenium-java
 
 jobs:
   dependencies:
@@ -78,7 +78,6 @@ jobs:
             chmod +x ./java-github-release.sh
             ./java-github-release.sh
 
-
 workflows:
   version: 2
   build:
@@ -94,7 +93,7 @@ workflows:
             - tests
           filters:
             branches:
-              only: develop
+              only: chore/release/4.3.2
       - release:
           context: html-tools
           requires:
