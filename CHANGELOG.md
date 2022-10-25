@@ -1,3 +1,12 @@
+## [4.3.2](https://github.com/dequelabs/axe-core-maven-html/compare/v4.3.1...v4.3.2) (2022-10-25)
+
+
+### Bug Fixes
+
+* **selenium:** only set allowedOrigin when needed ([0c4daa5](https://github.com/dequelabs/axe-core-maven-html/commit/0c4daa5983eddc60a9c9c307a579bae1dad2d50b))
+
+
+
 # [4.3.0](https://github.com/dequelabs/axe-core-maven-html/compare/v4.2.2...v4.3.0) (2021-09-20)
 
 
