@@ -18,6 +18,7 @@
     "del-cli": "^5.0.0",
     "husky": "^8.0.1",
     "jfrog-cli-go": "^1.54.0",
+    "standard-version": "^9.5.0",
     "sync-pom-version-to-package": "^1.6.1"
   }
 }
