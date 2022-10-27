@@ -17,9 +17,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
+      - name: Cache node_modules
+        uses: actions/cache@v3
+        with:
+          path: ./node_modules
+          key: npm-cache-${{ runner.os }}-${{ hashFiles('./package-lock.json') }}
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - run: npm ci
       - run: npx standard-version --release-as="${{ github.events.inputs.releaseLevel }}" --dry-run
       # - name: Create pull request
       #   uses: peter-evans/create-pull-request@v3
