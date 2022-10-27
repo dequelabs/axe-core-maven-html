@@ -30,7 +30,7 @@ jobs:
         run: |
           git config user.name "API Team CI User"
           git config user.email "aciattestteamci@deque.com"
-      - run: npx standard-version --release-as="${{ github.events.inputs.releaseLevel }}" --dry-run
+      - run: npx standard-version --release-as="${{ github.events.inputs.releaseLevel }}"
       - name: Create pull request
         uses: peter-evans/create-pull-request@v3
         with:
