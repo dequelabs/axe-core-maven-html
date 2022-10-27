@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       releaseLevel:
-        description: 'Release level: major, minor, or patch.'
+        description: "Release level: major, minor, or patch."
         required: true
-        default: 'patch'
+        default: "patch"
 
 jobs:
   create_release:
@@ -17,18 +17,15 @@ jobs:
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
-
-      - name: Run preparation script
-        run: .github/scripts/prepare_release.sh ${{ github.event.inputs.releaseLevel }}
-
-      - name: Create pull request
-        uses: peter-evans/create-pull-request@v3
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          branch: release
-          branch-suffix: timestamp
-          title: "chore: release v${{ steps.get-new-version.outputs.version }}"
-          # If there are any changes not already committed, they will be added to
-          # a commit with this as the message.
-          # If there are no changes no commit will be created.
-          commit-message: "chore: applying release changes"
+      - run: npx standard-version --release-as="${{ github.events.inputs.releaseLevel }}" --dry-run
+      # - name: Create pull request
+      #   uses: peter-evans/create-pull-request@v3
+      #   with:
+      #     token: ${{ secrets.GITHUB_TOKEN }}
+      #     branch: release
+      #     branch-suffix: timestamp
+      #     title: "chore: release v${{ steps.get-new-version.outputs.version }}"
+      #     # If there are any changes not already committed, they will be added to
+      #     # a commit with this as the message.
+      #     # If there are no changes no commit will be created.
+      #     commit-message: "chore: applying release changes"

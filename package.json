@@ -4,8 +4,6 @@
   "license": "ISC",
   "repository": "dequelabs/axe-core-maven-html",
   "scripts": {
-    "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0",
-    "prechangelog": "sync-pom-version",
     "docs:clean": "del 'dist-docs'",
     "docs:copy": "copyfiles -u 1 'docs/assets/*' 'docs/nav.json' 'dist-docs'",
     "predocs": "npm run docs:clean && npm run docs:copy",
@@ -13,12 +11,11 @@
     "prepare": "husky install"
   },
   "devDependencies": {
-    "conventional-changelog-cli": "^2.2.2",
     "copyfiles": "^2.4.1",
     "del-cli": "^5.0.0",
     "husky": "^8.0.1",
     "jfrog-cli-go": "^1.54.0",
     "standard-version": "^9.5.0",
-    "sync-pom-version-to-package": "^1.6.1"
+    "xml-js": "^1.6.11"
   }
 }
