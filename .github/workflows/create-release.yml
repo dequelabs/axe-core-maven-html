@@ -19,7 +19,7 @@ jobs:
           fetch-depth: 0
 
       - name: Run preparation script
-        run .github/scripts/prepare_release.sh ${{ github.event.inputs.releaseLevel }}
+        run: .github/scripts/prepare_release.sh ${{ github.event.inputs.releaseLevel }}
 
       - name: Get version for later steps
         id: get-new-version
