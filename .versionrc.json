@@ -20,5 +20,6 @@
       "filename": "utilities/pom.xml",
       "updater": "scripts/update-pom.js"
     }
-  ]
+  ],
+  "skip": { "tag": true }
 }
