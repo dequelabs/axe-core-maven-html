@@ -7,9 +7,6 @@ on:
         description: "Release level: major, minor, or patch."
         required: true
         default: "patch"
-  push:
-    branches:
-      - ci/automate/releases
 
 jobs:
   create_release:
@@ -34,14 +31,14 @@ jobs:
           git config user.name "API Team CI User"
           git config user.email "aciattestteamci@deque.com"
       - run: npx standard-version --release-as="${{ github.events.inputs.releaseLevel }}" --dry-run
-      # - name: Create pull request
-      #   uses: peter-evans/create-pull-request@v3
-      #   with:
-      #     token: ${{ secrets.GITHUB_TOKEN }}
-      #     branch: release
-      #     branch-suffix: timestamp
-      #     title: "chore: release v${{ steps.get-new-version.outputs.version }}"
-      #     # If there are any changes not already committed, they will be added to
-      #     # a commit with this as the message.
-      #     # If there are no changes no commit will be created.
-      #     commit-message: "chore: applying release changes"
+      - name: Create pull request
+        uses: peter-evans/create-pull-request@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: release
+          branch-suffix: timestamp
+          title: "chore: release v${{ steps.get-new-version.outputs.version }}"
+          # If there are any changes not already committed, they will be added to
+          # a commit with this as the message.
+          # If there are no changes no commit will be created.
+          commit-message: "chore: applying release changes"
