@@ -21,24 +21,6 @@ jobs:
       - name: Run preparation script
         run: .github/scripts/prepare_release.sh ${{ github.event.inputs.releaseLevel }}
 
-      - name: Get version for later steps
-        id: get-new-version
-        run: echo ::set-output name=version::$(node -pe 'require("./package.json").version')
-
-      - name: Create release commit
-        run: |
-          git config user.name "${{ secrets.ADT_API_RELEASE_NAME}}"
-          git config user.email "${{ secrets.ADT_API_RELEASE_EMAIL }}"
-          git commit -am "chore: release v${{ steps.get-new-version.outputs.version }}"
-      # create-pull-request has no way of setting the target branch that won't also
-      # get rid of all commits (aside from the release commit).
-      # So, we have to be on master and manually grab all the changes.
-      # We do that by just telling git "master is now develop (+ the release commit)".
-      - name: Update local master from develop
-        run: |
-          commitHash="$(git log -1 --format='%H')"
-          git checkout master
-          git reset --hard "$commitHash"
       - name: Create pull request
         uses: peter-evans/create-pull-request@v3
         with:
