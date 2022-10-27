@@ -6,10 +6,10 @@ set -e
 releaseLevel="$1"
 
 oldVersion="$(node -pe 'require("./package.json").version')"
-npx standard-version --release-as "$releaseLevel" --skip.commit=true --skip.changelog=true --skip.tag=true
+npx standard-version --release-as "$releaseLevel"
 
 cd selenium
-npx standard-version --release-as "$releaseLevel" --skip.commit=true --skip.changelog=true --skip.tag=true
+npx standard-version --release-as "$releaseLevel"
 cd ..
 newVersion="$(node -pe 'require("./package.json").version')"
 
