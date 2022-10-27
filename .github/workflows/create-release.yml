@@ -7,6 +7,9 @@ on:
         description: "Release level: major, minor, or patch."
         required: true
         default: "patch"
+  push:
+    branches:
+      - ci/automate/releases
 
 jobs:
   create_release:
