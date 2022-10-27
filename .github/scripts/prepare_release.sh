@@ -49,5 +49,3 @@ updateXML "$propertiesVersionXpath" "$newVersion" e2etests/pom.xml
 for examplePom in examples/*/pom.xml; do
   updateXML "$dequeDepVersionXpath" "$newVersion" "$examplePom"
 done
-
-npx conventional-changelog-cli -p angular -i CHANGELOG.md -s
