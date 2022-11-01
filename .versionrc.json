@@ -1,0 +1,25 @@
+{
+  "commitAll": true,
+  "bumpFiles": [
+    "package.json",
+    "selenium/package.json",
+    "playwright/package.json",
+    {
+      "filename": "pom.xml",
+      "updater": "scripts/update-pom.js"
+    },
+    {
+      "filename": "selenium/pom.xml",
+      "updater": "scripts/update-pom.js"
+    },
+    {
+      "filename": "playwright/pom.xml",
+      "updater": "scripts/update-pom.js"
+    },
+    {
+      "filename": "utilities/pom.xml",
+      "updater": "scripts/update-pom.js"
+    }
+  ],
+  "skip": { "tag": true }
+}
