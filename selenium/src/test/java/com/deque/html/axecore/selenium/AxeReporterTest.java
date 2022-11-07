@@ -18,14 +18,15 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import com.deque.html.axecore.results.CheckedNode;
-import com.deque.html.axecore.results.Rule;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import javax.naming.OperationNotSupportedException;
+
+import com.deque.html.axecore.results.CheckedNode;
+import com.deque.html.axecore.results.Rule;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

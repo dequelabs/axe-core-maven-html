@@ -1,3 +1,19 @@
+# Changelog
+
+All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+## [4.5.0](https://github.com/dequelabs/axe-core-maven-html/compare/v4.4.2...v4.5.0) (2022-11-04)
+
+
+### Features
+
+* upgrade to use axe-core@4.5.0 ([#259](https://github.com/dequelabs/axe-core-maven-html/issues/259)) ([cc9ca8f](https://github.com/dequelabs/axe-core-maven-html/commit/cc9ca8f28489ec3ab8140443670288d912ad9042))
+
+
+### Bug Fixes
+
+* update to use axe-core 4.5.1 ([#262](https://github.com/dequelabs/axe-core-maven-html/issues/262)) ([02240b6](https://github.com/dequelabs/axe-core-maven-html/commit/02240b6e22f4436482da78d02f206394be84f83d))
+
 ## [4.4.2](https://github.com/dequelabs/axe-core-maven-html/compare/v4.4.1...v4.4.2) (2022-09-28)
 
 
@@ -32,6 +48,13 @@
 * update axe-core to v4.3.5 ([10f0960](https://dequelabs/commits/10f09601d1a9c53da59c62e399d8f995dc0df731))
 * upgrade axe-core to 4.4.0 ([#198](https://dequelabs/issues/198)) ([65e69ff](https://dequelabs/commits/65e69ff5bf41ec949a9fea6a907e6cc37aaabd7d))
 
+
+## [4.3.2](https://github.com/dequelabs/axe-core-maven-html/compare/v4.3.1...v4.3.2) (2022-10-25)
+
+
+### Bug Fixes
+
+* **selenium:** only set allowedOrigin when needed ([0c4daa5](https://github.com/dequelabs/axe-core-maven-html/commit/0c4daa5983eddc60a9c9c307a579bae1dad2d50b))
 
 
 ## [4.3.1](https://dequelabs/compare/v4.3.0...v4.3.1) (2021-09-27)
@@ -165,6 +188,3 @@
 
 
 # 2.1.0 (2017-10-12)
-
-
-

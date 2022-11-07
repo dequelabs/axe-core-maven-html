@@ -12,7 +12,7 @@
 
 package com.deque.html.axecore.selenium;
 
-import com.deque.html.axecore.axeargs.AxeRunOptions;
+import com.deque.html.axecore.args.AxeRunOptions;
 import com.deque.html.axecore.results.Node;
 import com.deque.html.axecore.results.Results;
 import com.deque.html.axecore.results.Rule;
