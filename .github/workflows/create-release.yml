@@ -30,14 +30,19 @@ jobs:
         run: |
           git config user.name "API Team CI User"
           git config user.email "aciattestteamci@deque.com"
-      - run: npx standard-version --release-as="${{ github.events.inputs.releaseLevel }}"
+      - id: release
+        name: Release
+        run: |
+          npx standard-version --release-as="${{ github.events.inputs.releaseLevel }}"
+          Version=$(jq -r .version package.json)
+          echo "::set-output name=Version::$Version"
       - name: Create pull request
         uses: peter-evans/create-pull-request@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           branch: release
           branch-suffix: timestamp
-          title: "chore: release v${{ steps.get-new-version.outputs.version }}"
+          title: "chore: release v${{ steps.release.outputs.Version }}"
           # If there are any changes not already committed, they will be added to
           # a commit with this as the message.
           # If there are no changes no commit will be created.
