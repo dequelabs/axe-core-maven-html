@@ -14,7 +14,7 @@ fi
 cd ..
 
 # For reference: https://github.com/clibs/clib/blob/master/scripts/pre-commit-hook.sh#L3-L10
-function format_and_restage_file {
+format_and_restage_file () {
   local file="$1"
   if [ -f "$file" ]; then
     java -jar .cache/google-java-format-1.7-all-deps.jar --replace $file
