@@ -19,10 +19,10 @@ import java.util.List;
 /** contains context for the Accessibility run scan. */
 public class AxeRunContext {
   /** list of what to include in the scan. */
-  private List<List<String>> include;
+  private List<List<List<String>>> include;
 
   /** list of what to exclude in the scan. */
-  private List<List<String>> exclude;
+  private List<List<List<String>>> exclude;
 
   /**
    * gets a list of included values.
@@ -30,7 +30,7 @@ public class AxeRunContext {
    * @return the included values
    */
   @JsonProperty(value = "include")
-  public List<List<String>> getInclude() {
+  public List<List<List<String>>> getInclude() {
     return this.include;
   }
 
@@ -40,7 +40,7 @@ public class AxeRunContext {
    * @param newInclude new values to be included
    */
   @JsonProperty(value = "include")
-  public void setInclude(final List<String> newInclude) {
+  public void setInclude(final List<List<String>> newInclude) {
     if (include == null) {
       this.include = new ArrayList<>();
     }
@@ -53,9 +53,9 @@ public class AxeRunContext {
    * @return a list of excluded elements
    */
   @JsonProperty(value = "exclude")
-  public List<List<String>> getExclude() {
+  public List<List<List<String>>> getExclude() {
     if (exclude == null) {
-      this.exclude = new ArrayList<List<String>>();
+      this.exclude = new ArrayList<>();
     }
     return this.exclude;
   }
@@ -66,9 +66,9 @@ public class AxeRunContext {
    * @param newExclude a new list of strings to be set
    */
   @JsonProperty(value = "exclude")
-  public void setExclude(final List<String> newExclude) {
+  public void setExclude(final List<List<String>> newExclude) {
     if (exclude == null) {
-      this.exclude = new ArrayList<List<String>>();
+      this.exclude = new ArrayList<>();
     }
     this.exclude.add(newExclude);
   }

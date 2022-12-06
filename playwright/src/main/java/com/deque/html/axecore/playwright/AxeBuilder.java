@@ -48,6 +48,17 @@ public class AxeBuilder {
    * @return this
    */
   public AxeBuilder include(List<String> selector) {
+    this.context.setInclude(Collections.singletonList(selector));
+    return this;
+  }
+
+  /**
+   * A list of lists of shadow DOM selector(s) to include during analysis
+   *
+   * @param selector List of Lists of Strings
+   * @return this
+   */
+  public AxeBuilder includeShadow(List<List<String>> selector) {
     this.context.setInclude(selector);
     return this;
   }
@@ -59,6 +70,17 @@ public class AxeBuilder {
    * @return this
    */
   public AxeBuilder exclude(List<String> selector) {
+    this.context.setExclude(Collections.singletonList(selector));
+    return this;
+  }
+
+  /**
+   * A list of lists of shadow DOM selector(s) to exclude during analysis
+   *
+   * @param selector List of Lists of Strings
+   * @return this
+   */
+  public AxeBuilder excludeShadow(List<List<String>> selector) {
     this.context.setExclude(selector);
     return this;
   }
@@ -158,7 +180,9 @@ public class AxeBuilder {
     try {
       /**
        * this allows Playwright to run the script to be used later rather than invoking it instantly
-       * @see https://github.com/microsoft/playwright-java/issues/1070 */
+       *
+       * @see https://github.com/microsoft/playwright-java/issues/1070
+       */
       this.page.evaluate("() => {" + getAxeScript() + "}");
     } catch (RuntimeException runtimeException) {
       throw new RuntimeException("Problematic axe-source, unable to inject. ", runtimeException);
@@ -387,7 +411,9 @@ public class AxeBuilder {
     try {
       ObjectMapper mapper = new ObjectMapper();
       mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-      return mapper.writeValueAsString(obj);
+      String value = mapper.writeValueAsString(obj);
+      System.out.println(value);
+      return value;
     } catch (JsonProcessingException jsonProcessingException) {
       throw new IllegalArgumentException("Unable to serialize object. ", jsonProcessingException);
     }

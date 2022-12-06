@@ -806,4 +806,30 @@ public class PlaywrightJavaTest {
           violationsString.contains(expectedSubstring));
     }
   }
+
+  @Test
+  public void shadowDOMSelectors() {
+    page.navigate("http://127.0.0.1:5501/hazaar.html");
+
+    List<List<String>> shadowRootOne =
+        Collections.singletonList(Arrays.asList("#shadow-root-1", "#shadow-button-1"));
+
+    List<List<String>> shadowRootTwo =
+        Collections.singletonList(Arrays.asList("#shadow-root-2", "#shadow-button-2"));
+
+    AxeBuilder axeBuilder =
+        new AxeBuilder(page).includeShadow(shadowRootOne).includeShadow(shadowRootTwo);
+
+    AxeResults axeResults = axeBuilder.analyze();
+
+    // so I dont forget https://github.com/dequelabs/axe-test-fixtures/pull/19/files
+
+    List<String> targets =
+        axeResults.getPasses().stream()
+            .flatMap(p -> p.getNodes().stream().map(n -> n.getTarget().toString()))
+            .collect(Collectors.toList());
+
+    assertTrue(targets.stream().anyMatch(t -> t.contains("#shadow-button-1")));
+    assertTrue(targets.stream().anyMatch(t -> t.contains("#shadow-button-2")));
+  }
 }
