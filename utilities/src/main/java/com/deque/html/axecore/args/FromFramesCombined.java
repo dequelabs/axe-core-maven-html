@@ -19,8 +19,8 @@ public class FromFramesCombined {
       fromFramesCombined = new ArrayList<>();
     }
 
-    this.fromFramesCombined.addAll(fromFrames);
     this.fromFramesCombined.add(fromShadowDom);
+    this.fromFramesCombined.addAll(fromFrames);
   }
 
   @JsonProperty(value = "fromFrames")

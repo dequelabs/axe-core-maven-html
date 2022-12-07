@@ -31,6 +31,9 @@ public class AxeRunContext {
    */
   @JsonProperty(value = "include")
   public List<Object> getInclude() {
+    if (include == null) {
+      this.include = new ArrayList<>();
+    }
     return this.include;
   }
 
