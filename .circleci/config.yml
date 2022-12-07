@@ -14,12 +14,12 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: v2-mvn-deps-{{ checksum "pom.xml" }}-{{ checksum "selenium/pom.xml" }}-{{ checksum "playwright/pom.xml" }}-{{ checksum "utilities/pom.xml" }}
+          key: v2-mvn-deps-v2-{{ checksum "pom.xml" }}-{{ checksum "selenium/pom.xml" }}-{{ checksum "playwright/pom.xml" }}-{{ checksum "utilities/pom.xml" }}
       - restore_cache:
           key: v2-npm-deps-{{ checksum "package-lock.json" }}-{{ checksum "selenium/package-lock.json" }}-{{ checksum "playwright/package-lock.json" }}
       - run: mvn clean install -DskipTests
       - save_cache:
-          key: v2-mvn-deps-{{ checksum "pom.xml" }}-{{ checksum "selenium/pom.xml" }}-{{ checksum "playwright/pom.xml" }}-{{ checksum "utilities/pom.xml" }}
+          key: v2-mvn-deps-v2-{{ checksum "pom.xml" }}-{{ checksum "selenium/pom.xml" }}-{{ checksum "playwright/pom.xml" }}-{{ checksum "utilities/pom.xml" }}
           paths:
             - ~/.m2
       - save_cache:
@@ -60,7 +60,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: v2-mvn-deps-{{ checksum "pom.xml" }}-{{ checksum "selenium/pom.xml" }}-{{ checksum "playwright/pom.xml" }}-{{ checksum "utilities/pom.xml" }}
+          key: v2-mvn-deps-v2-{{ checksum "pom.xml" }}-{{ checksum "selenium/pom.xml" }}-{{ checksum "playwright/pom.xml" }}-{{ checksum "utilities/pom.xml" }}
       - restore_cache:
           key: v2-npm-deps-{{ checksum "package-lock.json" }}-{{ checksum "selenium/package-lock.json" }}-{{ checksum "playwright/package-lock.json" }}
       - browser-tools/install-chrome
