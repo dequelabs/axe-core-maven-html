@@ -25,12 +25,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.time.Duration;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import javax.naming.OperationNotSupportedException;
 import org.junit.After;
 import org.junit.Before;
@@ -100,6 +98,18 @@ public class Axe43xIntegrationTest {
       String out = new Scanner(stream, "UTF-8").useDelimiter("\\A").next();
       return out;
     }
+  }
+
+  /**
+   * Returns all targets from each pass rule
+   *
+   * @param axeResults - result from scanning
+   * @return - list of targets selectors
+   */
+  private List<String> getPassTargets(Results axeResults) {
+    return axeResults.getPasses().stream()
+        .flatMap(r -> r.getNodes().stream().map(n -> n.getTarget().toString()))
+        .collect(Collectors.toList());
   }
 
   /** closes and shuts down the web driver. */
@@ -347,6 +357,107 @@ public class Axe43xIntegrationTest {
     assertNotNull(axeResults.getInapplicable());
     assertNotNull(axeResults.getIncomplete());
     assertNotNull(axeResults.getPasses());
+  }
+
+  @Test
+  public void withLabelledFrame() {
+    webDriver.get(fixture("/context-include-exclude.html"));
+    AxeBuilder axeBuilder =
+        new AxeBuilder()
+            .includeFromFrames(Arrays.asList("#ifr-inc-excl", "html"))
+            .excludeFromFrames(Arrays.asList("#ifr-inc-excl", "#foo-bar"))
+            .includeFromFrames(Arrays.asList("#ifr-inc-excl", "#foo-baz", "html"))
+            .excludeFromFrames(Arrays.asList("#ifr-inc-excl", "#foo-baz", "input"));
+
+    Results axeResults = axeBuilder.analyze(webDriver);
+    boolean isLabelRulePresent =
+        axeResults.getViolations().stream()
+            .map(r -> r.getId().equalsIgnoreCase("label"))
+            .findFirst()
+            .isPresent();
+
+    List<String> targets = getPassTargets(axeResults);
+
+    assertFalse(isLabelRulePresent);
+    targets.forEach(
+        target -> {
+          assertFalse(target.contains("#foo-bar"));
+          assertFalse(target.contains("input"));
+        });
+  }
+
+  @Test
+  public void withIncludeShadowDOM() {
+    webDriver.get(fixture("/shadow-dom.html"));
+    AxeBuilder axeBuilder =
+        new AxeBuilder()
+            .includeFrames(
+                Collections.singletonList(Arrays.asList("#shadow-root-1", "#shadow-button-1")))
+            .includeFrames(
+                Collections.singletonList(Arrays.asList("#shadow-root-2", "#shadow-button-2")));
+
+    Results axeResults = axeBuilder.analyze(webDriver);
+
+    List<String> targets = getPassTargets(axeResults);
+
+    assertTrue(targets.stream().anyMatch(t -> t.contains("#shadow-button-1")));
+    assertTrue(targets.stream().anyMatch(t -> t.contains("#shadow-button-2")));
+    assertTrue(targets.stream().noneMatch(t -> t.contains("#button")));
+  }
+
+  @Test
+  public void withExcludeShadowDOM() {
+    webDriver.get(fixture("/shadow-dom.html"));
+    AxeBuilder axeBuilder =
+        new AxeBuilder()
+            .excludeFrames(
+                Collections.singletonList(Arrays.asList("#shadow-root-1", "#shadow-button-1")))
+            .excludeFrames(
+                Collections.singletonList(Arrays.asList("#shadow-root-2", "#shadow-button-2")));
+
+    Results axeResults = axeBuilder.analyze(webDriver);
+
+    List<String> targets = getPassTargets(axeResults);
+
+    assertTrue(targets.stream().noneMatch(t -> t.contains("#shadow-button-1")));
+    assertTrue(targets.stream().noneMatch(t -> t.contains("#shadow-button-2")));
+    assertTrue(targets.stream().anyMatch(t -> t.contains("#button")));
+  }
+
+  @Test
+  public void withLabelledShadowDOM() {
+    webDriver.get(fixture("/shadow-dom.html"));
+    AxeBuilder axeBuilder =
+        new AxeBuilder()
+            .includeFromShadowDom(Arrays.asList("#shadow-root-1", "#shadow-button-1"))
+            .excludeFromShadowDom(Arrays.asList("#shadow-root-2", "#shadow-button-2"));
+
+    Results axeResults = axeBuilder.analyze(webDriver);
+
+    List<String> targets = getPassTargets(axeResults);
+
+    assertTrue(targets.stream().anyMatch(t -> t.contains("#shadow-button-1")));
+    assertTrue(targets.stream().noneMatch(t -> t.contains("#shadow-button-2")));
+  }
+
+  @Test
+  public void withLabelledIFrameAndShadowDOM() {
+    webDriver.get(fixture("/shadow-frames.html"));
+    AxeBuilder axeBuilder =
+        new AxeBuilder()
+            .excludeFromFramesCombined(
+                Collections.singletonList("input"), Arrays.asList("#shadow-root", "#shadow-frame"))
+            .withRules(Collections.singletonList("label"));
+
+    Results axeResults = axeBuilder.analyze(webDriver);
+    List<Rule> violations = axeResults.getViolations();
+
+    assertEquals(violations.get(0).getId(), "label");
+    assertEquals(violations.get(0).getNodes().size(), 2);
+
+    List<CheckedNode> nodes = violations.get(0).getNodes();
+    assertEquals(nodes.get(0).getTarget().toString(), "[#light-frame, input]");
+    assertEquals(nodes.get(1).getTarget().toString(), "[#slotted-frame, input]");
   }
 
   /**

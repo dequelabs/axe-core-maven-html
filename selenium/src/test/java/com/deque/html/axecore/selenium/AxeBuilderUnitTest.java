@@ -12,6 +12,12 @@
 
 package com.deque.html.axecore.selenium;
 
+import com.deque.html.axecore.args.AxeRuleOptions;
+import com.deque.html.axecore.args.AxeRunContext;
+import com.deque.html.axecore.args.AxeRunOnlyOptions;
+import com.deque.html.axecore.args.AxeRunOptions;
+import com.deque.html.axecore.results.Results;
+import com.deque.html.axecore.results.Rule;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -21,13 +27,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import javax.naming.OperationNotSupportedException;
-
-import com.deque.html.axecore.args.AxeRuleOptions;
-import com.deque.html.axecore.args.AxeRunContext;
-import com.deque.html.axecore.args.AxeRunOnlyOptions;
-import com.deque.html.axecore.args.AxeRunOptions;
-import com.deque.html.axecore.results.Results;
-import com.deque.html.axecore.results.Rule;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -266,8 +265,8 @@ public class AxeBuilderUnitTest {
     builder.withOnlyRules(null);
     builder.disableRules(null);
     builder.withTags(null);
-    builder.include(null);
-    builder.exclude(null);
+    builder.include((String) null);
+    builder.exclude((String) null);
     builder.withOptions(null);
   }
 
