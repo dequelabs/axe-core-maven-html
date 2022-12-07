@@ -830,20 +830,18 @@ public class PlaywrightJavaTest {
             .excludeFromFrames(Arrays.asList("#ifr-inc-excl", "#foo-baz", "input"));
 
     AxeResults axeResults = axeBuilder.analyze();
-    boolean isLabelRulePresent =
+
+    List<Rule> labelRule =
         axeResults.getViolations().stream()
-            .map(r -> r.getId().equalsIgnoreCase("label"))
-            .findFirst()
-            .isPresent();
+            .filter(v -> v.getId().equalsIgnoreCase("label"))
+            .collect(Collectors.toList());
+
+    assertEquals(labelRule.size(), 0);
 
     List<String> targets = getPassTargets(axeResults);
 
-    assertFalse(isLabelRulePresent);
-    targets.forEach(
-        target -> {
-          assertFalse(target.contains("#foo-bar"));
-          assertFalse(target.contains("input"));
-        });
+    assertTrue(targets.stream().noneMatch(t -> t.equalsIgnoreCase("#foo-bar")));
+    assertTrue(targets.stream().noneMatch(t -> t.equalsIgnoreCase("input")));
   }
 
   @Test
