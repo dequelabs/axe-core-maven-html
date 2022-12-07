@@ -53,6 +53,44 @@ public class AxeBuilder {
   }
 
   /**
+   * Include a single CSS selector to include during analysis
+   *
+   * @param selector Arraylist of Strings
+   * @return this
+   */
+  public AxeBuilder include(String selector) {
+    this.context.setInclude(selector);
+    return this;
+  }
+
+  /**
+   * List of iframe CSS selector(s) to include during analysis
+   *
+   * @param selector Nested list of Strings
+   * @return this
+   */
+  public AxeBuilder includes(List<List<String>> selector) {
+    this.context.setInclude(selector);
+    return this;
+  }
+
+  /**
+   * Limit frame testing with the use of `fromFrames`.
+   *
+   * @param selectors - List of specific sections within a frame to include
+   * @return this
+   * @see <a
+   *     href="https://github.com/dequelabs/axe-core/blob/develop/doc/context.md#limit-frame-testing
+   *     </a>
+   */
+  public AxeBuilder includeFromFrames(List<String> selectors) {
+    FromFrames fromFrames = new FromFrames();
+    fromFrames.setFromFrames(selectors);
+    this.context.setInclude(fromFrames);
+    return this;
+  }
+
+  /**
    * List of CSS selector(s) to exclude during analysis
    *
    * @param selector ArrayList of Strings
@@ -60,6 +98,44 @@ public class AxeBuilder {
    */
   public AxeBuilder exclude(List<String> selector) {
     this.context.setExclude(selector);
+    return this;
+  }
+
+  /**
+   * Include a single CSS selector to exclude during analysis
+   *
+   * @param selector Arraylist of Strings
+   * @return this
+   */
+  public AxeBuilder exclude(String selector) {
+    this.context.setExclude(selector);
+    return this;
+  }
+
+  /**
+   * List of iframe CSS selector(s) to exclude during analysis
+   *
+   * @param selector Nested list of Strings
+   * @return this
+   */
+  public AxeBuilder excludes(List<List<String>> selector) {
+    this.context.setExclude(selector);
+    return this;
+  }
+
+  /**
+   * Limit frame testing with the use of `fromFrames`.
+   *
+   * @param selectors - List of specific sections within a frame to exclude
+   * @return this
+   * @see <a
+   *     href="https://github.com/dequelabs/axe-core/blob/develop/doc/context.md#limit-frame-testing
+   *     </a>
+   */
+  public AxeBuilder excludeFromFrames(List<String> selectors) {
+    FromFrames fromFrames = new FromFrames();
+    fromFrames.setFromFrames(selectors);
+    this.context.setExclude(fromFrames);
     return this;
   }
 
@@ -153,12 +229,15 @@ public class AxeBuilder {
     // We need to serialize the context and options passed by the user (if any)
     // to Strings to be able to parse them via Playwright
     String axeContext = serialize(this.context);
+    System.out.println(axeContext);
     String axeOptions = serialize(this.options);
 
     try {
       /**
        * this allows Playwright to run the script to be used later rather than invoking it instantly
-       * @see https://github.com/microsoft/playwright-java/issues/1070 */
+       *
+       * @see https://github.com/microsoft/playwright-java/issues/1070
+       */
       this.page.evaluate("() => {" + getAxeScript() + "}");
     } catch (RuntimeException runtimeException) {
       throw new RuntimeException("Problematic axe-source, unable to inject. ", runtimeException);
