@@ -1,4 +1,4 @@
-package com.deque.html.axecore.playwright;
+package com.deque.html.axecore.args;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.ArrayList;

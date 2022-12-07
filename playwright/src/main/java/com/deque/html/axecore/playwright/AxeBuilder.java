@@ -1,9 +1,6 @@
 package com.deque.html.axecore.playwright;
 
-import com.deque.html.axecore.args.AxeRuleOptions;
-import com.deque.html.axecore.args.AxeRunContext;
-import com.deque.html.axecore.args.AxeRunOnlyOptions;
-import com.deque.html.axecore.args.AxeRunOptions;
+import com.deque.html.axecore.args.*;
 import com.deque.html.axecore.results.AxeResults;
 import com.deque.html.axecore.results.FrameContext;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -91,6 +88,22 @@ public class AxeBuilder {
   }
 
   /**
+   * Limit shadow DOM testing with the use of `includeFromShadowDom`.
+   *
+   * @param selectors - List of shadow DOM host element(s) to include
+   * @return this
+   * @see <a
+   *     href="https://github.com/dequelabs/axe-core/blob/develop/doc/context.md#limit-shadow-dom-testing
+   *     </a>
+   */
+  public AxeBuilder includeFromShadowDom(List<String> selectors) {
+    FromShadowDom fromShadowDom = new FromShadowDom();
+    fromShadowDom.setFromFrames(selectors);
+    this.context.setInclude(fromShadowDom);
+    return this;
+  }
+
+  /**
    * List of CSS selector(s) to exclude during analysis
    *
    * @param selector ArrayList of Strings
@@ -136,6 +149,22 @@ public class AxeBuilder {
     FromFrames fromFrames = new FromFrames();
     fromFrames.setFromFrames(selectors);
     this.context.setExclude(fromFrames);
+    return this;
+  }
+
+  /**
+   * Limit shadow DOM testing with the use of `excludeFromShadowDom`.
+   *
+   * @param selectors - List of shadow DOM host element(s) to exclude
+   * @return this
+   * @see <a
+   *     href="https://github.com/dequelabs/axe-core/blob/develop/doc/context.md#limit-shadow-dom-testing
+   *     </a>
+   */
+  public AxeBuilder excludeFromShadowDom(List<String> selectors) {
+    FromShadowDom fromShadowDom = new FromShadowDom();
+    fromShadowDom.setFromFrames(selectors);
+    this.context.setExclude(fromShadowDom);
     return this;
   }
 
