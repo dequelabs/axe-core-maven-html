@@ -13,7 +13,7 @@ public class FromShadowDom {
   private List<String> fromShadowDom;
 
   @JsonProperty(value = "fromShadowDom")
-  public void setFromFrames(List<String> fromShadowDom) {
+  public void setFromShadowDom(List<String> fromShadowDom) {
     if (this.fromShadowDom == null) {
       this.fromShadowDom = new ArrayList<>();
     }
@@ -22,7 +22,7 @@ public class FromShadowDom {
   }
 
   @JsonProperty(value = "fromShadowDom")
-  public List<String> getFromFrames() {
+  public List<String> getFromShadowDom() {
     return this.fromShadowDom;
   }
 }

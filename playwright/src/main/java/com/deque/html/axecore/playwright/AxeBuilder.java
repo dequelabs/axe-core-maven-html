@@ -46,6 +46,7 @@ public class AxeBuilder {
    */
   public AxeBuilder include(List<String> selector) {
     this.context.setInclude(selector);
+
     return this;
   }
 
@@ -57,6 +58,7 @@ public class AxeBuilder {
    */
   public AxeBuilder include(String selector) {
     this.context.setInclude(selector);
+
     return this;
   }
 
@@ -66,8 +68,9 @@ public class AxeBuilder {
    * @param selector Nested list of Strings
    * @return this
    */
-  public AxeBuilder includes(List<List<String>> selector) {
+  public AxeBuilder includeFrames(List<List<String>> selector) {
     this.context.setInclude(selector);
+
     return this;
   }
 
@@ -84,6 +87,7 @@ public class AxeBuilder {
     FromFrames fromFrames = new FromFrames();
     fromFrames.setFromFrames(selectors);
     this.context.setInclude(fromFrames);
+
     return this;
   }
 
@@ -98,8 +102,29 @@ public class AxeBuilder {
    */
   public AxeBuilder includeFromShadowDom(List<String> selectors) {
     FromShadowDom fromShadowDom = new FromShadowDom();
-    fromShadowDom.setFromFrames(selectors);
+    fromShadowDom.setFromShadowDom(selectors);
     this.context.setInclude(fromShadowDom);
+
+    return this;
+  }
+
+  /**
+   * Select frames inside shadow DOM trees or shadow DOM trees inside frames
+   *
+   * @param fromFrames - List of specific sections within a frame to include
+   * @param fromShadowDom - List of shadow DOM host element(s) to include
+   * @return this
+   * @see <a
+   *     href="https://github.com/dequelabs/axe-core/blob/develop/doc/context.md#combine-shadow-dom-and-frame-context
+   *     </a>
+   */
+  public AxeBuilder includeFromFramesCombined(List<String> fromFrames, List<String> fromShadowDom) {
+    FromFramesCombined fromFramesCombined = new FromFramesCombined();
+    FromShadowDom fromShadowDomObj = new FromShadowDom();
+    fromShadowDomObj.setFromShadowDom(fromShadowDom);
+    fromFramesCombined.setFromFramesCombined(fromFrames, fromShadowDomObj);
+    this.context.setInclude(fromFramesCombined);
+
     return this;
   }
 
@@ -111,6 +136,7 @@ public class AxeBuilder {
    */
   public AxeBuilder exclude(List<String> selector) {
     this.context.setExclude(selector);
+
     return this;
   }
 
@@ -122,6 +148,7 @@ public class AxeBuilder {
    */
   public AxeBuilder exclude(String selector) {
     this.context.setExclude(selector);
+
     return this;
   }
 
@@ -131,8 +158,9 @@ public class AxeBuilder {
    * @param selector Nested list of Strings
    * @return this
    */
-  public AxeBuilder excludes(List<List<String>> selector) {
+  public AxeBuilder excludeFrames(List<List<String>> selector) {
     this.context.setExclude(selector);
+
     return this;
   }
 
@@ -149,6 +177,7 @@ public class AxeBuilder {
     FromFrames fromFrames = new FromFrames();
     fromFrames.setFromFrames(selectors);
     this.context.setExclude(fromFrames);
+
     return this;
   }
 
@@ -163,8 +192,29 @@ public class AxeBuilder {
    */
   public AxeBuilder excludeFromShadowDom(List<String> selectors) {
     FromShadowDom fromShadowDom = new FromShadowDom();
-    fromShadowDom.setFromFrames(selectors);
+    fromShadowDom.setFromShadowDom(selectors);
     this.context.setExclude(fromShadowDom);
+
+    return this;
+  }
+
+  /**
+   * Select frames inside shadow DOM trees or shadow DOM trees inside frames
+   *
+   * @param fromFrames - List of specific sections within a frame to exclude
+   * @param fromShadowDom - List of shadow DOM host element(s) to exclude
+   * @return this
+   * @see <a
+   *     href="https://github.com/dequelabs/axe-core/blob/develop/doc/context.md#combine-shadow-dom-and-frame-context
+   *     </a>
+   */
+  public AxeBuilder excludeFromFramesCombined(List<String> fromFrames, List<String> fromShadowDom) {
+    FromFramesCombined fromFramesCombined = new FromFramesCombined();
+    FromShadowDom fromShadowDomObj = new FromShadowDom();
+    fromShadowDomObj.setFromShadowDom(fromShadowDom);
+    fromFramesCombined.setFromFramesCombined(fromFrames, fromShadowDomObj);
+    this.context.setExclude(fromFramesCombined);
+
     return this;
   }
 
