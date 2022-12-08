@@ -849,6 +849,7 @@ public class PlaywrightJavaTest {
     page.navigate(server + "shadow-dom.html");
     AxeBuilder axeBuilder =
         new AxeBuilder(page)
+            /* output: { include: [ [["#shadow-root-1", "#shadow-button-1"]] ] } */
             .includeFrames(
                 Collections.singletonList(Arrays.asList("#shadow-root-1", "#shadow-button-1")))
             .includeFrames(

@@ -12,6 +12,8 @@
 
 package com.deque.html.axecore.selenium;
 
+import static org.junit.Assert.assertTrue;
+
 import com.deque.html.axecore.args.AxeRuleOptions;
 import com.deque.html.axecore.args.AxeRunContext;
 import com.deque.html.axecore.args.AxeRunOnlyOptions;
@@ -201,7 +203,7 @@ public class AxeBuilderUnitTest {
     AxeBuilder builder = new AxeBuilder().exclude(exclude);
     Results result = builder.analyze(this.webDriver);
     verifyAxeResultsNotNull(result);
-    assertViolations(result, "aria-hidden-focus", "color-contrast", "page-has-heading-one");
+    assertViolations(result, "aria-hidden-focus", "color-contrast", "page-has-heading-one", "list");
     verifyDriversNotNull();
   }
 
@@ -322,7 +324,7 @@ public class AxeBuilderUnitTest {
 
     AxeBuilder builder = new AxeBuilder().withTags(expectedTags);
     Results res = builder.analyze(this.webDriver);
-    Assert.assertTrue(res.isErrored());
+    assertTrue(res.isErrored());
   }
 
   /**
@@ -351,7 +353,7 @@ public class AxeBuilderUnitTest {
 
     AxeBuilder builder = new AxeBuilder().disableRules(disableRules).withOnlyRules(expectedRules);
     Results res = builder.analyze(this.webDriver);
-    Assert.assertTrue(res.isErrored());
+    assertTrue(res.isErrored());
   }
 
   /**

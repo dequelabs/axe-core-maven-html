@@ -308,7 +308,6 @@ public class AxeBuilder {
     // We need to serialize the context and options passed by the user (if any)
     // to Strings to be able to parse them via Playwright
     String axeContext = serialize(this.context);
-    System.out.println(axeContext);
     String axeOptions = serialize(this.options);
 
     try {
