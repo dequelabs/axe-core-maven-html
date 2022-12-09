@@ -378,6 +378,21 @@ public class AxeBuilder {
   }
 
   /**
+   * Build more complex selectors by supplying a single object to include
+   *
+   * @param selector - List of Strings, FromFrames, FromShadowDom object
+   * @return this
+   * @see <a
+   *     href="https://github.com/dequelabs/axe-core/blob/develop/doc/context.md#combine-shadow-dom-and-frame-context"
+   *     </a>
+   */
+  public AxeBuilder include(Object selector) {
+    this.runContext.setInclude(selector);
+
+    return this;
+  }
+
+  /**
    * Build more complex selectors by combining Shadow DOM and Frame Context to include
    *
    * @param selector - provide a list nested selectors
@@ -445,6 +460,21 @@ public class AxeBuilder {
    * @return this
    */
   public AxeBuilder exclude(String selector) {
+    this.runContext.setExclude(selector);
+
+    return this;
+  }
+
+  /**
+   * Build more complex selectors by supplying a single object to exclude
+   *
+   * @param selector - List of Strings, FromFrames, FromShadowDom object
+   * @return this
+   * @see <a
+   *     href="https://github.com/dequelabs/axe-core/blob/develop/doc/context.md#combine-shadow-dom-and-frame-context"
+   *     </a>
+   */
+  public AxeBuilder exclude(Object selector) {
     this.runContext.setExclude(selector);
 
     return this;
