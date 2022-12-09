@@ -444,7 +444,7 @@ public class Axe43xIntegrationTest {
     AxeBuilder axeBuilder =
         new AxeBuilder()
             .exclude(new FromFrames(new FromShadowDom("#shadow-root", "#shadow-frame"), "input"))
-            .withRules(Collections.singletonList("label"));
+            .withOnlyRules(Collections.singletonList("label"));
 
     Results axeResults = axeBuilder.analyze(webDriver);
     List<Rule> violations = axeResults.getViolations();
