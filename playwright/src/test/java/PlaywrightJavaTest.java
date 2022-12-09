@@ -2,6 +2,8 @@ import static org.junit.Assert.*;
 
 import com.deque.html.axecore.args.AxeRuleOptions;
 import com.deque.html.axecore.args.AxeRunOptions;
+import com.deque.html.axecore.args.FromFrames;
+import com.deque.html.axecore.args.FromShadowDom;
 import com.deque.html.axecore.playwright.AxeBuilder;
 import com.deque.html.axecore.playwright.Reporter;
 import com.deque.html.axecore.results.AxeResults;
@@ -824,10 +826,10 @@ public class PlaywrightJavaTest {
     page.navigate(server + "context-include-exclude.html");
     AxeBuilder axeBuilder =
         new AxeBuilder(page)
-            .includeFromFrames(Arrays.asList("#ifr-inc-excl", "html"))
-            .excludeFromFrames(Arrays.asList("#ifr-inc-excl", "#foo-bar"))
-            .includeFromFrames(Arrays.asList("#ifr-inc-excl", "#foo-baz", "html"))
-            .excludeFromFrames(Arrays.asList("#ifr-inc-excl", "#foo-baz", "input"));
+            .include(new FromFrames("#ifr-inc-excl", "html"))
+            .exclude(new FromFrames("#ifr-inc-excl", "#foo-bar"))
+            .include(new FromFrames("#ifr-inc-excl", "#foo-baz", "html"))
+            .exclude(new FromFrames("#ifr-inc-excl", "#foo-baz", "input"));
 
     AxeResults axeResults = axeBuilder.analyze();
 
@@ -850,9 +852,8 @@ public class PlaywrightJavaTest {
     AxeBuilder axeBuilder =
         new AxeBuilder(page)
             /* output: { include: [ [["#shadow-root-1", "#shadow-button-1"]] ] } */
-            .includeFrames(
-                Collections.singletonList(Arrays.asList("#shadow-root-1", "#shadow-button-1")))
-            .includeFrames(
+            .include(Collections.singletonList(Arrays.asList("#shadow-root-1", "#shadow-button-1")))
+            .include(
                 Collections.singletonList(Arrays.asList("#shadow-root-2", "#shadow-button-2")));
 
     AxeResults axeResults = axeBuilder.analyze();
@@ -869,9 +870,8 @@ public class PlaywrightJavaTest {
     page.navigate(server + "shadow-dom.html");
     AxeBuilder axeBuilder =
         new AxeBuilder(page)
-            .excludeFrames(
-                Collections.singletonList(Arrays.asList("#shadow-root-1", "#shadow-button-1")))
-            .excludeFrames(
+            .exclude(Collections.singletonList(Arrays.asList("#shadow-root-1", "#shadow-button-1")))
+            .exclude(
                 Collections.singletonList(Arrays.asList("#shadow-root-2", "#shadow-button-2")));
 
     AxeResults axeResults = axeBuilder.analyze();
@@ -886,10 +886,11 @@ public class PlaywrightJavaTest {
   @Test
   public void withLabelledShadowDOM() {
     page.navigate(server + "shadow-dom.html");
+
     AxeBuilder axeBuilder =
         new AxeBuilder(page)
-            .includeFromShadowDom(Arrays.asList("#shadow-root-1", "#shadow-button-1"))
-            .excludeFromShadowDom(Arrays.asList("#shadow-root-2", "#shadow-button-2"));
+            .include(new FromShadowDom("#shadow-root-1", "#shadow-button-1"))
+            .exclude(new FromShadowDom("#shadow-root-2", "#shadow-button-2"));
 
     AxeResults axeResults = axeBuilder.analyze();
 
@@ -902,10 +903,10 @@ public class PlaywrightJavaTest {
   @Test
   public void withLabelledIFrameAndShadowDOM() {
     page.navigate(server + "shadow-frames.html");
+
     AxeBuilder axeBuilder =
         new AxeBuilder(page)
-            .excludeFromFramesCombined(
-                Collections.singletonList("input"), Arrays.asList("#shadow-root", "#shadow-frame"))
+            .exclude(new FromFrames(new FromShadowDom("#shadow-root", "#shadow-frame"), "input"))
             .withRules(Collections.singletonList("label"));
 
     AxeResults axeResults = axeBuilder.analyze();

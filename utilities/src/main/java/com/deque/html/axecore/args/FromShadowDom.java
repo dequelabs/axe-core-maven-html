@@ -1,7 +1,7 @@
 package com.deque.html.axecore.args;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -12,13 +12,13 @@ import java.util.List;
 public class FromShadowDom {
   private List<String> fromShadowDom;
 
-  @JsonProperty(value = "fromShadowDom")
-  public void setFromShadowDom(List<String> fromShadowDom) {
-    if (this.fromShadowDom == null) {
-      this.fromShadowDom = new ArrayList<>();
-    }
+  public FromShadowDom(String... selectors) {
+    setFromShadowDom(selectors);
+  }
 
-    this.fromShadowDom.addAll(fromShadowDom);
+  @JsonProperty(value = "fromShadowDom")
+  public void setFromShadowDom(String... fromShadowDom) {
+    this.fromShadowDom = Arrays.asList(fromShadowDom);
   }
 
   @JsonProperty(value = "fromShadowDom")

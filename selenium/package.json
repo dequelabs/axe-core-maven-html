@@ -6,7 +6,7 @@
   "repository": "dequelabs/axe-core-maven-html",
   "scripts": {},
   "dependencies": {
-    "axe-core": "^4.5.2-canary.08e2d20"
+    "axe-core": "^4.5.2-canary.123b83c"
   },
   "devDependencies": {
     "axe-test-fixtures": "github:dequelabs/axe-test-fixtures#v1"

@@ -14,6 +14,8 @@ package com.deque.html.axecore.selenium;
 
 import static org.junit.Assert.*;
 
+import com.deque.html.axecore.args.FromFrames;
+import com.deque.html.axecore.args.FromShadowDom;
 import com.deque.html.axecore.providers.EmbeddedResourceAxeProvider;
 import com.deque.html.axecore.providers.StringAxeScriptProvider;
 import com.deque.html.axecore.results.CheckedNode;
@@ -364,10 +366,10 @@ public class Axe43xIntegrationTest {
     webDriver.get(fixture("/context-include-exclude.html"));
     AxeBuilder axeBuilder =
         new AxeBuilder()
-            .includeFromFrames(Arrays.asList("#ifr-inc-excl", "html"))
-            .excludeFromFrames(Arrays.asList("#ifr-inc-excl", "#foo-bar"))
-            .includeFromFrames(Arrays.asList("#ifr-inc-excl", "#foo-baz", "html"))
-            .excludeFromFrames(Arrays.asList("#ifr-inc-excl", "#foo-baz", "input"));
+            .include(new FromFrames("#ifr-inc-excl", "html"))
+            .exclude(new FromFrames("#ifr-inc-excl", "#foo-bar"))
+            .include(new FromFrames("#ifr-inc-excl", "#foo-baz", "html"))
+            .exclude(new FromFrames("#ifr-inc-excl", "#foo-baz", "input"));
 
     Results axeResults = axeBuilder.analyze(webDriver);
     List<Rule> labelRule =
@@ -388,9 +390,9 @@ public class Axe43xIntegrationTest {
     webDriver.get(fixture("/shadow-dom.html"));
     AxeBuilder axeBuilder =
         new AxeBuilder()
-            .includeFrames(
-                Collections.singletonList(Arrays.asList("#shadow-root-1", "#shadow-button-1")))
-            .includeFrames(
+            /* output: { include: [ [["#shadow-root-1", "#shadow-button-1"]] ] } */
+            .include(Collections.singletonList(Arrays.asList("#shadow-root-1", "#shadow-button-1")))
+            .include(
                 Collections.singletonList(Arrays.asList("#shadow-root-2", "#shadow-button-2")));
 
     Results axeResults = axeBuilder.analyze(webDriver);
@@ -407,9 +409,8 @@ public class Axe43xIntegrationTest {
     webDriver.get(fixture("/shadow-dom.html"));
     AxeBuilder axeBuilder =
         new AxeBuilder()
-            .excludeFrames(
-                Collections.singletonList(Arrays.asList("#shadow-root-1", "#shadow-button-1")))
-            .excludeFrames(
+            .exclude(Collections.singletonList(Arrays.asList("#shadow-root-1", "#shadow-button-1")))
+            .exclude(
                 Collections.singletonList(Arrays.asList("#shadow-root-2", "#shadow-button-2")));
 
     Results axeResults = axeBuilder.analyze(webDriver);
@@ -426,8 +427,8 @@ public class Axe43xIntegrationTest {
     webDriver.get(fixture("/shadow-dom.html"));
     AxeBuilder axeBuilder =
         new AxeBuilder()
-            .includeFromShadowDom(Arrays.asList("#shadow-root-1", "#shadow-button-1"))
-            .excludeFromShadowDom(Arrays.asList("#shadow-root-2", "#shadow-button-2"));
+            .include(new FromShadowDom("#shadow-root-1", "#shadow-button-1"))
+            .exclude(new FromShadowDom("#shadow-root-2", "#shadow-button-2"));
 
     Results axeResults = axeBuilder.analyze(webDriver);
 
@@ -442,9 +443,8 @@ public class Axe43xIntegrationTest {
     webDriver.get(fixture("/shadow-frames.html"));
     AxeBuilder axeBuilder =
         new AxeBuilder()
-            .excludeFromFramesCombined(
-                Collections.singletonList("input"), Arrays.asList("#shadow-root", "#shadow-frame"))
-            .withOnlyRules(Collections.singletonList("label"));
+            .exclude(new FromFrames(new FromShadowDom("#shadow-root", "#shadow-frame"), "input"))
+            .withRules(Collections.singletonList("label"));
 
     Results axeResults = axeBuilder.analyze(webDriver);
     List<Rule> violations = axeResults.getViolations();
