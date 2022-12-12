@@ -8,7 +8,7 @@
     "start": "http-server ./node_modules/axe-test-fixtures/fixtures -p 1337"
   },
   "dependencies": {
-    "axe-core": "^4.5.2-canary.123b83c"
+    "axe-core": "^4.6.0"
   },
   "devDependencies": {
     "axe-test-fixtures": "github:dequelabs/axe-test-fixtures#v1",

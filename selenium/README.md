@@ -145,10 +145,12 @@ The following shows how to exclude the `footer`, as well as any `.commentBody` e
 import com.deque.html.axecore.args.FromFrames;
 import com.deque.html.axecore.args.FromShadowDom;
 
-new AxeBuilder()
-        .exclude("footer",
-        new FromFrames("iframe#blog-comments",
-        new FromShadowDom("#userComments", ".commentBody")))
+new AxeBuilder(page)
+        .exclude("footer")
+        .exclude(new FromFrames(
+                "iframe#blog-comments",
+                new FromShadowDom("#userComments", ".commentBody")
+                ));
 ```
 
 More information about [limit frame testing](https://github.com/dequelabs/axe-core/blob/develop/doc/context.md#limit-frame-testing).
