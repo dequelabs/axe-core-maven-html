@@ -386,6 +386,31 @@ public class Axe43xIntegrationTest {
   }
 
   @Test
+  public void withCommaListIFrames() {
+    webDriver.get(fixture("/context-include-exclude.html"));
+    AxeBuilder axeBuilder =
+        new AxeBuilder()
+            .include("#ifr-inc-excl", "html")
+            .exclude("#ifr-inc-excl", "#foo-bar")
+            .include("#ifr-inc-excl", "#foo-baz", "html")
+            .exclude("#ifr-inc-excl", "#foo-baz", "input");
+
+    Results axeResults = axeBuilder.analyze(webDriver);
+
+    List<Rule> labelRule =
+        axeResults.getViolations().stream()
+            .filter(v -> v.getId().equalsIgnoreCase("label"))
+            .collect(Collectors.toList());
+
+    assertEquals(labelRule.size(), 0);
+
+    List<String> targets = getPassTargets(axeResults);
+
+    assertTrue(targets.stream().noneMatch(t -> t.equalsIgnoreCase("#foo-bar")));
+    assertTrue(targets.stream().noneMatch(t -> t.equalsIgnoreCase("input")));
+  }
+
+  @Test
   public void withIncludeShadowDOM() {
     webDriver.get(fixture("/shadow-dom.html"));
     AxeBuilder axeBuilder =

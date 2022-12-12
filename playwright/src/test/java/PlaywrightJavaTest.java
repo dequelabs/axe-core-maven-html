@@ -847,11 +847,35 @@ public class PlaywrightJavaTest {
   }
 
   @Test
+  public void withCommaListIFrames() {
+    page.navigate(server + "context-include-exclude.html");
+    AxeBuilder axeBuilder =
+        new AxeBuilder(page)
+            .include("#ifr-inc-excl", "html")
+            .exclude("#ifr-inc-excl", "#foo-bar")
+            .include("#ifr-inc-excl", "#foo-baz", "html")
+            .exclude("#ifr-inc-excl", "#foo-baz", "input");
+
+    AxeResults axeResults = axeBuilder.analyze();
+
+    List<Rule> labelRule =
+        axeResults.getViolations().stream()
+            .filter(v -> v.getId().equalsIgnoreCase("label"))
+            .collect(Collectors.toList());
+
+    assertEquals(labelRule.size(), 0);
+
+    List<String> targets = getPassTargets(axeResults);
+
+    assertTrue(targets.stream().noneMatch(t -> t.equalsIgnoreCase("#foo-bar")));
+    assertTrue(targets.stream().noneMatch(t -> t.equalsIgnoreCase("input")));
+  }
+
+  @Test
   public void withIncludeShadowDOM() {
     page.navigate(server + "shadow-dom.html");
     AxeBuilder axeBuilder =
         new AxeBuilder(page)
-            /* output: { include: [ [["#shadow-root-1", "#shadow-button-1"]] ] } */
             .include(Collections.singletonList(Arrays.asList("#shadow-root-1", "#shadow-button-1")))
             .include(
                 Collections.singletonList(Arrays.asList("#shadow-root-2", "#shadow-button-2")));
