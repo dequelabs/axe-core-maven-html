@@ -130,14 +130,24 @@ new AxeBuilder(page)
         .include(Collections.singletonList(".some-class"))
         .include(Collections.singletonList(".some-other-class"));
 
+// OR
+
+new AxeBuilder(page)
+        .include(".some-class")
+        .include(".some-other-class");
 ```
 
-CSS iframe selectors to include during analysis
+CSS iframe selectors to include during analysis.
 
 ```java
 // To include everything within html of parent-iframe
 new AxeBuilder(page)
         .include(Arrays.asList("#parent-iframe","#html"))
+
+// OR
+
+new AxeBuilder(page)
+        .include("#parent-iframe", "#html"));
 ```
 
 ## AxeBuilder#exclude(List\<String> selector)
@@ -149,6 +159,12 @@ new AxeBuilder(page)
         .exclude(Collections.singletonList(".some-class"))
         .exclude(Collections.singletonList(".some-other-class"));
 
+// OR
+
+new AxeBuilder(page)
+        .exclude(".some-class")
+        .exclude(".some-other-class");
+
 ```
 
 CSS iframe selectors to exclude during analysis
@@ -157,6 +173,11 @@ CSS iframe selectors to exclude during analysis
 // To exclude everything within html of parent-iframe
 new AxeBuilder(page)
         .exclude(Arrays.asList("#parent-iframe","#html"))
+
+// OR
+
+new AxeBuilder(page)
+        .exclude("#parent-iframe", "#html"));
 ```
 
 ## AxeBuilder#withRules(List\<String> rules)
@@ -314,16 +335,18 @@ new AxeBuilder()
         .include(new FromFrames(new FromShadowDom("#appRoot", "iframe"), "main"))
 ```
 
-The following shows how to exclude the `footer`, as well as any `.commentBody` elements in the `#userComments` shadow DOM tree, inside the `#blog-comments` iframe:
+The following shows how to exclude the `.commentBody` inside the `#userComments` shadow element, inside the iframe#blog-comments iframe, inside the footer iframe.
 
 ```java
 import com.deque.html.axecore.args.FromFrames;
 import com.deque.html.axecore.args.FromShadowDom;
 
-new AxeBuilder()
-        .exclude("footer",
-        new FromFrames("iframe#blog-comments",
-        new FromShadowDom("#userComments", ".commentBody")))
+new AxeBuilder(page)
+        .exclude("footer")
+        .exclude(new FromFrames(
+                "iframe#blog-comments",
+                new FromShadowDom("#userComments", ".commentBody")
+                ));
 ```
 
 More information about [limit frame testing](https://github.com/dequelabs/axe-core/blob/develop/doc/context.md#limit-frame-testing).
