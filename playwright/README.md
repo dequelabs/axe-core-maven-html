@@ -335,7 +335,7 @@ new AxeBuilder()
         .include(new FromFrames(new FromShadowDom("#appRoot", "iframe"), "main"))
 ```
 
-The following shows how to exclude the `.commentBody` inside the `#userComments` shadow element, inside the iframe#blog-comments iframe, inside the footer iframe.
+The following shows how to exclude the `footer`, as well as any `.commentBody` elements in the `#userComments` shadow DOM tree, inside the `#blog-comments` iframe:
 
 ```java
 import com.deque.html.axecore.args.FromFrames;
