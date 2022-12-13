@@ -28,10 +28,10 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-        key: npm-v1-deps-{{ checksum "package-lock.json" }}-{{ checksum "selenium/package-lock.json" }}-{{ checksum "playwright/package-lock.json" }}
+          key: npm-v1-deps-{{ checksum "package-lock.json" }}-{{ checksum "selenium/package-lock.json" }}-{{ checksum "playwright/package-lock.json" }}
       - run: npm ci
-      - run: npm --prefix=playwright ci
       - run: npm --prefix=selenium ci
+      - run: npm --prefix=playwright ci
       - save_cache:
           key: npm-v1-deps-{{ checksum "package-lock.json" }}-{{ checksum "selenium/package-lock.json" }}-{{ checksum "playwright/package-lock.json" }}
           paths:
