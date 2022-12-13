@@ -22,6 +22,7 @@ jobs:
           key: v2-mvn-deps-{{ checksum "pom.xml" }}-{{ checksum "selenium/pom.xml" }}-{{ checksum "playwright/pom.xml" }}-{{ checksum "utilities/pom.xml" }}
           paths:
             - ~/.m2
+      - run: npm install      
       - save_cache:
           key: v2-npm-deps-{{ checksum "package-lock.json" }}-{{ checksum "selenium/package-lock.json" }}-{{ checksum "playwright/package-lock.json" }}
           paths:
