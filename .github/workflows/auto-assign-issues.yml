@@ -15,4 +15,4 @@ jobs:
         uses: srggrs/assign-one-project-github-action@1.2.1
         with:
           project: https://github.com/orgs/dequelabs/projects/66
-          column_name: 'Ungroomed'
+          column_name: 'Ungroomed/Blocked from Starting'
