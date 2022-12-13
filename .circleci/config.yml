@@ -39,6 +39,7 @@ jobs:
           command: |
             google-chrome --version
             chromedriver --version
+      - run: mvn clean install -DskipTests
       - run:
           command: node selenium/src/test/resources/test-app.js
           background: true
@@ -47,7 +48,6 @@ jobs:
           background: true
 
       - run: sleep 5 # sleep to allow the server some time to boot
-      - run: mvn clean install -DskipTests
       # run only selenium tests in this job
       - run: mvn test -pl selenium
 
@@ -63,12 +63,12 @@ jobs:
           command: |
             google-chrome --version
             chromedriver --version
+      - run: mvn clean install -DskipTests
       # start the test fixture server
       - run:
           name: Start test fixture server
           command: cd playwright && npm start
           background: true
-      - run: mvn clean install -DskipTests
       # run only playwright tests in this job
       - run: mvn test -q -pl playwright
 
