@@ -9,19 +9,6 @@ defaults: &defaults
   working_directory: ~/axe-core-maven-html
 
 jobs:
-  # fetch and cache maven dependencies
-  dependencies_maven:
-    <<: *defaults
-    steps:
-      - checkout
-      - restore_cache:
-          key: mvn-v1-deps-{{ checksum "pom.xml" }}-{{ checksum "selenium/pom.xml" }}-{{ checksum "playwright/pom.xml" }}-{{ checksum "utilities/pom.xml" }}
-      - run: mvn clean install -DskipTests
-      - save_cache:
-          key: mvn-v1-deps-{{ checksum "pom.xml" }}-{{ checksum "selenium/pom.xml" }}-{{ checksum "playwright/pom.xml" }}-{{ checksum "utilities/pom.xml" }}
-          paths:
-            - ~/.m2
-
   # fetch and cache npm dependencies
   dependencies_npm:
     <<: *defaults
@@ -44,8 +31,6 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: mvn-v1-deps-{{ checksum "pom.xml" }}-{{ checksum "selenium/pom.xml" }}-{{ checksum "playwright/pom.xml" }}-{{ checksum "utilities/pom.xml" }}
-      - restore_cache:
           key: npm-v1-deps-{{ checksum "package-lock.json" }}-{{ checksum "selenium/package-lock.json" }}-{{ checksum "playwright/package-lock.json" }}
       - run: sudo apt update && sudo apt install python2
       - browser-tools/install-chrome
@@ -62,6 +47,7 @@ jobs:
           background: true
 
       - run: sleep 5 # sleep to allow the server some time to boot
+      - run: mvn clean install -DskipTests
       # run only selenium tests in this job
       - run: mvn test -pl selenium
 
@@ -69,8 +55,6 @@ jobs:
     <<: *defaults
     steps:
       - checkout
-      - restore_cache:
-          key: mvn-v1-deps-{{ checksum "pom.xml" }}-{{ checksum "selenium/pom.xml" }}-{{ checksum "playwright/pom.xml" }}-{{ checksum "utilities/pom.xml" }}
       - restore_cache:
           key: npm-v1-deps-{{ checksum "package-lock.json" }}-{{ checksum "selenium/package-lock.json" }}-{{ checksum "playwright/package-lock.json" }}
       - browser-tools/install-chrome
@@ -84,6 +68,7 @@ jobs:
           name: Start test fixture server
           command: cd playwright && npm start
           background: true
+      - run: mvn clean install -DskipTests
       # run only playwright tests in this job
       - run: mvn test -q -pl playwright
 
@@ -92,9 +77,8 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: mvn-v1-deps-{{ checksum "pom.xml" }}-{{ checksum "selenium/pom.xml" }}-{{ checksum "playwright/pom.xml" }}-{{ checksum "utilities/pom.xml" }}
-      - restore_cache:
           key: npm-v1-deps-{{ checksum "package-lock.json" }}-{{ checksum "selenium/package-lock.json" }}-{{ checksum "playwright/package-lock.json" }}
+      - run: mvn clean install -DskipTests
       - run: echo "$GPG_PRIVATE_KEY" | base64 --decode | gpg --import
       - run: echo "default-key 7701193A898A849383D3E8B49F8AFEACBF07F7C4" > ~/.gnupg/gpg.conf
       - run: sudo apt update && sudo apt install python
@@ -106,9 +90,8 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: mvn-v1-deps-{{ checksum "pom.xml" }}-{{ checksum "selenium/pom.xml" }}-{{ checksum "playwright/pom.xml" }}-{{ checksum "utilities/pom.xml" }}
-      - restore_cache:
           key: npm-v1-deps-{{ checksum "package-lock.json" }}-{{ checksum "selenium/package-lock.json" }}-{{ checksum "playwright/package-lock.json" }}
+      - run: mvn clean install -DskipTests
       - run: echo "$GPG_PRIVATE_KEY" | base64 --decode | gpg --import
       - run: echo "default-key 7701193A898A849383D3E8B49F8AFEACBF07F7C4" > ~/.gnupg/gpg.conf
       - run: .circleci/publish.sh
@@ -131,20 +114,16 @@ workflows:
   build_and_test:
     jobs:
       - dependencies_npm
-      - dependencies_maven
       - selenium:
           requires:
             - dependencies_npm
-            - dependencies_maven
       - playwright:
           requires:
             - dependencies_npm
-            - dependencies_maven
       - snapshot_release:
           context: html-tools
           requires:
             - dependencies_npm
-            - dependencies_maven
             - selenium
             - playwright
           filters:
@@ -154,7 +133,6 @@ workflows:
           context: html-tools
           requires:
             - dependencies_npm
-            - dependencies_maven
             - selenium
             - playwright
           filters:
