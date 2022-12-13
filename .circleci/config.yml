@@ -9,19 +9,16 @@ defaults: &defaults
   working_directory: ~/axe-core-maven-html
 
 jobs:
-  dependencies:
+  # fetch and cache npm dependencies
+  dependencies_npm:
     <<: *defaults
     steps:
       - checkout
       - restore_cache:
-          key: mvn-v1-deps-{{ checksum "pom.xml" }}-{{ checksum "selenium/pom.xml" }}-{{ checksum "playwright/pom.xml" }}-{{ checksum "utilities/pom.xml" }}
-      - restore_cache:
           key: npm-v1-deps-{{ checksum "package-lock.json" }}-{{ checksum "selenium/package-lock.json" }}-{{ checksum "playwright/package-lock.json" }}
-      - run: mvn clean install -DskipTests
-      - save_cache:
-          key: mvn-v1-deps-{{ checksum "pom.xml" }}-{{ checksum "selenium/pom.xml" }}-{{ checksum "playwright/pom.xml" }}-{{ checksum "utilities/pom.xml" }}
-          paths:
-            - ~/.m2
+      - run: npm ci
+      - run: npm --prefix=selenium ci
+      - run: npm --prefix=playwright ci
       - save_cache:
           key: npm-v1-deps-{{ checksum "package-lock.json" }}-{{ checksum "selenium/package-lock.json" }}-{{ checksum "playwright/package-lock.json" }}
           paths:
@@ -34,9 +31,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: mvn-v1-deps-{{ checksum "pom.xml" }}-{{ checksum "selenium/pom.xml" }}-{{ checksum "playwright/pom.xml" }}-{{ checksum "utilities/pom.xml" }}
-      - restore_cache:
-          key: npm-v1-deps-{{ checksum "package-lock.json" }}-{{ checksum "selenium/package-lock.json" }}
+          key: npm-v1-deps-{{ checksum "package-lock.json" }}-{{ checksum "selenium/package-lock.json" }}-{{ checksum "playwright/package-lock.json" }}
       - run: sudo apt update && sudo apt install python2
       - browser-tools/install-chrome
       - browser-tools/install-chromedriver
@@ -44,6 +39,7 @@ jobs:
           command: |
             google-chrome --version
             chromedriver --version
+      - run: mvn clean install -DskipTests
       - run:
           command: node selenium/src/test/resources/test-app.js
           background: true
@@ -60,8 +56,6 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: mvn-v1-deps-{{ checksum "pom.xml" }}-{{ checksum "selenium/pom.xml" }}-{{ checksum "playwright/pom.xml" }}-{{ checksum "utilities/pom.xml" }}
-      - restore_cache:
           key: npm-v1-deps-{{ checksum "package-lock.json" }}-{{ checksum "selenium/package-lock.json" }}-{{ checksum "playwright/package-lock.json" }}
       - browser-tools/install-chrome
       - browser-tools/install-chromedriver
@@ -69,6 +63,7 @@ jobs:
           command: |
             google-chrome --version
             chromedriver --version
+      - run: mvn clean install -DskipTests
       # start the test fixture server
       - run:
           name: Start test fixture server
@@ -82,9 +77,8 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: mvn-v1-deps-{{ checksum "pom.xml" }}-{{ checksum "selenium/pom.xml" }}-{{ checksum "playwright/pom.xml" }}-{{ checksum "utilities/pom.xml" }}
-      - restore_cache:
           key: npm-v1-deps-{{ checksum "package-lock.json" }}-{{ checksum "selenium/package-lock.json" }}-{{ checksum "playwright/package-lock.json" }}
+      - run: mvn clean install -DskipTests
       - run: echo "$GPG_PRIVATE_KEY" | base64 --decode | gpg --import
       - run: echo "default-key 7701193A898A849383D3E8B49F8AFEACBF07F7C4" > ~/.gnupg/gpg.conf
       - run: sudo apt update && sudo apt install python
@@ -96,9 +90,8 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: mvn-v1-deps-{{ checksum "pom.xml" }}-{{ checksum "selenium/pom.xml" }}-{{ checksum "playwright/pom.xml" }}-{{ checksum "utilities/pom.xml" }}
-      - restore_cache:
           key: npm-v1-deps-{{ checksum "package-lock.json" }}-{{ checksum "selenium/package-lock.json" }}-{{ checksum "playwright/package-lock.json" }}
+      - run: mvn clean install -DskipTests
       - run: echo "$GPG_PRIVATE_KEY" | base64 --decode | gpg --import
       - run: echo "default-key 7701193A898A849383D3E8B49F8AFEACBF07F7C4" > ~/.gnupg/gpg.conf
       - run: .circleci/publish.sh
@@ -120,17 +113,17 @@ workflows:
   version: 2
   build_and_test:
     jobs:
-      - dependencies
+      - dependencies_npm
       - selenium:
           requires:
-            - dependencies
+            - dependencies_npm
       - playwright:
           requires:
-            - dependencies
+            - dependencies_npm
       - snapshot_release:
           context: html-tools
           requires:
-            - dependencies
+            - dependencies_npm
             - selenium
             - playwright
           filters:
@@ -139,7 +132,7 @@ workflows:
       - release:
           context: html-tools
           requires:
-            - dependencies
+            - dependencies_npm
             - selenium
             - playwright
           filters:
