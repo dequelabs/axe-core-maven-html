@@ -8,10 +8,10 @@
     "start": "http-server ./node_modules/axe-test-fixtures/fixtures -p 1337"
   },
   "dependencies": {
-    "axe-core": "^4.5.2"
+    "axe-core": "^4.6.0"
   },
   "devDependencies": {
-    "axe-test-fixtures": "github:dequelabs/axe-test-fixtures",
+    "axe-test-fixtures": "github:dequelabs/axe-test-fixtures#v1",
     "http-server": "^14.1.1"
   }
 }

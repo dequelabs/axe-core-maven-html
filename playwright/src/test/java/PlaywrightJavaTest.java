@@ -2,6 +2,8 @@ import static org.junit.Assert.*;
 
 import com.deque.html.axecore.args.AxeRuleOptions;
 import com.deque.html.axecore.args.AxeRunOptions;
+import com.deque.html.axecore.args.FromFrames;
+import com.deque.html.axecore.args.FromShadowDom;
 import com.deque.html.axecore.playwright.AxeBuilder;
 import com.deque.html.axecore.playwright.Reporter;
 import com.deque.html.axecore.results.AxeResults;
@@ -119,6 +121,18 @@ public class PlaywrightJavaTest {
     return results.getIncomplete().stream()
         .flatMap(node -> node.getNodes().stream())
         .map(target -> target.getTarget().toString().replaceAll("(^\\[|]$)", ""))
+        .collect(Collectors.toList());
+  }
+
+  /**
+   * Returns all targets from each pass rule
+   *
+   * @param axeResults - result from scanning
+   * @return - list of targets selectors
+   */
+  private List<String> getPassTargets(AxeResults axeResults) {
+    return axeResults.getPasses().stream()
+        .flatMap(r -> r.getNodes().stream().map(n -> n.getTarget().toString()))
         .collect(Collectors.toList());
   }
 
@@ -805,5 +819,128 @@ public class PlaywrightJavaTest {
               expectedSubstring, violationsString),
           violationsString.contains(expectedSubstring));
     }
+  }
+
+  @Test
+  public void withLabelledFrame() {
+    page.navigate(server + "context-include-exclude.html");
+    AxeBuilder axeBuilder =
+        new AxeBuilder(page)
+            .include(new FromFrames("#ifr-inc-excl", "html"))
+            .exclude(new FromFrames("#ifr-inc-excl", "#foo-bar"))
+            .include(new FromFrames("#ifr-inc-excl", "#foo-baz", "html"))
+            .exclude(new FromFrames("#ifr-inc-excl", "#foo-baz", "input"));
+
+    AxeResults axeResults = axeBuilder.analyze();
+
+    List<Rule> labelRule =
+        axeResults.getViolations().stream()
+            .filter(v -> v.getId().equalsIgnoreCase("label"))
+            .collect(Collectors.toList());
+
+    assertEquals(labelRule.size(), 0);
+
+    List<String> targets = getPassTargets(axeResults);
+
+    assertTrue(targets.stream().noneMatch(t -> t.equalsIgnoreCase("#foo-bar")));
+    assertTrue(targets.stream().noneMatch(t -> t.equalsIgnoreCase("input")));
+  }
+
+  @Test
+  public void withCommaListIFrames() {
+    page.navigate(server + "context-include-exclude.html");
+    AxeBuilder axeBuilder =
+        new AxeBuilder(page)
+            .include("#ifr-inc-excl", "html")
+            .exclude("#ifr-inc-excl", "#foo-bar")
+            .include("#ifr-inc-excl", "#foo-baz", "html")
+            .exclude("#ifr-inc-excl", "#foo-baz", "input");
+
+    AxeResults axeResults = axeBuilder.analyze();
+
+    List<Rule> labelRule =
+        axeResults.getViolations().stream()
+            .filter(v -> v.getId().equalsIgnoreCase("label"))
+            .collect(Collectors.toList());
+
+    assertEquals(labelRule.size(), 0);
+
+    List<String> targets = getPassTargets(axeResults);
+
+    assertTrue(targets.stream().noneMatch(t -> t.equalsIgnoreCase("#foo-bar")));
+    assertTrue(targets.stream().noneMatch(t -> t.equalsIgnoreCase("input")));
+  }
+
+  @Test
+  public void withIncludeShadowDOM() {
+    page.navigate(server + "shadow-dom.html");
+    AxeBuilder axeBuilder =
+        new AxeBuilder(page)
+            .include(Collections.singletonList(Arrays.asList("#shadow-root-1", "#shadow-button-1")))
+            .include(
+                Collections.singletonList(Arrays.asList("#shadow-root-2", "#shadow-button-2")));
+
+    AxeResults axeResults = axeBuilder.analyze();
+
+    List<String> targets = getPassTargets(axeResults);
+
+    assertTrue(targets.stream().anyMatch(t -> t.contains("#shadow-button-1")));
+    assertTrue(targets.stream().anyMatch(t -> t.contains("#shadow-button-2")));
+    assertTrue(targets.stream().noneMatch(t -> t.contains("#button")));
+  }
+
+  @Test
+  public void withExcludeShadowDOM() {
+    page.navigate(server + "shadow-dom.html");
+    AxeBuilder axeBuilder =
+        new AxeBuilder(page)
+            .exclude(Collections.singletonList(Arrays.asList("#shadow-root-1", "#shadow-button-1")))
+            .exclude(
+                Collections.singletonList(Arrays.asList("#shadow-root-2", "#shadow-button-2")));
+
+    AxeResults axeResults = axeBuilder.analyze();
+
+    List<String> targets = getPassTargets(axeResults);
+
+    assertTrue(targets.stream().noneMatch(t -> t.contains("#shadow-button-1")));
+    assertTrue(targets.stream().noneMatch(t -> t.contains("#shadow-button-2")));
+    assertTrue(targets.stream().anyMatch(t -> t.contains("#button")));
+  }
+
+  @Test
+  public void withLabelledShadowDOM() {
+    page.navigate(server + "shadow-dom.html");
+
+    AxeBuilder axeBuilder =
+        new AxeBuilder(page)
+            .include(new FromShadowDom("#shadow-root-1", "#shadow-button-1"))
+            .exclude(new FromShadowDom("#shadow-root-2", "#shadow-button-2"));
+
+    AxeResults axeResults = axeBuilder.analyze();
+
+    List<String> targets = getPassTargets(axeResults);
+
+    assertTrue(targets.stream().anyMatch(t -> t.contains("#shadow-button-1")));
+    assertTrue(targets.stream().noneMatch(t -> t.contains("#shadow-button-2")));
+  }
+
+  @Test
+  public void withLabelledIFrameAndShadowDOM() {
+    page.navigate(server + "shadow-frames.html");
+
+    AxeBuilder axeBuilder =
+        new AxeBuilder(page)
+            .exclude(new FromFrames(new FromShadowDom("#shadow-root", "#shadow-frame"), "input"))
+            .withRules(Collections.singletonList("label"));
+
+    AxeResults axeResults = axeBuilder.analyze();
+    List<Rule> violations = axeResults.getViolations();
+
+    assertEquals(violations.get(0).getId(), "label");
+    assertEquals(violations.get(0).getNodes().size(), 2);
+
+    List<CheckedNode> nodes = violations.get(0).getNodes();
+    assertEquals(nodes.get(0).getTarget().toString(), "[#light-frame, input]");
+    assertEquals(nodes.get(1).getTarget().toString(), "[#slotted-frame, input]");
   }
 }
