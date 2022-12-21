@@ -35,10 +35,10 @@ jobs:
       - run: mvn license:add-third-party
       - run:
           name: Selenium Licenses
-          command: node .circleci/check_licenses.js selenium/target/generated-sources/license/THIRD-PARTY.txt
+          command: node .circleci/license-check.js selenium/target/generated-sources/license/THIRD-PARTY.txt
       - run:
           name: Playwright Licenses
-          command: node .circleci/check_licenses.js playwright/target/generated-sources/license/THIRD-PARTY.txt
+          command: node .circleci/license-check.js playwright/target/generated-sources/license/THIRD-PARTY.txt
 
   selenium:
     <<: *defaults
