@@ -26,6 +26,20 @@ jobs:
             - selenium/node_modules
             - playwright/node_modules
 
+  check_licenses:
+    <<: *defaults
+    steps:
+      - checkout
+      - restore_cache:
+          key: npm-v1-deps-{{ checksum "package-lock.json" }}-{{ checksum "selenium/package-lock.json" }}-{{ checksum "playwright/package-lock.json" }}
+      - run: mvn license:add-third-party
+      - run:
+          name: Selenium Licenses
+          command: node .circleci/license-check.js selenium/target/generated-sources/license/THIRD-PARTY.txt
+      - run:
+          name: Playwright Licenses
+          command: node .circleci/license-check.js playwright/target/generated-sources/license/THIRD-PARTY.txt
+
   selenium:
     <<: *defaults
     steps:
@@ -114,6 +128,9 @@ workflows:
   build_and_test:
     jobs:
       - dependencies_npm
+      - check_licenses:
+          requires:
+            - dependencies_npm
       - selenium:
           requires:
             - dependencies_npm
