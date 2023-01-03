@@ -145,7 +145,7 @@ workflows:
             - playwright
           filters:
             branches:
-              only: fix/snapshot-release
+              only: develop
       - release:
           context: html-tools
           requires:

@@ -67,7 +67,7 @@ public class AxeBuilder {
   /**
    * Build more complex selectors by supplying a single object to include
    *
-   * @param selector - List of Strings, FromFrames, FromShadowDom object
+   * @param selector List of Strings, FromFrames, FromShadowDom object
    * @return this
    * @see <a
    *     href="https://github.com/dequelabs/axe-core/blob/develop/doc/context.md#combine-shadow-dom-and-frame-context">Combine
@@ -82,7 +82,7 @@ public class AxeBuilder {
   /**
    * Build more complex selectors by combining Shadow DOM and Frame Context to include
    *
-   * @param selector - provide a list nested selectors
+   * @param selector provide a list nested selectors
    * @return this
    * @see <a
    *     href="https://github.com/dequelabs/axe-core/blob/develop/doc/context.md#combine-shadow-dom-and-frame-context">Combine
@@ -97,7 +97,7 @@ public class AxeBuilder {
   /**
    * Limit frame testing with the use of `fromFrames`.
    *
-   * @param fromFrames - List of specific sections within a frame to include
+   * @param fromFrames List of specific sections within a frame to include
    * @return this
    * @see <a
    *     href="https://github.com/dequelabs/axe-core/blob/develop/doc/context.md#limit-frame-testing">FromFrames
@@ -112,7 +112,7 @@ public class AxeBuilder {
   /**
    * Limit shadow DOM testing with the use of `excludeFromShadowDom`.
    *
-   * @param fromShadowDom - List of shadow DOM host element(s) to include
+   * @param fromShadowDom List of shadow DOM host element(s) to include
    * @return this
    * @see <a
    *     href="https://github.com/dequelabs/axe-core/blob/develop/doc/context.md#limit-shadow-dom-testing">FromShadowDom
@@ -151,7 +151,7 @@ public class AxeBuilder {
   /**
    * Build more complex selectors by supplying a single object to exclude
    *
-   * @param selector - List of Strings, FromFrames, FromShadowDom object
+   * @param selector List of Strings, FromFrames, FromShadowDom object
    * @return this
    * @see <a
    *     href="https://github.com/dequelabs/axe-core/blob/develop/doc/context.md#combine-shadow-dom-and-frame-context">Combine
@@ -166,7 +166,7 @@ public class AxeBuilder {
   /**
    * Build more complex selectors by combining Shadow DOM and Frame Context to exclude
    *
-   * @param selector - provide a list nested selectors
+   * @param selector Provide a list nested selectors
    * @return this
    * @see <a
    *     href="https://github.com/dequelabs/axe-core/blob/develop/doc/context.md#combine-shadow-dom-and-frame-context">Combine
@@ -181,7 +181,7 @@ public class AxeBuilder {
   /**
    * Limit frame testing with the use of `fromFrames`.
    *
-   * @param fromFrames - List of specific sections within a frame to exclude
+   * @param fromFrames List of specific sections within a frame to exclude
    * @return this
    * @see <a
    *     href="https://github.com/dequelabs/axe-core/blob/develop/doc/context.md#limit-frame-testing">FromFrames
@@ -196,7 +196,7 @@ public class AxeBuilder {
   /**
    * Limit shadow DOM testing with the use of `excludeFromShadowDom`.
    *
-   * @param fromShadowDom - List of shadow DOM host element(s) to exclude
+   * @param fromShadowDom List of shadow DOM host element(s) to exclude
    * @return this
    * @see <a
    *     href="https://github.com/dequelabs/axe-core/blob/develop/doc/context.md#limit-shadow-dom-testing">FromShadowDom
