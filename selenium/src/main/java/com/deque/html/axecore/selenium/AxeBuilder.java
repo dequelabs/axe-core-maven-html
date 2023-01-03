@@ -383,8 +383,8 @@ public class AxeBuilder {
    * @param selector - List of Strings, FromFrames, FromShadowDom object
    * @return this
    * @see <a
-   *     href="https://github.com/dequelabs/axe-core/blob/develop/doc/context.md#combine-shadow-dom-and-frame-context"
-   *     </a>
+   *     href="https://github.com/dequelabs/axe-core/blob/develop/doc/context.md#combine-shadow-dom-and-frame-context">Combine
+   *     shadow DOM and frame context </a>
    */
   public AxeBuilder include(Object selector) {
     this.runContext.setInclude(selector);
@@ -398,8 +398,8 @@ public class AxeBuilder {
    * @param selector - provide a list nested selectors
    * @return this
    * @see <a
-   *     href="https://github.com/dequelabs/axe-core/blob/develop/doc/context.md#combine-shadow-dom-and-frame-context"
-   *     </a>
+   *     href="https://github.com/dequelabs/axe-core/blob/develop/doc/context.md#combine-shadow-dom-and-frame-context">Combine
+   *     shadow DOM and frame context</a>
    */
   public AxeBuilder include(Object... selector) {
     this.runContext.setInclude(selector);
@@ -413,7 +413,7 @@ public class AxeBuilder {
    * @param fromFrames - List of specific sections within a frame to include
    * @return this
    * @see <a
-   *     href="https://github.com/dequelabs/axe-core/blob/develop/doc/context.md#limit-frame-testing
+   *     href="https://github.com/dequelabs/axe-core/blob/develop/doc/context.md#limit-frame-testing">FromFrames
    *     </a>
    */
   public AxeBuilder include(FromFrames fromFrames) {
@@ -428,7 +428,7 @@ public class AxeBuilder {
    * @param fromShadowDom - List of shadow DOM host element(s) to include
    * @return this
    * @see <a
-   *     href="https://github.com/dequelabs/axe-core/blob/develop/doc/context.md#limit-shadow-dom-testing
+   *     href="https://github.com/dequelabs/axe-core/blob/develop/doc/context.md#limit-shadow-dom-testing">FromShadowDom
    *     </a>
    */
   public AxeBuilder include(FromShadowDom fromShadowDom) {
@@ -471,8 +471,8 @@ public class AxeBuilder {
    * @param selector - List of Strings, FromFrames, FromShadowDom object
    * @return this
    * @see <a
-   *     href="https://github.com/dequelabs/axe-core/blob/develop/doc/context.md#combine-shadow-dom-and-frame-context"
-   *     </a>
+   *     href="https://github.com/dequelabs/axe-core/blob/develop/doc/context.md#combine-shadow-dom-and-frame-context">Combine
+   *     shadow DOM and frame context </a>
    */
   public AxeBuilder exclude(Object selector) {
     this.runContext.setExclude(selector);
@@ -486,8 +486,8 @@ public class AxeBuilder {
    * @param selector - provide a list nested selectors
    * @return this
    * @see <a
-   *     href="https://github.com/dequelabs/axe-core/blob/develop/doc/context.md#combine-shadow-dom-and-frame-context"
-   *     </a>
+   *     href="https://github.com/dequelabs/axe-core/blob/develop/doc/context.md#combine-shadow-dom-and-frame-context">Combine
+   *     shadow DOM and frame context </a>
    */
   public AxeBuilder exclude(Object... selector) {
     this.runContext.setExclude(selector);
@@ -501,7 +501,7 @@ public class AxeBuilder {
    * @param fromFrames - List of specific sections within a frame to exclude
    * @return this
    * @see <a
-   *     href="https://github.com/dequelabs/axe-core/blob/develop/doc/context.md#limit-frame-testing
+   *     href="https://github.com/dequelabs/axe-core/blob/develop/doc/context.md#limit-frame-testing">FromFrames
    *     </a>
    */
   public AxeBuilder exclude(FromFrames fromFrames) {
@@ -516,7 +516,7 @@ public class AxeBuilder {
    * @param fromShadowDom - List of shadow DOM host element(s) to exclude
    * @return this
    * @see <a
-   *     href="https://github.com/dequelabs/axe-core/blob/develop/doc/context.md#limit-shadow-dom-testing
+   *     href="https://github.com/dequelabs/axe-core/blob/develop/doc/context.md#limit-shadow-dom-testing">FromShadowDom
    *     </a>
    */
   public AxeBuilder exclude(FromShadowDom fromShadowDom) {
