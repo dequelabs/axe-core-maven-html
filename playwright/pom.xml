@@ -62,15 +62,6 @@
     </resources>
     <plugins>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.10.1</version>
-        <configuration>
-          <source>8</source>
-          <target>8</target>
-        </configuration>
-      </plugin>
-      <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <configuration>
           <descriptor>assembly-descriptor.xml</descriptor>
@@ -165,7 +156,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-javadoc-plugin</artifactId>
-            <version>3.4.0</version>
+            <version>3.4.1</version>
             <executions>
               <execution>
                 <id>attach-javadocs</id>
@@ -246,7 +237,7 @@
     <dependency>
       <groupId>com.microsoft.playwright</groupId>
       <artifactId>playwright</artifactId>
-      <version>1.27.0</version>
+      <version>1.28.1</version>
     </dependency>
     <!-- Overrides commons-codec used in httpclient for security reasons -->
     <dependency>
@@ -258,7 +249,7 @@
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-compress</artifactId>
-      <version>1.21</version>
+      <version>1.22</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
@@ -281,13 +272,13 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-annotations</artifactId>
-      <version>2.13.3</version>
+      <version>2.14.1</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>2.13.4.1</version>
+      <version>2.14.1</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
