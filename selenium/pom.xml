@@ -118,7 +118,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-javadoc-plugin</artifactId>
-            <version>3.4.0</version>
+            <version>3.4.1</version>
             <executions>
               <execution>
                 <id>attach-javadocs</id>
@@ -175,12 +175,12 @@
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
       <artifactId>selenium-java</artifactId>
-      <version>4.5.0</version>
+      <version>4.7.2</version>
     </dependency>
     <dependency>
       <groupId>io.github.bonigarcia</groupId>
       <artifactId>webdrivermanager</artifactId>
-      <version>5.3.0</version>
+      <version>5.3.1</version>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
@@ -190,7 +190,7 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>2.13.4.1</version>
+      <version>2.14.1</version>
     </dependency>
     <dependency>
       <groupId>org.junit.vintage</groupId>
