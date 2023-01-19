@@ -32,7 +32,7 @@ jobs:
       - checkout
       - restore_cache:
           key: npm-v1-deps-{{ checksum "package-lock.json" }}-{{ checksum "selenium/package-lock.json" }}-{{ checksum "playwright/package-lock.json" }}
-      - run: mvn license:add-third-party
+      - run: mvn compile license:add-third-party
       - run:
           name: Selenium Licenses
           command: node .circleci/license-check.js selenium/target/generated-sources/license/THIRD-PARTY.txt
