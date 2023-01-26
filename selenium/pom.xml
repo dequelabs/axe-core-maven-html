@@ -2,12 +2,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <artifactId>selenium</artifactId>
-  <version>4.5.1</version>
+  <version>4.6.0</version>
   <packaging>jar</packaging>
   <parent>
     <groupId>com.deque.html.axe-core</groupId>
     <artifactId>virtual-superpackage</artifactId>
-    <version>4.5.1</version>
+    <version>4.6.0</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   <build>
@@ -118,7 +118,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-javadoc-plugin</artifactId>
-            <version>3.4.0</version>
+            <version>3.4.1</version>
             <executions>
               <execution>
                 <id>attach-javadocs</id>
@@ -175,12 +175,12 @@
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
       <artifactId>selenium-java</artifactId>
-      <version>4.5.0</version>
+      <version>4.7.2</version>
     </dependency>
     <dependency>
       <groupId>io.github.bonigarcia</groupId>
       <artifactId>webdrivermanager</artifactId>
-      <version>5.3.0</version>
+      <version>5.3.1</version>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
@@ -190,7 +190,7 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>2.13.4.1</version>
+      <version>2.14.1</version>
     </dependency>
     <dependency>
       <groupId>org.junit.vintage</groupId>
@@ -208,7 +208,7 @@
     <dependency>
       <groupId>com.deque.html.axe-core</groupId>
       <artifactId>dequeutilites</artifactId>
-      <version>4.5.1</version>
+      <version>4.6.0</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>

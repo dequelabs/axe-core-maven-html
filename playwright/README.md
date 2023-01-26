@@ -130,14 +130,24 @@ new AxeBuilder(page)
         .include(Collections.singletonList(".some-class"))
         .include(Collections.singletonList(".some-other-class"));
 
+// OR
+
+new AxeBuilder(page)
+        .include(".some-class")
+        .include(".some-other-class");
 ```
 
-CSS iframe selectors to include during analysis
+CSS iframe selectors to include during analysis.
 
 ```java
 // To include everything within html of parent-iframe
 new AxeBuilder(page)
         .include(Arrays.asList("#parent-iframe","#html"))
+
+// OR
+
+new AxeBuilder(page)
+        .include("#parent-iframe", "#html"));
 ```
 
 ## AxeBuilder#exclude(List\<String> selector)
@@ -149,6 +159,12 @@ new AxeBuilder(page)
         .exclude(Collections.singletonList(".some-class"))
         .exclude(Collections.singletonList(".some-other-class"));
 
+// OR
+
+new AxeBuilder(page)
+        .exclude(".some-class")
+        .exclude(".some-other-class");
+
 ```
 
 CSS iframe selectors to exclude during analysis
@@ -157,6 +173,11 @@ CSS iframe selectors to exclude during analysis
 // To exclude everything within html of parent-iframe
 new AxeBuilder(page)
         .exclude(Arrays.asList("#parent-iframe","#html"))
+
+// OR
+
+new AxeBuilder(page)
+        .exclude("#parent-iframe", "#html"));
 ```
 
 ## AxeBuilder#withRules(List\<String> rules)
@@ -226,6 +247,109 @@ cross-origin iframes will not be tested.
 new AxeBuilder(page)
         .setLegacyMode(true);
 ```
+
+## Limit Frame Testing
+
+Including or excluding specific sections within a frame can be done with a `FromFrames` selector object.
+
+### AxeBuilder#include(FromFrames fromFrames)
+
+The following shows how to test all `form` elements a `#paymentFrame` frame or iframe:
+
+```java
+import com.deque.html.axecore.args.FromFrames;
+
+// Test each <form> inside each #paymentFrame frame or iframe:
+new AxeBuilder()
+        .include(new FromFrames("#paymentFrame", "form"));
+
+```
+
+### AxeBuilder#exclude(FromFrames fromFrames)
+
+```java
+import com.deque.html.axecore.args.FromFrames;
+
+// Skip any .ad-banner, as well as any .ad-banner inside iframes:
+new AxeBuilder()
+        .exclude(".ad-banner")
+        .exclude(new FromFrames("iframe", ".ad-banner"));
+```
+
+The `FromFrames` object can be used as part of an existing `exclude` or `include` chain. The following shows how to test the `form` inside the `#payment` iframe, except for the `.ad-banner` in that `form`:
+
+```java
+import com.deque.html.axecore.args.FromFrames;
+
+new AxeBuilder()
+        .include(new FromFrames("iframe#payment", "form"))
+        .exclude(new FromFrames("iframe#payment", "form > .ad-banner"))
+```
+
+## Limit Shadow DOM Testing
+
+Including or excluding specific sections of a [shadow DOM](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_shadow_DOM) tree can be done with a `FromShadowDom` selector object. This works similar to the [FromFrames](#limit-frame-testing) object selector.
+
+### AxeBuilder#include(FromShadowDom fromShadowDom)
+
+```java
+import com.deque.html.axecore.args.FromShadowDom;
+
+// Test each search form inside each <app-header> shadow DOM tree.
+new AxeBuilder()
+        .include(new FromShadowDom(".add-header", "form#search"))
+```
+
+The `FromShadowDom` selector object can also be used as part of an `exclude` or `include` method chain. It can be by itself, or with other selectors. The following example shows how to exclude all `.comment` elements inside the `<blog-comments>` custom element, as well as excluding the `footer` element:
+
+### AxeBuilder#exclude(FromShadowDom fromShadowDom)
+
+```java
+import com.deque.html.axecore.args.FromShadowDom;
+
+// Skip footer, as well as any .comment element inside the shadow DOM tree of <blog-comments>
+new AxeBuilder()
+        .exclude(".footer")
+        .exclude(new FromShadowDom("blog-comments", ".comment"))
+```
+
+The following shows how to test the `<app-footer>` custom component, inside the shadow DOM of the `#root` element, but to exclude any `.ad-banner` inside the `<app-footer>`'s shadow DOM tree:
+
+```java
+import com.deque.html.axecore.args.FromShadowDom;
+
+new AxeBuilder()
+        .include(new FromShadowDom("#root", "app-footer"))
+        .exclude(new FromShadowDom("#root", "app-footer", ".ad-banner"))
+```
+
+## Combine Shadow DOM and Frame Context
+
+To select frames inside shadow DOM trees or shadow DOM trees inside frames, it is possible to use [FromShadowDom](#limit-shadow-dom-testing) as a selector in the [FromFrames](#limit-frame-testing) selector object. The following example shows how to test the `main` element, inside each `iframe` that is part of the shadow DOM tree of `#appRoot`:
+
+```java
+import com.deque.html.axecore.args.FromFrames;
+import com.deque.html.axecore.args.FromShadowDom;
+
+new AxeBuilder()
+        .include(new FromFrames(new FromShadowDom("#appRoot", "iframe"), "main"))
+```
+
+The following shows how to exclude the `footer`, as well as any `.commentBody` elements in the `#userComments` shadow DOM tree, inside the `#blog-comments` iframe:
+
+```java
+import com.deque.html.axecore.args.FromFrames;
+import com.deque.html.axecore.args.FromShadowDom;
+
+new AxeBuilder(page)
+        .exclude("footer")
+        .exclude(new FromFrames(
+                "iframe#blog-comments",
+                new FromShadowDom("#userComments", ".commentBody")
+                ));
+```
+
+More information about [limit frame testing](https://github.com/dequelabs/axe-core/blob/develop/doc/context.md#limit-frame-testing).
 
 ## Reporter#JSONStringify(AxeResults results, String fileName)
 

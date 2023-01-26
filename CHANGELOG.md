@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.6.0](https://github.com/dequelabs/axe-core-maven-html/compare/v4.5.1...v4.6.0) (2023-01-19)
+
+
+### Features
+
+* **playwright, selenium:** add support for new include/exclude selectors and axe-core 4.6
+  ([#283](https://github.com/dequelabs/axe-core-maven-html/issues/283))
+  ([8736a9c](https://github.com/dequelabs/axe-core-maven-html/commit/8736a9c501e36a5808d96ea04827d14579635a78))
+
 ### [4.5.1](https://github.com/dequelabs/axe-core-maven-html/compare/v4.5.0...v4.5.1) (2022-11-15)
 
 

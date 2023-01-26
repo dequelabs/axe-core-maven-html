@@ -1,6 +1,6 @@
 {
   "name": "axe-core-maven-html",
-  "version": "4.5.1",
+  "version": "4.6.0",
   "license": "ISC",
   "repository": "dequelabs/axe-core-maven-html",
   "scripts": {
@@ -13,8 +13,8 @@
   "devDependencies": {
     "copyfiles": "^2.4.1",
     "del-cli": "^5.0.0",
-    "husky": "^8.0.1",
-    "jfrog-cli-go": "^1.54.0",
+    "husky": "^8.0.3",
+    "jfrog-cli-go": "^1.54.1",
     "standard-version": "^9.5.0",
     "xml-js": "^1.6.11"
   }

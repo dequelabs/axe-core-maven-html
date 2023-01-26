@@ -1,9 +1,6 @@
 package com.deque.html.axecore.playwright;
 
-import com.deque.html.axecore.args.AxeRuleOptions;
-import com.deque.html.axecore.args.AxeRunContext;
-import com.deque.html.axecore.args.AxeRunOnlyOptions;
-import com.deque.html.axecore.args.AxeRunOptions;
+import com.deque.html.axecore.args.*;
 import com.deque.html.axecore.results.AxeResults;
 import com.deque.html.axecore.results.FrameContext;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -14,11 +11,13 @@ import com.microsoft.playwright.Browser;
 import com.microsoft.playwright.ElementHandle;
 import com.microsoft.playwright.Frame;
 import com.microsoft.playwright.Page;
+
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.*;
+
 import org.apache.commons.io.IOUtils;
 
 /** Chainable class: AxeBuilder used to customize and analyze using axe-core */
@@ -49,6 +48,79 @@ public class AxeBuilder {
    */
   public AxeBuilder include(List<String> selector) {
     this.context.setInclude(selector);
+
+    return this;
+  }
+
+  /**
+   * Include a single CSS selector to include during analysis
+   *
+   * @param selector Arraylist of Strings
+   * @return this
+   */
+  public AxeBuilder include(String selector) {
+    this.context.setInclude(selector);
+
+    return this;
+  }
+
+  /**
+   * Build more complex selectors by supplying a single object to include
+   *
+   * @param selector List of Strings, FromFrames, FromShadowDom object
+   * @return this
+   * @see <a
+   *     href="https://github.com/dequelabs/axe-core/blob/develop/doc/context.md#combine-shadow-dom-and-frame-context">Combine
+   *     shadow DOM and frame context </a>
+   */
+  public AxeBuilder include(Object selector) {
+    this.context.setInclude(selector);
+
+    return this;
+  }
+
+  /**
+   * Build more complex selectors by combining Shadow DOM and Frame Context to include
+   *
+   * @param selector provide a list nested selectors
+   * @return this
+   * @see <a
+   *     href="https://github.com/dequelabs/axe-core/blob/develop/doc/context.md#combine-shadow-dom-and-frame-context">Combine
+   *     shadow DOM and frame context</a>
+   */
+  public AxeBuilder include(Object... selector) {
+    this.context.setInclude(selector);
+
+    return this;
+  }
+
+  /**
+   * Limit frame testing with the use of `fromFrames`.
+   *
+   * @param fromFrames List of specific sections within a frame to include
+   * @return this
+   * @see <a
+   *     href="https://github.com/dequelabs/axe-core/blob/develop/doc/context.md#limit-frame-testing">FromFrames
+   *     </a>
+   */
+  public AxeBuilder include(FromFrames fromFrames) {
+    this.context.setInclude(fromFrames);
+
+    return this;
+  }
+
+  /**
+   * Limit shadow DOM testing with the use of `excludeFromShadowDom`.
+   *
+   * @param fromShadowDom List of shadow DOM host element(s) to include
+   * @return this
+   * @see <a
+   *     href="https://github.com/dequelabs/axe-core/blob/develop/doc/context.md#limit-shadow-dom-testing">FromShadowDom
+   *     </a>
+   */
+  public AxeBuilder include(FromShadowDom fromShadowDom) {
+    this.context.setInclude(fromShadowDom);
+
     return this;
   }
 
@@ -60,6 +132,79 @@ public class AxeBuilder {
    */
   public AxeBuilder exclude(List<String> selector) {
     this.context.setExclude(selector);
+
+    return this;
+  }
+
+  /**
+   * Include a single CSS selector to exclude during analysis
+   *
+   * @param selector Arraylist of Strings
+   * @return this
+   */
+  public AxeBuilder exclude(String selector) {
+    this.context.setExclude(selector);
+
+    return this;
+  }
+
+  /**
+   * Build more complex selectors by supplying a single object to exclude
+   *
+   * @param selector List of Strings, FromFrames, FromShadowDom object
+   * @return this
+   * @see <a
+   *     href="https://github.com/dequelabs/axe-core/blob/develop/doc/context.md#combine-shadow-dom-and-frame-context">Combine
+   *     shadow DOM and frame context </a>
+   */
+  public AxeBuilder exclude(Object selector) {
+    this.context.setExclude(selector);
+
+    return this;
+  }
+
+  /**
+   * Build more complex selectors by combining Shadow DOM and Frame Context to exclude
+   *
+   * @param selector Provide a list nested selectors
+   * @return this
+   * @see <a
+   *     href="https://github.com/dequelabs/axe-core/blob/develop/doc/context.md#combine-shadow-dom-and-frame-context">Combine
+   *     shadow DOM and frame context </a>
+   */
+  public AxeBuilder exclude(Object... selector) {
+    this.context.setExclude(selector);
+
+    return this;
+  }
+
+  /**
+   * Limit frame testing with the use of `fromFrames`.
+   *
+   * @param fromFrames List of specific sections within a frame to exclude
+   * @return this
+   * @see <a
+   *     href="https://github.com/dequelabs/axe-core/blob/develop/doc/context.md#limit-frame-testing">FromFrames
+   *     </a>
+   */
+  public AxeBuilder exclude(FromFrames fromFrames) {
+    this.context.setExclude(fromFrames);
+
+    return this;
+  }
+
+  /**
+   * Limit shadow DOM testing with the use of `excludeFromShadowDom`.
+   *
+   * @param fromShadowDom List of shadow DOM host element(s) to exclude
+   * @return this
+   * @see <a
+   *     href="https://github.com/dequelabs/axe-core/blob/develop/doc/context.md#limit-shadow-dom-testing">FromShadowDom
+   *     </a>
+   */
+  public AxeBuilder exclude(FromShadowDom fromShadowDom) {
+    this.context.setExclude(fromShadowDom);
+
     return this;
   }
 
@@ -158,7 +303,9 @@ public class AxeBuilder {
     try {
       /**
        * this allows Playwright to run the script to be used later rather than invoking it instantly
-       * @see https://github.com/microsoft/playwright-java/issues/1070 */
+       *
+       * @see https://github.com/microsoft/playwright-java/issues/1070
+       */
       this.page.evaluate("() => {" + getAxeScript() + "}");
     } catch (RuntimeException runtimeException) {
       throw new RuntimeException("Problematic axe-source, unable to inject. ", runtimeException);
@@ -278,12 +425,12 @@ public class AxeBuilder {
   /**
    * *
    *
-   * @see <a
-   *     href="https://github.com/dequelabs/axe-core/blob/master/doc/run-partial.md#axeutilsgetframecontextscontext-framecontext>axe-core
-   *     frameContexts</a>
    * @param frame current iframe
    * @param context current context
    * @return returns array of frameContexts
+   * @see <a
+   *     href="https://github.com/dequelabs/axe-core/blob/master/doc/run-partial.md#axeutilsgetframecontextscontext-framecontext>axe-core
+   *     frameContexts</a>
    */
   private Object getFrameContexts(Frame frame, String context) {
     return frame.evaluate(
