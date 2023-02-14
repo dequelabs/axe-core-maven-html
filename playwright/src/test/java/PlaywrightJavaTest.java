@@ -872,6 +872,31 @@ public class PlaywrightJavaTest {
   }
 
   @Test
+  public void withArrayListIframes() {
+    page.navigate(server + "context-include-exclude.html");
+    AxeBuilder axeBuilder =
+        new AxeBuilder(page)
+            .include(Arrays.asList("#ifr-inc-excl", "html"))
+            .exclude(Arrays.asList("#ifr-inc-excl", "#foo-bar"))
+            .include(Arrays.asList("#ifr-inc-excl", "#foo-baz", "html"))
+            .exclude(Arrays.asList("#ifr-inc-excl", "#foo-baz", "input"));
+
+    AxeResults axeResults = axeBuilder.analyze();
+
+    List<Rule> labelRule =
+        axeResults.getViolations().stream()
+            .filter(v -> v.getId().equalsIgnoreCase("label"))
+            .collect(Collectors.toList());
+
+    assertEquals(labelRule.size(), 0);
+
+    List<String> targets = getPassTargets(axeResults);
+
+    assertTrue(targets.stream().noneMatch(t -> t.equalsIgnoreCase("#foo-bar")));
+    assertTrue(targets.stream().noneMatch(t -> t.equalsIgnoreCase("input")));
+  }
+
+  @Test
   public void withIncludeShadowDOM() {
     page.navigate(server + "shadow-dom.html");
     AxeBuilder axeBuilder =
