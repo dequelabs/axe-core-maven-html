@@ -411,6 +411,34 @@ public class Axe43xIntegrationTest {
   }
 
   @Test
+  public void withIncludeIframe() {
+    webDriver.get(fixture("/context-include-exclude.html"));
+    AxeBuilder axeBuilder =
+        new AxeBuilder()
+            .include(Arrays.asList("#ifr-inc-excl", "#foo-baz", "html"))
+            .include(Arrays.asList("#ifr-inc-excl", "#foo-baz", "input"))
+            // does not exist
+            .include(Arrays.asList("#hazaar", "html"));
+
+    Results axeResults = axeBuilder.analyze(webDriver);
+
+    List<Rule> labelRule =
+        axeResults.getViolations().stream()
+            .filter(v -> v.getId().equalsIgnoreCase("label"))
+            .collect(Collectors.toList());
+
+    assertEquals(labelRule.size(), 1);
+
+    List<String> targets = getPassTargets(axeResults);
+
+    assertTrue(targets.stream().anyMatch(t -> t.contains("#ifr-inc-excl")));
+    assertTrue(targets.stream().anyMatch(t -> t.contains("#foo-baz")));
+    assertTrue(targets.stream().anyMatch(t -> t.contains("input")));
+    assertTrue(targets.stream().noneMatch(t -> t.contains("#foo-bar")));
+    assertTrue(targets.stream().noneMatch(t -> t.contains("#hazaar")));
+  }
+
+  @Test
   public void withArrayListIframes() {
     webDriver.get(fixture("/context-include-exclude.html"));
     AxeBuilder axeBuilder =

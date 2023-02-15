@@ -822,6 +822,35 @@ public class PlaywrightJavaTest {
   }
 
   @Test
+  public void withIncludeIframe() {
+    page.navigate(server + "context-include-exclude.html");
+
+    AxeBuilder axeBuilder =
+        new AxeBuilder(page)
+            .include(Arrays.asList("#ifr-inc-excl", "#foo-baz", "html"))
+            .include(Arrays.asList("#ifr-inc-excl", "#foo-baz", "input"))
+            // does not exist
+            .include(Arrays.asList("#hazaar", "html"));
+
+    AxeResults axeResults = axeBuilder.analyze();
+
+    List<Rule> labelRule =
+        axeResults.getViolations().stream()
+            .filter(v -> v.getId().equalsIgnoreCase("label"))
+            .collect(Collectors.toList());
+
+    assertEquals(labelRule.size(), 1);
+
+    List<String> targets = getPassTargets(axeResults);
+
+    assertTrue(targets.stream().anyMatch(t -> t.contains("#ifr-inc-excl")));
+    assertTrue(targets.stream().anyMatch(t -> t.contains("#foo-baz")));
+    assertTrue(targets.stream().anyMatch(t -> t.contains("input")));
+    assertTrue(targets.stream().noneMatch(t -> t.contains("#foo-bar")));
+    assertTrue(targets.stream().noneMatch(t -> t.contains("#hazaar")));
+  }
+
+  @Test
   public void withLabelledFrame() {
     page.navigate(server + "context-include-exclude.html");
     AxeBuilder axeBuilder =
