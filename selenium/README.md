@@ -1,56 +1,231 @@
-# axe-core Selenium (Java) Integration
+# axe-core-maven-html-selenium
 
-[![CircleCI](https://circleci.com/gh/dequelabs/axe-selenium-java.svg?style=svg)](https://circleci.com/gh/dequelabs/axe-selenium-java)
+> A Selenium Java chainable API integration for axe-core
 
-This example demonstrates how to use axe to run web accessibility tests in Java projects with the Selenium browser automation tool and Java development tools.
+## Table of Contents
 
-Selenium integration enables testing of full pages and sites.
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+- [Local Development](#local-development)
+- [Usage](#usage)
 
-## Requirements
+## Prerequisites
 
-- Chrome must be installed; follow the directions at https://www.google.com/chrome/ to install it. On Unix, ensure that Chrome is on your path.
-- The Java SE Development Kit must be installed; follow the directions at http://www.oracle.com/technetwork/java/javase/downloads/index.html to install it.
-- Maven must be installed; follow the directions at http://maven.apache.org/ to install it. Ensure that it is on your path.
+Axe-core-maven-html-selenium requires Java 8.
 
-## To run the example
+More information: [Seleium Getting Started](https://www.selenium.dev/documentation/webdriver/getting_started/)
 
-1. Move to the `axe-core-maven-html` directory.
-2. `node src/test/resources/test-app.js` to start the fixture server.
-3. `mvn test` to build and run the JUnit tests that drive Selenium against the fixture.
+## Installation
 
-This should launch an automated Chrome window, load and analyze the configured web pages, and then pass/fail a JUnit test depending on whether there are any accessibility violations detected.
-
-## To modify the example
-
-To run the example tests on your own web page, change the URL passed to `driver.get` in `ExampleTest.setUp()`.
-
-## To use the AXE helper library in your own tests
-
-Include this library as a test-scoped dependency in your POM. Ensure the `version` matches the one in `[pom.xml](./pom.xml)`:
+Add Selenium Java to your `pom.xml` if you have not already:
 
 ```xml
+<!-- https://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-java -->
 <dependency>
-    <groupId>com.deque.html.axe-core</groupId>
-    <artifactId>selenium</artifactId>
-    <version>3.1-SNAPSHOT</version>
-    <scope>test</scope>
+    <groupId>org.seleniumhq.selenium</groupId>
+    <artifactId>selenium-java</artifactId>
+    <version>4.8.1</version>
 </dependency>
 ```
 
-The `AxeBuilder` type is the main interface. Pass it a Selenium `WebDriver` instance, configure it,
-and run the `analyze` method to get results.
+Add `axe-core-maven-html-selenium` dependency to your `pom.xml`:
 
-- `options` wires a JSON string to axe, allowing rules to be toggled on or off.
-  See the `testAccessibilityWithOptions` unit test for a sample single-rule execution, and the
-  [axe-core API documentation](https://github.com/dequelabs/axe-core/blob/master/doc/API.md#b-options-parameter)
-  for full documentation on the options object. The runOnly option with tags may be of particular interest, allowing axe to execute all rules with the specified tag(s).
-- `include` adds to the list of included selectors. If you do not call `include` at all, axe will run against the entire document.
-- `exclude` adds to the list of excluded selectors. Exclusions allow you to focus scope exactly where you need it, ignoring child elements you don't want to test.
-- `withOptions` takes an options object to be passed to the `axe.run` call.
-- `withTags` limits rules run to those that match specified tags.
-- `withOnlyRules` limites rules run to those specified.
-- `disableRules` disables rules.
-- `analyze` executes axe with any configuration you have previously defined. If you want to test one or more `WebElement`s, you may pass them into `analyze` instead of using `include` and `exclude`.
+```xml
+<!-- https://mvnrepository.com/artifact/com.deque.html.axe-core/selenium -->
+<dependency>
+    <groupId>com.deque.html.axe-core</groupId>
+    <artifactId>selenium</artifactId>
+    <version>4.6.0</version>
+</dependency>
+```
+
+## Local Development
+
+First time installation:
+
+Navigate to `selenium`:
+
+```shell
+npm install
+```
+
+```shell
+mvn clean install
+```
+
+To run the tests and start the test fixture server:
+
+```shell
+cd selenium/node_modules/axe-test-fixtures/fixtures && python -m http.server 8001
+```
+
+```shell
+mvn test -q
+```
+
+## Usage
+
+This integration allows you to inject, configure and analyze webpages using the axe-core accessibility engine with
+Selenium Java.
+
+Below is an example of utilizing this API to run analysis on a webpage and checking if it is violation free:
+
+```Java
+import com.deque.html.axecore.results.Results;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+
+import org.junit.Test;
+
+import static org.junit.Assert.*;
+
+public class MySeleniumTestSuite {
+
+    @Test
+    public void testMyWebPage() {
+        AxeBuilder axeBuilder = new AxeBuilder();
+        WebDriver webDriver = new ChromeDriver();
+
+        webDriver.get("https://dequeuniversity.com/demo/mars/");
+
+        try {
+            Results results = axeBuilder.analyze(webDriver);
+            assertTrue(axeResults.violationFree())
+        } catch (RuntimeException e) {
+            // Do something with the error
+        }
+
+        webDriver.close();
+    }
+}
+```
+
+## AxeBuilder#include(List\<String> selector)
+
+CSS selectors to include during analysis
+
+```java
+new AxeBuilder()
+        .include(Collections.singletonList(".some-class"))
+        .include(Collections.singletonList(".some-other-class"));
+
+// OR
+
+        new AxeBuilder()
+        .include(".some-class")
+        .include(".some-other-class");
+```
+
+CSS iframe selectors to include during analysis.
+
+```java
+// To include everything within html of parent-iframe
+new AxeBuilder()
+        .include(Arrays.asList("#parent-iframe","#html"))
+
+// OR
+
+        new AxeBuilder()
+        .include("#parent-iframe","#html"));
+```
+
+## AxeBuilder#exclude(List\<String> selector)
+
+CSS selectors to exclude during analysis
+
+```java
+new AxeBuilder()
+        .exclude(Collections.singletonList(".some-class"))
+        .exclude(Collections.singletonList(".some-other-class"));
+
+// OR
+
+        new AxeBuilder()
+        .exclude(".some-class")
+        .exclude(".some-other-class");
+
+```
+
+CSS iframe selectors to exclude during analysis
+
+```java
+// To exclude everything within html of parent-iframe
+new AxeBuilder()
+        .exclude(Arrays.asList("#parent-iframe","#html"))
+
+// OR
+
+        new AxeBuilder()
+        .exclude("#parent-iframe","#html"));
+```
+
+## AxeBuilder#withRules(List\<String> rules)
+
+Limit the amount of rules to be executed during analysis.
+
+```java
+// Single Rule
+new AxeBuilder()
+        .withRules(Collections.singletonList("color-contrast"));
+
+// Multiple Rules
+        new AxeBuilder()
+        .withRules(Arrays.asList("color-contrast","image-alt"));
+```
+
+## AxeBuilder#withTags(List\<String> rules)
+
+Limit the amount of tags to be executed during analysis.
+
+```java
+// Single tag
+new AxeBuilder()
+        .withTags(Collections.singletonList("wcag21aa"));
+
+// Multiple tags
+        new AxeBuilder()
+        .withTags(Arrays.asList("wcag21aa","best-practice"));
+```
+
+## AxeBuilder#disableRules(List\<String> rules)
+
+Disable rules to be executed during analysis.
+
+```java
+// Single Rule
+new AxeBuilder()
+        .disableRules(Collections.singletonList("color-contrast"));
+
+// Multiple Rules
+        new AxeBuilder()
+        .disableRules(Arrays.asList("color-contrast","image-alt"));
+```
+
+## AxeBuilder#analyze()
+
+Analyze the Selenium page and return `AxeResults` object from the completed analysis.
+
+```java
+
+AxeBuilder axeBuilder=new AxeBuilder();
+        AxeResults axeResults=axeBuilder.analyze(webDriver);
+
+/* Usage may include:
+axeResults.getViolations() - returns only violation results
+axeResults.getPasses() - returns only pass results
+axeResults.getIncomplete() - returns only incomplete results
+*/
+```
+
+## AxeBuilder#setLegacyMode(boolean legacyMode)
+
+Disables `runPartial()` which is called in each iframe as well as `finishRun()`. This uses normal `run()` instead,
+cross-origin iframes will not be tested.
+
+```java
+new AxeBuilder(page)
+        .setLegacyMode(true);
+```
 
 ## Limit Frame Testing
 
@@ -65,7 +240,7 @@ import com.deque.html.axecore.args.FromFrames;
 
 // Test each <form> inside each #paymentFrame frame or iframe:
 new AxeBuilder()
-        .include(new FromFrames("#paymentFrame", "form"));
+        .include(new FromFrames("#paymentFrame","form"));
 
 ```
 
@@ -77,22 +252,25 @@ import com.deque.html.axecore.args.FromFrames;
 // Skip any .ad-banner, as well as any .ad-banner inside iframes:
 new AxeBuilder()
         .exclude(".ad-banner")
-        .exclude(new FromFrames("iframe", ".ad-banner"));
+        .exclude(new FromFrames("iframe",".ad-banner"));
 ```
 
-The `FromFrames` object can be used as part of an existing `exclude` or `include` chain. The following shows how to test the `form` inside the `#payment` iframe, except for the `.ad-banner` in that `form`:
+The `FromFrames` object can be used as part of an existing `exclude` or `include` chain. The following shows how to test
+the `form` inside the `#payment` iframe, except for the `.ad-banner` in that `form`:
 
 ```java
 import com.deque.html.axecore.args.FromFrames;
 
 new AxeBuilder()
-        .include(new FromFrames("iframe#payment", "form"))
-        .exclude(new FromFrames("iframe#payment", "form > .ad-banner"))
+        .include(new FromFrames("iframe#payment","form"))
+        .exclude(new FromFrames("iframe#payment","form > .ad-banner"))
 ```
 
 ## Limit Shadow DOM Testing
 
-Including or excluding specific sections of a [shadow DOM](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_shadow_DOM) tree can be done with a `FromShadowDom` selector object. This works similar to the [FromFrames](#limit-frame-testing) object selector.
+Including or excluding specific sections of
+a [shadow DOM](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_shadow_DOM) tree can be done with
+a `FromShadowDom` selector object. This works similar to the [FromFrames](#limit-frame-testing) object selector.
 
 ### AxeBuilder#include(FromShadowDom fromShadowDom)
 
@@ -101,10 +279,12 @@ import com.deque.html.axecore.args.FromShadowDom;
 
 // Test each search form inside each <app-header> shadow DOM tree.
 new AxeBuilder()
-        .include(new FromShadowDom(".add-header", "form#search"))
+        .include(new FromShadowDom(".add-header","form#search"))
 ```
 
-The `FromShadowDom` selector object can also be used as part of an `exclude` or `include` method chain. It can be by itself, or with other selectors. The following example shows how to exclude all `.comment` elements inside the `<blog-comments>` custom element, as well as excluding the `footer` element:
+The `FromShadowDom` selector object can also be used as part of an `exclude` or `include` method chain. It can be by
+itself, or with other selectors. The following example shows how to exclude all `.comment` elements inside
+the `<blog-comments>` custom element, as well as excluding the `footer` element:
 
 ### AxeBuilder#exclude(FromShadowDom fromShadowDom)
 
@@ -114,32 +294,37 @@ import com.deque.html.axecore.args.FromShadowDom;
 // Skip footer, as well as any .comment element inside the shadow DOM tree of <blog-comments>
 new AxeBuilder()
         .exclude(".footer")
-        .exclude(new FromShadowDom("blog-comments", ".comment"))
+        .exclude(new FromShadowDom("blog-comments",".comment"))
 ```
 
-The following shows how to test the `<app-footer>` custom component, inside the shadow DOM of the `#root` element, but to exclude any `.ad-banner` inside the `<app-footer>`'s shadow DOM tree:
+The following shows how to test the `<app-footer>` custom component, inside the shadow DOM of the `#root` element, but
+to exclude any `.ad-banner` inside the `<app-footer>`'s shadow DOM tree:
 
 ```java
 import com.deque.html.axecore.args.FromShadowDom;
 
 new AxeBuilder()
-        .include(new FromShadowDom("#root", "app-footer"))
-        .exclude(new FromShadowDom("#root", "app-footer", ".ad-banner"))
+        .include(new FromShadowDom("#root","app-footer"))
+        .exclude(new FromShadowDom("#root","app-footer",".ad-banner"))
 ```
 
 ## Combine Shadow DOM and Frame Context
 
-To select frames inside shadow DOM trees or shadow DOM trees inside frames, it is possible to use [FromShadowDom](#limit-shadow-dom-testing) as a selector in the [FromFrames](#limit-frame-testing) selector object. The following example shows how to test the `main` element, inside each `iframe` that is part of the shadow DOM tree of `#appRoot`:
+To select frames inside shadow DOM trees or shadow DOM trees inside frames, it is possible to
+use [FromShadowDom](#limit-shadow-dom-testing) as a selector in the [FromFrames](#limit-frame-testing) selector object.
+The following example shows how to test the `main` element, inside each `iframe` that is part of the shadow DOM tree
+of `#appRoot`:
 
 ```java
 import com.deque.html.axecore.args.FromFrames;
 import com.deque.html.axecore.args.FromShadowDom;
 
 new AxeBuilder()
-        .include(new FromFrames(new FromShadowDom("#appRoot", "iframe"), "main"))
+        .include(new FromFrames(new FromShadowDom("#appRoot","iframe"),"main"))
 ```
 
-The following shows how to exclude the `footer`, as well as any `.commentBody` elements in the `#userComments` shadow DOM tree, inside the `#blog-comments` iframe:
+The following shows how to exclude the `footer`, as well as any `.commentBody` elements in the `#userComments` shadow
+DOM tree, inside the `#blog-comments` iframe:
 
 ```java
 import com.deque.html.axecore.args.FromFrames;
@@ -148,9 +333,12 @@ import com.deque.html.axecore.args.FromShadowDom;
 new AxeBuilder(page)
         .exclude("footer")
         .exclude(new FromFrames(
-                "iframe#blog-comments",
-                new FromShadowDom("#userComments", ".commentBody")
-                ));
+        "iframe#blog-comments",
+        new FromShadowDom("#userComments",".commentBody")
+        ));
 ```
 
-More information about [limit frame testing](https://github.com/dequelabs/axe-core/blob/develop/doc/context.md#limit-frame-testing).
+More information
+about [limit frame testing](https://github.com/dequelabs/axe-core/blob/develop/doc/context.md#limit-frame-testing).
+
+
