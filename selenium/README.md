@@ -90,7 +90,7 @@ public class MySeleniumTestSuite {
 
         try {
             Results axeResults = axeBuilder.analyze(webDriver);
-            assertTrue(axeResults.violationFree())
+            assertTrue(axeResults.violationFree());
         } catch (RuntimeException e) {
             // Do something with the error
         }
