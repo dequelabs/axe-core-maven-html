@@ -36,6 +36,9 @@ public final class AxeReporter {
   /** the string format of the results. */
   private static String axeResultString;
 
+  /** the string format of the results. */
+  private static boolean helpIsInReport = false;
+
   /**
    * sets the axe result string.
    *
@@ -52,6 +55,15 @@ public final class AxeReporter {
    */
   public static String getAxeResultString() {
     return axeResultString;
+  }
+
+  /**
+   * sets the boolean to know whether include detailed help in the report.
+   *
+   * @param helpIsInReport value to be set
+   */
+  public static void setHelpInReport(boolean helpIsInReport) {
+    AxeReporter.helpIsInReport = helpIsInReport;
   }
 
   /**
@@ -118,6 +130,18 @@ public final class AxeReporter {
   }
 
   /**
+   * Appends a field to a wcag report.
+   *
+   * @param message to append to.
+   * @param name    of the field to report.
+   * @param value   of the field to report
+   */
+  private static void appendPropertyToReport(StringBuilder message, String name, String value) {
+    message.append(name).append(value);
+    message.append(System.lineSeparator());
+  }
+
+  /**
    * Parses scanned accessibility results.
    *
    * @param typeOfScan Type of scan
@@ -127,6 +151,19 @@ public final class AxeReporter {
    */
   public static boolean getReadableAxeResults(
       final String typeOfScan, final WebDriver webDriver, final List<Rule> scannedResults) {
+    return  getReadableAxeResults(typeOfScan,webDriver.getCurrentUrl(),scannedResults);
+  }
+
+  /**
+   * Parses scanned accessibility results.
+   *
+   * @param typeOfScan Type of scan
+   * @param url Web driver url the scan was run on
+   * @param scannedResults The scan results
+   * @return True if the scan found anything
+   */
+  public static boolean getReadableAxeResults(
+      final String typeOfScan, final String url, final List<Rule> scannedResults) {
     StringBuilder message = new StringBuilder();
     final int axeRules = scannedResults.size();
 
@@ -135,7 +172,7 @@ public final class AxeReporter {
     message
         .append(typeOfScan.toUpperCase())
         .append(" check for: ")
-        .append(webDriver.getCurrentUrl());
+        .append(url);
     message.append(System.lineSeparator());
     message.append("Found ").append(axeRules).append(" items");
     message.append(System.lineSeparator());
@@ -151,21 +188,18 @@ public final class AxeReporter {
     for (Rule element : scannedResults) {
       message.append(loops++).append(": ").append(element.getHelp());
       message.append(System.lineSeparator());
-      message.append("Description: ").append(element.getDescription());
-      message.append(System.lineSeparator());
-      message.append("Help URL: ").append(element.getHelpUrl());
-      message.append(System.lineSeparator());
-      message.append("Impact: ").append(element.getImpact());
-      message.append(System.lineSeparator());
-      message.append("Tags: ").append(String.join(", ", element.getTags()));
-      message.append(System.lineSeparator());
+      appendPropertyToReport(message, "Description: ", element.getDescription());
+      appendPropertyToReport(message, "Help URL: ", element.getHelpUrl());
+      if (helpIsInReport) {
+        appendPropertyToReport(message, "Help: ", element.getHelp());
+      }
+      appendPropertyToReport(message, "Impact: ", element.getImpact());
+      appendPropertyToReport(message, "Tags: ", String.join(", ", element.getTags()));
 
       if (element.getNodes() != null && !element.getNodes().isEmpty()) {
         for (Node item : element.getNodes()) {
-          message.append("\t\t" + "HTML element: ").append(item.getHtml());
-          message.append(System.lineSeparator());
-          message.append("\t\t" + "Selector: ").append(item.getTarget());
-          message.append(System.lineSeparator());
+          appendPropertyToReport(message, "\tHTML element: ", item.getHtml());
+          appendPropertyToReport(message, "\tSelector: ", item.getTarget().toString());
         }
       }
       message.append(System.lineSeparator());
