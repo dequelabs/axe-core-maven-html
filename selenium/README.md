@@ -89,7 +89,7 @@ public class MySeleniumTestSuite {
         webDriver.get("https://dequeuniversity.com/demo/mars/");
 
         try {
-            Results results = axeBuilder.analyze(webDriver);
+            Results axeResults = axeBuilder.analyze(webDriver);
             assertTrue(axeResults.violationFree())
         } catch (RuntimeException e) {
             // Do something with the error
