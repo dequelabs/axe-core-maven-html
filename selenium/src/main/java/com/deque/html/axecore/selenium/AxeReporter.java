@@ -198,8 +198,8 @@ public final class AxeReporter {
 
       if (element.getNodes() != null && !element.getNodes().isEmpty()) {
         for (Node item : element.getNodes()) {
-          appendPropertyToReport(message, "\tHTML element: ", item.getHtml());
-          appendPropertyToReport(message, "\tSelector: ", item.getTarget().toString());
+          appendPropertyToReport(message, "\t\t" + "HTML element: ", item.getHtml());
+          appendPropertyToReport(message, "\t\t" + "Selector: ", item.getTarget().toString());
         }
       }
       message.append(System.lineSeparator());
