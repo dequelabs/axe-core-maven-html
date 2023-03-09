@@ -14,6 +14,7 @@ package com.deque.html.axecore.selenium;
 
 import static com.deque.html.axecore.selenium.AxeReporter.getAxeResultString;
 import static com.deque.html.axecore.selenium.AxeReporter.getReadableAxeResults;
+import static com.deque.html.axecore.selenium.AxeReporter.setHelpInReport;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -63,22 +64,7 @@ public class AxeReporterTest {
   private String newline() {
     return System.lineSeparator();
   }
-
-  @Test
-  public void testReadableAxeResultsEmpty() throws IOException, OperationNotSupportedException {
-    assertFalse(getReadableAxeResults(scanType, webDriver, new ArrayList<Rule>()));
-    String expected =
-        "ACCESSIBILITY CHECK"
-            + newline()
-            + String.format("%s check for: %s", scanType.toUpperCase(), webDriver.getCurrentUrl())
-            + newline()
-            + "Found 0 items";
-    assertEquals(expected, getAxeResultString());
-  }
-
-  @Test
-  public void testReadableAxeResults() throws IOException, OperationNotSupportedException {
-    this.webDriver.get("file:///" + new File(normalPage).getAbsolutePath());
+  private List<Rule> buildViolations(){
     List<Rule> violations = new ArrayList<Rule>();
 
     Rule r1 = new Rule();
@@ -113,7 +99,149 @@ public class AxeReporterTest {
     r3.setTags(Arrays.asList("tag31", "tag32"));
     violations.add(r3);
 
+    return violations;
+  }
+
+  @Test
+  public void testReadableAxeResultsEmpty() throws IOException, OperationNotSupportedException {
+    assertFalse(getReadableAxeResults(scanType, webDriver, new ArrayList<Rule>()));
+    String expected =
+        "ACCESSIBILITY CHECK"
+            + newline()
+            + String.format("%s check for: %s", scanType.toUpperCase(), webDriver.getCurrentUrl())
+            + newline()
+            + "Found 0 items";
+    assertEquals(expected, getAxeResultString());
+  }
+
+  @Test
+  public void testReadableAxeResults() throws IOException, OperationNotSupportedException {
+    this.webDriver.get("file:///" + new File(normalPage).getAbsolutePath());
+    List<Rule> violations = buildViolations();
+
     assertTrue(getReadableAxeResults(scanType, webDriver, violations));
+    String expected =
+        "ACCESSIBILITY CHECK"
+            + newline()
+            + String.format("%s check for: %s", scanType.toUpperCase(), webDriver.getCurrentUrl())
+            + newline()
+            + "Found 3 items"
+            + newline()
+            + newline()
+            + "1: help1"
+            + newline()
+            + "Description: desc1"
+            + newline()
+            + "Help URL: helpUrl1"
+            + newline()
+            + "Impact: critical1"
+            + newline()
+            + "Tags: tag11, tag12, tag13"
+            + newline()
+            + "\t\tHTML element: html11"
+            + newline()
+            + "\t\tSelector: selector11"
+            + newline()
+            + "\t\tHTML element: html21"
+            + newline()
+            + "\t\tSelector: selector21"
+            + newline()
+            + newline()
+            + newline()
+            + "2: help2"
+            + newline()
+            + "Description: desc2"
+            + newline()
+            + "Help URL: helpUrl2"
+            + newline()
+            + "Impact: critical2"
+            + newline()
+            + "Tags: tag21, tag22"
+            + newline()
+            + newline()
+            + newline()
+            + "3: help3"
+            + newline()
+            + "Description: desc3"
+            + newline()
+            + "Help URL: helpUrl3"
+            + newline()
+            + "Impact: critical3"
+            + newline()
+            + "Tags: tag31, tag32";
+
+    assertEquals(expected, getAxeResultString());
+  }
+  @Test
+  public void testReadableAxeResultsHelpOn() throws IOException, OperationNotSupportedException {
+    this.webDriver.get("file:///" + new File(normalPage).getAbsolutePath());
+    List<Rule> violations = buildViolations();
+    setHelpInReport(true);
+    assertTrue(getReadableAxeResults(scanType, webDriver, violations));
+    String expected =
+        "ACCESSIBILITY CHECK"
+            + newline()
+            + String.format("%s check for: %s", scanType.toUpperCase(), webDriver.getCurrentUrl())
+            + newline()
+            + "Found 3 items"
+            + newline()
+            + newline()
+            + "1: help1"
+            + newline()
+            + "Description: desc1"
+            + newline()
+            + "Help URL: helpUrl1"
+            + newline()
+            + "Help: help1"
+            + newline()
+            + "Impact: critical1"
+            + newline()
+            + "Tags: tag11, tag12, tag13"
+            + newline()
+            + "\t\tHTML element: html11"
+            + newline()
+            + "\t\tSelector: selector11"
+            + newline()
+            + "\t\tHTML element: html21"
+            + newline()
+            + "\t\tSelector: selector21"
+            + newline()
+            + newline()
+            + newline()
+            + "2: help2"
+            + newline()
+            + "Description: desc2"
+            + newline()
+            + "Help URL: helpUrl2"
+            + newline()
+            + "Help: help2"
+            + newline()
+            + "Impact: critical2"
+            + newline()
+            + "Tags: tag21, tag22"
+            + newline()
+            + newline()
+            + newline()
+            + "3: help3"
+            + newline()
+            + "Description: desc3"
+            + newline()
+            + "Help URL: helpUrl3"
+            + newline()
+            + "Help: help3"
+            + newline()
+            + "Impact: critical3"
+            + newline()
+            + "Tags: tag31, tag32";
+
+    assertEquals(expected, getAxeResultString());
+  }
+  @Test
+  public void testURLReadableAxeresults() throws IOException, OperationNotSupportedException {
+    String url = "file:///" + new File(normalPage).getAbsolutePath();
+    List<Rule> violations = buildViolations();
+
+    assertTrue(getReadableAxeResults(scanType, url, violations));
     String expected =
         "ACCESSIBILITY CHECK"
             + newline()
