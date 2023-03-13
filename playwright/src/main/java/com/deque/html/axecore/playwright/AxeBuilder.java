@@ -11,13 +11,11 @@ import com.microsoft.playwright.Browser;
 import com.microsoft.playwright.ElementHandle;
 import com.microsoft.playwright.Frame;
 import com.microsoft.playwright.Page;
-
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.*;
-
 import org.apache.commons.io.IOUtils;
 
 /** Chainable class: AxeBuilder used to customize and analyze using axe-core */
@@ -473,6 +471,29 @@ public class AxeBuilder {
     Browser browser = page.context().browser();
     Page blankPage = browser.newPage();
     blankPage.evaluate(getAxeScript() + getAxeConfigure(hasRunPartial));
+
+    String partialResString = "";
+    try {
+      ObjectMapper mapper = new ObjectMapper();
+      partialResString = mapper.writeValueAsString(partialResults);
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+    int sizeLimit = 15_000_000;
+    while (!partialResString.isEmpty()) {
+      int chunkSize = sizeLimit;
+      if (chunkSize > partialResString.length()) {
+        chunkSize = partialResString.length();
+      }
+      String chunk = partialResString.substring(0, chunkSize);
+      partialResString = partialResString.substring(chunkSize);
+      blankPage.evaluate(
+          "(chunk) => {"
+              + "window.partialResults ??= '';"
+              + "window.partialResults += chunk;"
+              + "}",
+          chunk);
+    }
 
     Object results;
 

@@ -118,7 +118,12 @@ public class AxeBuilder {
       "const context = typeof arguments[0] == 'string' ? JSON.parse(arguments[0]) : arguments[0];"
           + "return window.axe.utils.getFrameContexts(context);";
 
-  private static String finishRunScript = "return axe.finishRun(arguments[0])";
+  private static String storeChunk =
+      "window.partialResults ??= '';" + "window.partialResults += arguments[0];";
+
+  private static String finishRunScript =
+      "var partialResults = JSON.parse(window.partialResults || '[]');"
+          + "return axe.finishRun(partialResults);";
 
   /**
    * get the default axe builder options.
@@ -739,10 +744,25 @@ public class AxeBuilder {
 
     String prevWindow = WebDriverExtensions.openAboutBlank(webDriver);
     injectAxe(webDriver);
+    String partialResString = "";
+    try {
+      partialResString = objectMapper.writeValueAsString(partialResults);
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+    int sizeLimit = 15_000_000;
+    while (!partialResString.isEmpty()) {
+      int chunkSize = sizeLimit;
+      if (chunkSize > partialResString.length()) {
+        chunkSize = partialResString.length();
+      }
+      String chunk = partialResString.substring(0, chunkSize);
+      partialResString = partialResString.substring(chunkSize);
+      WebDriverInjectorExtensions.executeScript(webDriver, storeChunk, chunk);
+    }
     Object resResponse;
     try {
-      resResponse =
-          WebDriverInjectorExtensions.executeScript(webDriver, finishRunScript, partialResults);
+      resResponse = WebDriverInjectorExtensions.executeScript(webDriver, finishRunScript);
     } catch (Exception e) {
       throw new RuntimeException(
           "axe.finishRun failed. Please check out https://github.com/dequelabs/axe-core-maven-html/blob/develop/selenium/error-handling.md",
