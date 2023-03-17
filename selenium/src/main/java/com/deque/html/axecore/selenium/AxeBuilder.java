@@ -122,7 +122,7 @@ public class AxeBuilder {
       "window.partialResults ??= '';" + "window.partialResults += arguments[0];";
 
   private static String finishRunScript =
-      "var partialResults = JSON.parse(window.partialResults || '[]');"
+      "const partialResults = JSON.parse(window.partialResults || '[]');"
           + "return axe.finishRun(partialResults);";
 
   /**

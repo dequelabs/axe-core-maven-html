@@ -500,8 +500,10 @@ public class AxeBuilder {
     try {
       results =
           blankPage.evaluate(
-              "(partialResults) => {" + "return axe.finishRun(partialResults);" + "}",
-              partialResults);
+              "() => {"
+                  + "const partialResults = JSON.parse(window.partialResults || '[]');"
+                  + "return axe.finishRun(partialResults);"
+                  + "}");
     } catch (RuntimeException runtimeException) {
       throw new RuntimeException(
           "Please make sure popups are not disabled. Please see: Please see: https://github.com/dequelabs/axe-core-maven-html/blob/develop/playwright/error-handling.md",
