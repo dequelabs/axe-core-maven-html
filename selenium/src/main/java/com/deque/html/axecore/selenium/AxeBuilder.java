@@ -728,6 +728,29 @@ public class AxeBuilder {
     }
   }
 
+  /**
+   * Serializes and chunks partial results to send to the browser. This is done because webdriver
+   * has a maximum size for arguments.
+   */
+  private void sendPartialResults(final WebDriver webDriver, ArrayList<Object> partialResults) {
+    String partialResString = "";
+    try {
+      partialResString = objectMapper.writeValueAsString(partialResults);
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+    int sizeLimit = 60_000_000;
+    while (!partialResString.isEmpty()) {
+      int chunkSize = sizeLimit;
+      if (chunkSize > partialResString.length()) {
+        chunkSize = partialResString.length();
+      }
+      String chunk = partialResString.substring(0, chunkSize);
+      partialResString = partialResString.substring(chunkSize);
+      WebDriverInjectorExtensions.executeScript(webDriver, storeChunk, chunk);
+    }
+  }
+
   private Results analyzePost43x(final WebDriver webDriver, final Object rawContextArg) {
     String rawOptionsArg =
         getOptions().equals("{}") ? AxeReporter.serialize(runOptions) : getOptions();
@@ -744,22 +767,8 @@ public class AxeBuilder {
 
     String prevWindow = WebDriverExtensions.openAboutBlank(webDriver);
     injectAxe(webDriver);
-    String partialResString = "";
-    try {
-      partialResString = objectMapper.writeValueAsString(partialResults);
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
-    int sizeLimit = 15_000_000;
-    while (!partialResString.isEmpty()) {
-      int chunkSize = sizeLimit;
-      if (chunkSize > partialResString.length()) {
-        chunkSize = partialResString.length();
-      }
-      String chunk = partialResString.substring(0, chunkSize);
-      partialResString = partialResString.substring(chunkSize);
-      WebDriverInjectorExtensions.executeScript(webDriver, storeChunk, chunk);
-    }
+    sendPartialResults(webDriver, partialResults);
+
     Object resResponse;
     try {
       resResponse = WebDriverInjectorExtensions.executeScript(webDriver, finishRunScript);

@@ -472,28 +472,7 @@ public class AxeBuilder {
     Page blankPage = browser.newPage();
     blankPage.evaluate(getAxeScript() + getAxeConfigure(hasRunPartial));
 
-    String partialResString = "";
-    try {
-      ObjectMapper mapper = new ObjectMapper();
-      partialResString = mapper.writeValueAsString(partialResults);
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
-    int sizeLimit = 15_000_000;
-    while (!partialResString.isEmpty()) {
-      int chunkSize = sizeLimit;
-      if (chunkSize > partialResString.length()) {
-        chunkSize = partialResString.length();
-      }
-      String chunk = partialResString.substring(0, chunkSize);
-      partialResString = partialResString.substring(chunkSize);
-      blankPage.evaluate(
-          "(chunk) => {"
-              + "window.partialResults ??= '';"
-              + "window.partialResults += chunk;"
-              + "}",
-          chunk);
-    }
+    storePartialResults(partialResults);
 
     Object results;
 
@@ -512,6 +491,35 @@ public class AxeBuilder {
       blankPage.close();
     }
     return results;
+  }
+
+  /**
+   * Serializes and chunks partial results to send to the browser. This is done because webdriver
+   * has a maximum size for arguments.
+   */
+  private void storePartialResults(ArrayList<Object> partialResults) {
+    String partialResString = "";
+    try {
+      ObjectMapper mapper = new ObjectMapper();
+      partialResString = mapper.writeValueAsString(partialResults);
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+    int sizeLimit = 60_000_000;
+    while (!partialResString.isEmpty()) {
+      int chunkSize = sizeLimit;
+      if (chunkSize > partialResString.length()) {
+        chunkSize = partialResString.length();
+      }
+      String chunk = partialResString.substring(0, chunkSize);
+      partialResString = partialResString.substring(chunkSize);
+      blankPage.evaluate(
+          "(chunk) => {"
+              + "window.partialResults ??= '';"
+              + "window.partialResults += chunk;"
+              + "}",
+          chunk);
+    }
   }
 
   private boolean hasRunPartial(Page page) {
