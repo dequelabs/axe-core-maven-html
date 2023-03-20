@@ -58,6 +58,7 @@ public class Axe43xIntegrationTest {
   private static String axePost43x;
   private static String axeCrasherJS;
   private static String axeForceLegacyJS;
+  private static String axeLargePartialJS;
   private static File integrationTestTargetFile =
       new File("src/test/resources/html/integration-test-target.html");
   private static String integrationTestTargetUrl = integrationTestTargetFile.getAbsolutePath();
@@ -92,6 +93,7 @@ public class Axe43xIntegrationTest {
     axePre43x = downloadFromURL(fixture("/axe-core@legacy.js"));
     axeCrasherJS = downloadFromURL(fixture("/axe-crasher.js"));
     axeForceLegacyJS = downloadFromURL(fixture("/axe-force-legacy.js"));
+    axeLargePartialJS = downloadFromURL(fixture("/axe-large-partial.js"));
   }
 
   private static String downloadFromURL(String url) throws Exception {
@@ -532,6 +534,20 @@ public class Axe43xIntegrationTest {
     List<CheckedNode> nodes = violations.get(0).getNodes();
     assertEquals(nodes.get(0).getTarget().toString(), "[#light-frame, input]");
     assertEquals(nodes.get(1).getTarget().toString(), "[#slotted-frame, input]");
+  }
+
+  @Test
+  public void withLargeResults() {
+    webDriver.get(fixture("/index.html"));
+    AxeBuilder axeBuilder =
+        new AxeBuilder()
+            .setAxeScriptProvider(new StringAxeScriptProvider(axePost43x + axeLargePartialJS));
+
+    Results axeResults = axeBuilder.analyze(webDriver);
+    List<Rule> passes = axeResults.getPasses();
+
+    assertEquals(passes.size(), 1);
+    assertEquals(passes.get(0).getId(), "duplicate-id");
   }
 
   /**

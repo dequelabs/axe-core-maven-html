@@ -997,4 +997,17 @@ public class PlaywrightJavaTest {
     assertEquals(nodes.get(0).getTarget().toString(), "[#light-frame, input]");
     assertEquals(nodes.get(1).getTarget().toString(), "[#slotted-frame, input]");
   }
+
+  @Test
+  public void shouldWorkWithLargeResults() throws Exception {
+    page.navigate(server + "index.html");
+    String source = AxeBuilder.getAxeScript() + downloadFromURL(server + "axe-large-partial.js");
+    overwriteAxeSourceWithString(source);
+
+    AxeBuilder axeBuilder = new AxeBuilder(page);
+    AxeResults axeResults = axeBuilder.analyze();
+
+    assertEquals(axeResults.getPasses().size(), 1);
+    assertEquals(axeResults.getPasses().get(0).getId(), "duplicate-id");
+  }
 }
