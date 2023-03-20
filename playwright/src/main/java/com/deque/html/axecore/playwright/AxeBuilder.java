@@ -472,7 +472,7 @@ public class AxeBuilder {
     Page blankPage = browser.newPage();
     blankPage.evaluate(getAxeScript() + getAxeConfigure(hasRunPartial));
 
-    storePartialResults(partialResults);
+    storePartialResults(blankPage, partialResults);
 
     Object results;
 
@@ -497,7 +497,7 @@ public class AxeBuilder {
    * Serializes and chunks partial results to send to the browser. This is done because webdriver
    * has a maximum size for arguments.
    */
-  private void storePartialResults(ArrayList<Object> partialResults) {
+  private void storePartialResults(Page blankPage, ArrayList<Object> partialResults) {
     String partialResString = "";
     try {
       ObjectMapper mapper = new ObjectMapper();
