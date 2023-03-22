@@ -741,7 +741,7 @@ public class AxeBuilder {
       sj.add(pr);
     }
     String partialResString = sj.toString();
-    int sizeLimit = 20_000_000;
+    int sizeLimit = 60_000_000;
     while (!partialResString.isEmpty()) {
       int chunkSize = sizeLimit;
       if (chunkSize > partialResString.length()) {
