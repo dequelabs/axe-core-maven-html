@@ -560,6 +560,7 @@ public class Axe43xIntegrationTest {
       ChromeOptions options = new ChromeOptions();
       options.setUnhandledPromptBehaviour(UnexpectedAlertBehaviour.ACCEPT);
       options.addArguments(
+          "--remote-allow-origins=*",
           "no-sandbox",
           "--log-level=3",
           "--silent",
