@@ -505,7 +505,7 @@ public class AxeBuilder {
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
-    int sizeLimit = 60_000_000;
+    int sizeLimit = 20_000_000;
     while (!partialResString.isEmpty()) {
       int chunkSize = sizeLimit;
       if (chunkSize > partialResString.length()) {
