@@ -106,12 +106,6 @@ CSS selectors to include during analysis
 
 ```java
 new AxeBuilder()
-        .include(Collections.singletonList(".some-class"))
-        .include(Collections.singletonList(".some-other-class"));
-
-// OR
-
-        new AxeBuilder()
         .include(".some-class")
         .include(".some-other-class");
 ```
@@ -135,12 +129,6 @@ CSS selectors to exclude during analysis
 
 ```java
 new AxeBuilder()
-        .exclude(Collections.singletonList(".some-class"))
-        .exclude(Collections.singletonList(".some-other-class"));
-
-// OR
-
-        new AxeBuilder()
         .exclude(".some-class")
         .exclude(".some-other-class");
 
