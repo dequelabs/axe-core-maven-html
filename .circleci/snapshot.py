@@ -37,7 +37,7 @@ def make_version_snapshot(pom_dir):
                 dep_version_node.text = dep_version_node.text + ss
 
     tree.write(pom_path, xml_declaration = True, encoding = 'utf-8', method = 'xml')
-    print 'Added %s to version' % ss
+    print('Added %s to version' % ss)
 
 pom_dirs = ['', 'selenium', 'playwright', 'utilities']
 
