@@ -140,6 +140,7 @@ workflows:
           requires:
             - selenium
             - playwright
+            - check_licenses
           filters:
             branches:
               only: ci/fix-snapshot
@@ -149,6 +150,7 @@ workflows:
             - dependencies_npm
             - selenium
             - playwright
+            - check_licenses
           filters:
             branches:
               only: master
