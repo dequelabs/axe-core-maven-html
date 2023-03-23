@@ -90,8 +90,6 @@ jobs:
     <<: *defaults
     steps:
       - checkout
-      - restore_cache:
-          key: npm-v1-deps-{{ checksum "package-lock.json" }}-{{ checksum "selenium/package-lock.json" }}-{{ checksum "playwright/package-lock.json" }}
       - run: mvn clean install -DskipTests
       - run: echo "$GPG_PRIVATE_KEY" | base64 --decode | gpg --import
       - run: echo "default-key 7701193A898A849383D3E8B49F8AFEACBF07F7C4" > ~/.gnupg/gpg.conf
@@ -140,7 +138,6 @@ workflows:
       - snapshot_release:
           context: html-tools
           requires:
-            - dependencies_npm
             - selenium
             - playwright
           filters:
