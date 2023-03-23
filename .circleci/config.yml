@@ -146,7 +146,7 @@ workflows:
             - check_licenses
           filters:
             branches:
-              only: ci/fix-snapshot
+              only: develop
       - release:
           context: html-tools
           requires:
