@@ -6,7 +6,7 @@
   "repository": "dequelabs/axe-core-maven-html",
   "scripts": {},
   "dependencies": {
-    "axe-core": "^4.6.2"
+    "axe-core": "^4.7.0"
   },
   "devDependencies": {
     "axe-test-fixtures": "github:dequelabs/axe-test-fixtures#v1"
