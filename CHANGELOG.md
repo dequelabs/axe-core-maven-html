@@ -15,6 +15,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 * work with extremely large results ([#304](https://github.com/dequelabs/axe-core-maven-html/issues/304)) ([8fb6801](https://github.com/dequelabs/axe-core-maven-html/commit/8fb6801915780343b8d7c6e9a5043a189c15f3a9))
 
+
 ## [4.6.0](https://github.com/dequelabs/axe-core-maven-html/compare/v4.5.1...v4.6.0) (2023-01-19)
 
 
