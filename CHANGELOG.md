@@ -7,7 +7,6 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Features
 
-* **playwright, selenium:** add support for new include/exclude selectors and axe-core 4.6 ([#283](https://github.com/dequelabs/axe-core-maven-html/issues/283)) ([8736a9c](https://github.com/dequelabs/axe-core-maven-html/commit/8736a9c501e36a5808d96ea04827d14579635a78))
 * Update axe-core to v4.7.0 ([#307](https://github.com/dequelabs/axe-core-maven-html/issues/307)) ([d1e0fd9](https://github.com/dequelabs/axe-core-maven-html/commit/d1e0fd9c10aa0f891bb7064cc48b954cc2e04bd7))
 
 
