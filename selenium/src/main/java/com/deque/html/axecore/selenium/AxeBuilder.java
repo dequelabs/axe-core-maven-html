@@ -28,6 +28,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.StringJoiner;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import org.openqa.selenium.InvalidArgumentException;
@@ -112,13 +113,18 @@ public class AxeBuilder {
           // JSON passthrough removes propereties that are set to undefined. Fixes an infinite loop
           // in
           // finishRun
-          "window.axe.runPartial(context, options).then(res => JSON.parse(JSON.stringify(res))).then(cb);";
+          "window.axe.runPartial(context, options).then(res => JSON.stringify(res)).then(cb);";
 
   private static String frameContextScript =
       "const context = typeof arguments[0] == 'string' ? JSON.parse(arguments[0]) : arguments[0];"
           + "return window.axe.utils.getFrameContexts(context);";
 
-  private static String finishRunScript = "return axe.finishRun(arguments[0])";
+  private static String storeChunk =
+      "window.partialResults ??= '';" + "window.partialResults += arguments[0];";
+
+  private static String finishRunScript =
+      "const partialResults = JSON.parse(window.partialResults || '[]');"
+          + "return axe.finishRun(partialResults);";
 
   /**
    * get the default axe builder options.
@@ -662,7 +668,7 @@ public class AxeBuilder {
     return results;
   }
 
-  private ArrayList<Object> runPartialRecursive(
+  private ArrayList<String> runPartialRecursive(
       final WebDriver webDriver,
       final Object options,
       final Object context,
@@ -677,10 +683,11 @@ public class AxeBuilder {
       ArrayList<FrameContext> contexts =
           objectMapper.convertValue(fcResponse, new TypeReference<ArrayList<FrameContext>>() {});
 
-      Object resResponse =
-          WebDriverInjectorExtensions.executeAsyncScript(
-              webDriver, runPartialScript, context, options);
-      ArrayList<Object> partialResults = new ArrayList<Object>();
+      String resResponse =
+          (String)
+              WebDriverInjectorExtensions.executeAsyncScript(
+                  webDriver, runPartialScript, context, options);
+      ArrayList<String> partialResults = new ArrayList<String>();
       partialResults.add(resResponse);
       if (disableIframeTesting) {
         return partialResults;
@@ -695,7 +702,6 @@ public class AxeBuilder {
         if (frame instanceof String) {
           webDriver.switchTo().frame((String) frame);
         } else if (frame instanceof WebElement) {
-          WebElement elem = (WebElement) frame;
           webDriver.switchTo().frame((WebElement) frame);
         } else if (frame instanceof Integer) {
           webDriver.switchTo().frame((Integer) frame);
@@ -703,7 +709,7 @@ public class AxeBuilder {
           partialResults.add(null);
           continue;
         }
-        ArrayList<Object> morePartialResults =
+        ArrayList<String> morePartialResults =
             runPartialRecursive(webDriver, options, frameContext, false);
         partialResults.addAll(morePartialResults);
       }
@@ -712,7 +718,7 @@ public class AxeBuilder {
       if (isTopLevel) {
         throw e;
       } else {
-        ArrayList<Object> ret = new ArrayList<Object>();
+        ArrayList<String> ret = new ArrayList<String>();
         ret.add(null);
         return ret;
       }
@@ -723,11 +729,35 @@ public class AxeBuilder {
     }
   }
 
+  /**
+   * Serializes and chunks partial results to send to the browser. This is done because webdriver
+   * has a maximum size for arguments.
+   */
+  private void sendPartialResults(final WebDriver webDriver, ArrayList<String> partialResults) {
+    // partialResults is a list of result objects, so we can build a JSON array easily with
+    // appending strings
+    StringJoiner sj = new StringJoiner(",", "[", "]");
+    for (String pr : partialResults) {
+      sj.add(pr);
+    }
+    String partialResString = sj.toString();
+    int sizeLimit = 20_000_000;
+    while (!partialResString.isEmpty()) {
+      int chunkSize = sizeLimit;
+      if (chunkSize > partialResString.length()) {
+        chunkSize = partialResString.length();
+      }
+      String chunk = partialResString.substring(0, chunkSize);
+      partialResString = partialResString.substring(chunkSize);
+      WebDriverInjectorExtensions.executeScript(webDriver, storeChunk, chunk);
+    }
+  }
+
   private Results analyzePost43x(final WebDriver webDriver, final Object rawContextArg) {
     String rawOptionsArg =
         getOptions().equals("{}") ? AxeReporter.serialize(runOptions) : getOptions();
 
-    ArrayList<Object> partialResults;
+    ArrayList<String> partialResults;
     try {
       partialResults = runPartialRecursive(webDriver, rawOptionsArg, rawContextArg, true);
     } catch (RuntimeException re) {
@@ -739,10 +769,11 @@ public class AxeBuilder {
 
     String prevWindow = WebDriverExtensions.openAboutBlank(webDriver);
     injectAxe(webDriver);
+    sendPartialResults(webDriver, partialResults);
+
     Object resResponse;
     try {
-      resResponse =
-          WebDriverInjectorExtensions.executeScript(webDriver, finishRunScript, partialResults);
+      resResponse = WebDriverInjectorExtensions.executeScript(webDriver, finishRunScript);
     } catch (Exception e) {
       throw new RuntimeException(
           "axe.finishRun failed. Please check out https://github.com/dequelabs/axe-core-maven-html/blob/develop/selenium/error-handling.md",

@@ -11,13 +11,11 @@ import com.microsoft.playwright.Browser;
 import com.microsoft.playwright.ElementHandle;
 import com.microsoft.playwright.Frame;
 import com.microsoft.playwright.Page;
-
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.*;
-
 import org.apache.commons.io.IOUtils;
 
 /** Chainable class: AxeBuilder used to customize and analyze using axe-core */
@@ -318,7 +316,7 @@ public class AxeBuilder {
       return this.objectMapper.convertValue(results, AxeResults.class);
     }
 
-    ArrayList<Object> partialResults;
+    ArrayList<String> partialResults;
     try {
       partialResults = runPartialRecursive(page.mainFrame(), axeContext, true);
     } catch (RuntimeException runtimeException) {
@@ -362,7 +360,7 @@ public class AxeBuilder {
    * @see <a href="https://github.com/dequelabs/axe-core/blob/master/doc/run-partial.md">axe-core
    *     runPartial</a>
    */
-  private ArrayList<Object> runPartialRecursive(Frame frame, String context, boolean isTopLevel) {
+  private ArrayList<String> runPartialRecursive(Frame frame, String context, boolean isTopLevel) {
     try {
       if (!isTopLevel) {
         injectAxeSource(frame);
@@ -373,9 +371,9 @@ public class AxeBuilder {
           objectMapper.convertValue(
               frameContextResult, new TypeReference<ArrayList<FrameContext>>() {});
 
-      Object result = runPartial(frame, context, serialize(this.options));
+      String result = runPartial(frame, context, serialize(this.options));
 
-      ArrayList<Object> partialResults = new ArrayList<>();
+      ArrayList<String> partialResults = new ArrayList<>();
       partialResults.add(result);
 
       frameContexts.forEach(
@@ -385,7 +383,7 @@ public class AxeBuilder {
             Object iframe = getIframeHandle(frame, iframeSelector);
             if (iframe instanceof ElementHandle) {
               Frame childFrame = ((ElementHandle) iframe).contentFrame();
-              ArrayList<Object> childFrameResults =
+              ArrayList<String> childFrameResults =
                   runPartialRecursive(childFrame, iframeContext, false);
               partialResults.addAll(childFrameResults);
             } else {
@@ -398,7 +396,7 @@ public class AxeBuilder {
       if (isTopLevel) {
         throw runtimeException;
       }
-      ArrayList<Object> empty = new ArrayList<>();
+      ArrayList<String> empty = new ArrayList<>();
       empty.add(null);
       return empty;
     } finally {
@@ -450,14 +448,15 @@ public class AxeBuilder {
         iframeSelector);
   }
 
-  private Object runPartial(Frame frame, String context, String options) {
-    return frame.evaluate(
-        "([axeContext, axeOptions]) => {"
-            + "const context = JSON.parse(axeContext);"
-            + "const options = JSON.parse(axeOptions);"
-            + "return axe.runPartial(context, options).then(res => JSON.parse(JSON.stringify(res)));"
-            + "}",
-        Arrays.asList(context, options));
+  private String runPartial(Frame frame, String context, String options) {
+    return (String)
+        frame.evaluate(
+            "([axeContext, axeOptions]) => {"
+                + "const context = JSON.parse(axeContext);"
+                + "const options = JSON.parse(axeOptions);"
+                + "return axe.runPartial(context, options).then(res => JSON.stringify(res));"
+                + "}",
+            Arrays.asList(context, options));
   }
 
   /**
@@ -469,18 +468,22 @@ public class AxeBuilder {
    *     href="https://github.com/dequelabs/axe-core/blob/master/doc/run-partial.md#axefinishrunpartialresults-options-promise>axe-core
    *     runPartial</a>
    */
-  private Object finishRun(ArrayList<Object> partialResults) {
+  private Object finishRun(ArrayList<String> partialResults) {
     Browser browser = page.context().browser();
     Page blankPage = browser.newPage();
     blankPage.evaluate(getAxeScript() + getAxeConfigure(hasRunPartial));
+
+    storePartialResults(blankPage, partialResults);
 
     Object results;
 
     try {
       results =
           blankPage.evaluate(
-              "(partialResults) => {" + "return axe.finishRun(partialResults);" + "}",
-              partialResults);
+              "() => {"
+                  + "const partialResults = JSON.parse(window.partialResults || '[]');"
+                  + "return axe.finishRun(partialResults);"
+                  + "}");
     } catch (RuntimeException runtimeException) {
       throw new RuntimeException(
           "Please make sure popups are not disabled. Please see: Please see: https://github.com/dequelabs/axe-core-maven-html/blob/develop/playwright/error-handling.md",
@@ -489,6 +492,36 @@ public class AxeBuilder {
       blankPage.close();
     }
     return results;
+  }
+
+  /**
+   * Serializes and chunks partial results to send to the browser. This is done because webdriver
+   * has a maximum size for arguments.
+   */
+  private void storePartialResults(Page blankPage, ArrayList<String> partialResults) {
+    // partialResults is a list of result objects, so we can build a JSON array easily with
+    // appending strings
+    StringJoiner sj = new StringJoiner(",", "[", "]");
+    for (String pr : partialResults) {
+      sj.add(pr);
+    }
+    String partialResString = sj.toString();
+
+    int sizeLimit = 20_000_000;
+    while (!partialResString.isEmpty()) {
+      int chunkSize = sizeLimit;
+      if (chunkSize > partialResString.length()) {
+        chunkSize = partialResString.length();
+      }
+      String chunk = partialResString.substring(0, chunkSize);
+      partialResString = partialResString.substring(chunkSize);
+      blankPage.evaluate(
+          "(chunk) => {"
+              + "window.partialResults ??= '';"
+              + "window.partialResults += chunk;"
+              + "}",
+          chunk);
+    }
   }
 
   private boolean hasRunPartial(Page page) {

@@ -95,8 +95,8 @@ jobs:
       - run: mvn clean install -DskipTests
       - run: echo "$GPG_PRIVATE_KEY" | base64 --decode | gpg --import
       - run: echo "default-key 7701193A898A849383D3E8B49F8AFEACBF07F7C4" > ~/.gnupg/gpg.conf
-      - run: sudo apt update && sudo apt install python
-      - run: python .circleci/snapshot.py
+      - run: sudo apt update && sudo apt install python3
+      - run: python3 .circleci/snapshot.py
       - run: .circleci/publish.sh
 
   release:
@@ -143,6 +143,7 @@ workflows:
             - dependencies_npm
             - selenium
             - playwright
+            - check_licenses
           filters:
             branches:
               only: develop
@@ -152,6 +153,7 @@ workflows:
             - dependencies_npm
             - selenium
             - playwright
+            - check_licenses
           filters:
             branches:
               only: master

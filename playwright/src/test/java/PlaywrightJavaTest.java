@@ -822,6 +822,35 @@ public class PlaywrightJavaTest {
   }
 
   @Test
+  public void withIncludeIframe() {
+    page.navigate(server + "context-include-exclude.html");
+
+    AxeBuilder axeBuilder =
+        new AxeBuilder(page)
+            .include(Arrays.asList("#ifr-inc-excl", "#foo-baz", "html"))
+            .include(Arrays.asList("#ifr-inc-excl", "#foo-baz", "input"))
+            // does not exist
+            .include(Arrays.asList("#hazaar", "html"));
+
+    AxeResults axeResults = axeBuilder.analyze();
+
+    List<Rule> labelRule =
+        axeResults.getViolations().stream()
+            .filter(v -> v.getId().equalsIgnoreCase("label"))
+            .collect(Collectors.toList());
+
+    assertEquals(labelRule.size(), 1);
+
+    List<String> targets = getPassTargets(axeResults);
+
+    assertTrue(targets.stream().anyMatch(t -> t.contains("#ifr-inc-excl")));
+    assertTrue(targets.stream().anyMatch(t -> t.contains("#foo-baz")));
+    assertTrue(targets.stream().anyMatch(t -> t.contains("input")));
+    assertTrue(targets.stream().noneMatch(t -> t.contains("#foo-bar")));
+    assertTrue(targets.stream().noneMatch(t -> t.contains("#hazaar")));
+  }
+
+  @Test
   public void withLabelledFrame() {
     page.navigate(server + "context-include-exclude.html");
     AxeBuilder axeBuilder =
@@ -855,6 +884,31 @@ public class PlaywrightJavaTest {
             .exclude("#ifr-inc-excl", "#foo-bar")
             .include("#ifr-inc-excl", "#foo-baz", "html")
             .exclude("#ifr-inc-excl", "#foo-baz", "input");
+
+    AxeResults axeResults = axeBuilder.analyze();
+
+    List<Rule> labelRule =
+        axeResults.getViolations().stream()
+            .filter(v -> v.getId().equalsIgnoreCase("label"))
+            .collect(Collectors.toList());
+
+    assertEquals(labelRule.size(), 0);
+
+    List<String> targets = getPassTargets(axeResults);
+
+    assertTrue(targets.stream().noneMatch(t -> t.equalsIgnoreCase("#foo-bar")));
+    assertTrue(targets.stream().noneMatch(t -> t.equalsIgnoreCase("input")));
+  }
+
+  @Test
+  public void withArrayListIframes() {
+    page.navigate(server + "context-include-exclude.html");
+    AxeBuilder axeBuilder =
+        new AxeBuilder(page)
+            .include(Arrays.asList("#ifr-inc-excl", "html"))
+            .exclude(Arrays.asList("#ifr-inc-excl", "#foo-bar"))
+            .include(Arrays.asList("#ifr-inc-excl", "#foo-baz", "html"))
+            .exclude(Arrays.asList("#ifr-inc-excl", "#foo-baz", "input"));
 
     AxeResults axeResults = axeBuilder.analyze();
 
@@ -942,5 +996,18 @@ public class PlaywrightJavaTest {
     List<CheckedNode> nodes = violations.get(0).getNodes();
     assertEquals(nodes.get(0).getTarget().toString(), "[#light-frame, input]");
     assertEquals(nodes.get(1).getTarget().toString(), "[#slotted-frame, input]");
+  }
+
+  @Test
+  public void shouldWorkWithLargeResults() throws Exception {
+    page.navigate(server + "index.html");
+    String source = AxeBuilder.getAxeScript() + downloadFromURL(server + "axe-large-partial.js");
+    overwriteAxeSourceWithString(source);
+
+    AxeBuilder axeBuilder = new AxeBuilder(page);
+    AxeResults axeResults = axeBuilder.analyze();
+
+    assertEquals(axeResults.getPasses().size(), 1);
+    assertEquals(axeResults.getPasses().get(0).getId(), "duplicate-id");
   }
 }

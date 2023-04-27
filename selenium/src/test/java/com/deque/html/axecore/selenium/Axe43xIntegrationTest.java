@@ -58,6 +58,7 @@ public class Axe43xIntegrationTest {
   private static String axePost43x;
   private static String axeCrasherJS;
   private static String axeForceLegacyJS;
+  private static String axeLargePartialJS;
   private static File integrationTestTargetFile =
       new File("src/test/resources/html/integration-test-target.html");
   private static String integrationTestTargetUrl = integrationTestTargetFile.getAbsolutePath();
@@ -92,6 +93,7 @@ public class Axe43xIntegrationTest {
     axePre43x = downloadFromURL(fixture("/axe-core@legacy.js"));
     axeCrasherJS = downloadFromURL(fixture("/axe-crasher.js"));
     axeForceLegacyJS = downloadFromURL(fixture("/axe-force-legacy.js"));
+    axeLargePartialJS = downloadFromURL(fixture("/axe-large-partial.js"));
   }
 
   private static String downloadFromURL(String url) throws Exception {
@@ -411,6 +413,58 @@ public class Axe43xIntegrationTest {
   }
 
   @Test
+  public void withIncludeIframe() {
+    webDriver.get(fixture("/context-include-exclude.html"));
+    AxeBuilder axeBuilder =
+        new AxeBuilder()
+            .include(Arrays.asList("#ifr-inc-excl", "#foo-baz", "html"))
+            .include(Arrays.asList("#ifr-inc-excl", "#foo-baz", "input"))
+            // does not exist
+            .include(Arrays.asList("#hazaar", "html"));
+
+    Results axeResults = axeBuilder.analyze(webDriver);
+
+    List<Rule> labelRule =
+        axeResults.getViolations().stream()
+            .filter(v -> v.getId().equalsIgnoreCase("label"))
+            .collect(Collectors.toList());
+
+    assertEquals(labelRule.size(), 1);
+
+    List<String> targets = getPassTargets(axeResults);
+
+    assertTrue(targets.stream().anyMatch(t -> t.contains("#ifr-inc-excl")));
+    assertTrue(targets.stream().anyMatch(t -> t.contains("#foo-baz")));
+    assertTrue(targets.stream().anyMatch(t -> t.contains("input")));
+    assertTrue(targets.stream().noneMatch(t -> t.contains("#foo-bar")));
+    assertTrue(targets.stream().noneMatch(t -> t.contains("#hazaar")));
+  }
+
+  @Test
+  public void withArrayListIframes() {
+    webDriver.get(fixture("/context-include-exclude.html"));
+    AxeBuilder axeBuilder =
+        new AxeBuilder()
+            .include(Arrays.asList("#ifr-inc-excl", "html"))
+            .exclude(Arrays.asList("#ifr-inc-excl", "#foo-bar"))
+            .include(Arrays.asList("#ifr-inc-excl", "#foo-baz", "html"))
+            .exclude(Arrays.asList("#ifr-inc-excl", "#foo-baz", "input"));
+    Results axeResults = axeBuilder.analyze(webDriver);
+
+    List<Rule> labelRule =
+        axeResults.getViolations().stream()
+            .filter(v -> v.getId().equalsIgnoreCase("label"))
+            .collect(Collectors.toList());
+
+    assertEquals(labelRule.size(), 0);
+
+    List<String> targets = getPassTargets(axeResults);
+
+    assertTrue(targets.stream().noneMatch(t -> t.equalsIgnoreCase("#foo-bar")));
+    assertTrue(targets.stream().noneMatch(t -> t.equalsIgnoreCase("input")));
+  }
+
+  @Test
   public void withIncludeShadowDOM() {
     webDriver.get(fixture("/shadow-dom.html"));
     AxeBuilder axeBuilder =
@@ -482,6 +536,20 @@ public class Axe43xIntegrationTest {
     assertEquals(nodes.get(1).getTarget().toString(), "[#slotted-frame, input]");
   }
 
+  @Test
+  public void withLargeResults() {
+    webDriver.get(fixture("/index.html"));
+    AxeBuilder axeBuilder =
+        new AxeBuilder()
+            .setAxeScriptProvider(new StringAxeScriptProvider(axePost43x + axeLargePartialJS));
+
+    Results axeResults = axeBuilder.analyze(webDriver);
+    List<Rule> passes = axeResults.getPasses();
+
+    assertEquals(passes.size(), 1);
+    assertEquals(passes.get(0).getId(), "duplicate-id");
+  }
+
   /**
    * initiates a web browser for Chrome and Firefox.
    *
@@ -492,6 +560,7 @@ public class Axe43xIntegrationTest {
       ChromeOptions options = new ChromeOptions();
       options.setUnhandledPromptBehaviour(UnexpectedAlertBehaviour.ACCEPT);
       options.addArguments(
+          "--remote-allow-origins=*",
           "no-sandbox",
           "--log-level=3",
           "--silent",

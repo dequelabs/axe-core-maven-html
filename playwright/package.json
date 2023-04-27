@@ -1,6 +1,6 @@
 {
   "name": "axe-core-maven-html-playwright",
-  "version": "4.6.0",
+  "version": "4.7.0",
   "license": "MPL",
   "private": true,
   "repository": "dequelabs/axe-core-maven-html",
@@ -8,7 +8,7 @@
     "start": "http-server ./node_modules/axe-test-fixtures/fixtures -p 1337"
   },
   "dependencies": {
-    "axe-core": "^4.6.2"
+    "axe-core": "^4.7.0"
   },
   "devDependencies": {
     "axe-test-fixtures": "github:dequelabs/axe-test-fixtures#v1",
