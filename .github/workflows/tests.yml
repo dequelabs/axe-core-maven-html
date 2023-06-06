@@ -1,0 +1,47 @@
+name: Tests
+
+on:
+  push:
+    branches:
+      - "**" # all branches
+      - "!master" # except master
+      - "!develop" # except develop
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      # TODO: may not be needed, just trying it out (could be cool)
+      matrix:
+        os: [ubuntu-latest]
+        java: [8, 20]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Cache npm dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            - ./node_modules
+            - ./selenium/node_modules
+            - ./playwright/node_modules
+          key: npm-workspace-cache-${{ runner.os }}-${{ hashFiles('./**/package-lock.json') }}
+          restore-keys: |
+            npm-workspace-cache-${{ runner.os }}-
+      - name: Cache Maven dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+      - name: Set up JDK 8
+        uses: actions/setup-java@v3
+        with:
+          java-version: "8"
+          distribution: "oracle"
+      - name: Maven Clean and Install
+        run: mvn clean install
+      - name: Run Playwright tests
+        run: mvn test -q -pl playwright
+      - name: Run Selenium tests
+        run: mvn test -q -pl selenium
