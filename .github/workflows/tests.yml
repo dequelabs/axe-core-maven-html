@@ -38,7 +38,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           java-version: "8"
-          distribution: "oracle"
+          distribution: "temurin"
       - name: Maven Clean and Install
         run: mvn clean install
       - name: Run Playwright tests
