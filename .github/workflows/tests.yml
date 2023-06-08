@@ -78,5 +78,5 @@ jobs:
       - name: Start fixture server
         run: python -m http.server 8001 &
         working-directory: selenium/node_modules/axe-test-fixtures/fixtures
-      - name: Run Playwright tests
+      - name: Run Selenium tests
         run: mvn test -q -pl selenium
