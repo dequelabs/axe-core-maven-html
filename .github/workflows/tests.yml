@@ -50,6 +50,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - uses: actions/cache@v3
+        id: npm-cache
+        with:
+          path: "**/node_modules"
+          key: npm-workspace-cache-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            npm-workspace-cache-${{ runner.os }}-
       - name: Start fixture server
         run: npm --prefix=playwright start &
       - name: Run Playwright tests
@@ -62,6 +69,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - uses: actions/cache@v3
+        id: npm-cache
+        with:
+          path: "**/node_modules"
+          key: npm-workspace-cache-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            npm-workspace-cache-${{ runner.os }}-
       - name: Start fixture server
         run: python2 -m SimpleHTTPServer 8001 &
         working-directory: selenium/node_modules/axe-test-fixtures/fixtures
