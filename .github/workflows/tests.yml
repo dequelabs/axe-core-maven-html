@@ -75,10 +75,8 @@ jobs:
           restore-keys: |
             npm-workspace-cache-${{ runner.os }}-
       - uses: actions/setup-python@v4
-        with:
-          python-version: "2.x"
       - name: Start fixture server
-        run: python2 -m SimpleHTTPServer 8001 &
+        run: python -m http.server 8001 &
         working-directory: selenium/node_modules/axe-test-fixtures/fixtures
       - name: Run Playwright tests
         run: mvn test -q -pl selenium
