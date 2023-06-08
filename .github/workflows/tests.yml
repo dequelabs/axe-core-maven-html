@@ -14,6 +14,7 @@ jobs:
       - uses: actions/checkout@v3
       - name: Cache npm dependencies
         uses: actions/cache@v3
+        id: npm-cache
         with:
           path: |
             - ./node_modules
@@ -24,6 +25,7 @@ jobs:
             npm-workspace-cache-${{ runner.os }}-
       - name: Cache Maven dependencies
         uses: actions/cache@v3
+        id: maven-cache
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
@@ -34,8 +36,15 @@ jobs:
         with:
           java-version: "8"
           distribution: "temurin"
-      - name: Maven Install
+      - name: Install Maven dependencies
+        # https://github.com/actions/cache#skipping-steps-based-on-cache-hit
+        if: steps.maven-cache.outputs.cache-hit != 'true'
         run: mvn clean install -DskipTests
+      - name: Install NPM dependencies
+        # https://github.com/actions/cache#skipping-steps-based-on-cache-hit
+        if: steps.npm-cache.outputs.cache-hit != 'true'
+        run: npm --prefix=playwright ci && npm --prefix=selenium ci
+
   playwright-tests:
     needs: build
     runs-on: ubuntu-latest
@@ -47,6 +56,7 @@ jobs:
         run: mvn test -pl playwright
       - name: Run Selenium tests
         run: selenium/node_modules/axe-test-fixtures/fixtures && python2 -m SimpleHTTPServer 8001 & mvn test -q -pl selenium
+
   selenium-tests:
     needs: build
     runs-on: ubuntu-latest
