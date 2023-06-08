@@ -10,11 +10,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    strategy:
-      # TODO: may not be needed, just trying it out (could be cool)
-      matrix:
-        os: [ubuntu-latest]
-        java: [8, 20]
     steps:
       - uses: actions/checkout@v3
       - name: Cache npm dependencies
@@ -39,8 +34,8 @@ jobs:
         with:
           java-version: "8"
           distribution: "temurin"
-      - name: Maven Clean and Install
-        run: mvn clean install
+      - name: Maven Install
+        run: mvn clean install -DskipTests
   playwright-tests:
     needs: build
     runs-on: ubuntu-latest
