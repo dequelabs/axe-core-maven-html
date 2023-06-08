@@ -17,9 +17,9 @@ jobs:
         id: npm-cache
         with:
           path: |
-            - ./node_modules
-            - ./selenium/node_modules
-            - ./playwright/node_modules
+            - node_modules
+            - selenium/node_modules
+            - playwright/node_modules
           key: npm-workspace-cache-${{ runner.os }}-${{ hashFiles('./**/package-lock.json') }}
           restore-keys: |
             npm-workspace-cache-${{ runner.os }}-
@@ -43,7 +43,10 @@ jobs:
       - name: Install NPM dependencies
         # https://github.com/actions/cache#skipping-steps-based-on-cache-hit
         if: steps.npm-cache.outputs.cache-hit != 'true'
-        run: npm --prefix=playwright ci && npm --prefix=selenium ci
+        run: |
+          npm install &&
+          npm install --prefix=selenium && 
+          npm install --prefix=playwright
 
   playwright-tests:
     needs: build
