@@ -61,8 +61,6 @@ jobs:
         run: npm --prefix=playwright start &
       - name: Run Playwright tests
         run: mvn test -q -pl playwright
-      - name: Run Selenium tests
-        run: selenium/node_modules/axe-test-fixtures/fixtures && python2 -m SimpleHTTPServer 8001 & mvn test -q -pl selenium
 
   selenium-tests:
     needs: build
@@ -76,6 +74,9 @@ jobs:
           key: npm-workspace-cache-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             npm-workspace-cache-${{ runner.os }}-
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "2.x"
       - name: Start fixture server
         run: python2 -m SimpleHTTPServer 8001 &
         working-directory: selenium/node_modules/axe-test-fixtures/fixtures
