@@ -17,9 +17,9 @@ jobs:
         id: npm-cache
         with:
           path: |
-            - node_modules
-            - selenium/node_modules
-            - playwright/node_modules
+            - ./node_modules
+            - ./selenium/node_modules
+            - ./playwright/node_modules
           key: npm-workspace-cache-${{ runner.os }}-${{ hashFiles('./**/package-lock.json') }}
           restore-keys: |
             npm-workspace-cache-${{ runner.os }}-
@@ -45,8 +45,8 @@ jobs:
         if: steps.npm-cache.outputs.cache-hit != 'true'
         run: |
           npm install &&
-          npm install --prefix=selenium && 
-          npm install --prefix=playwright
+          npm --prefix=selenium install &&
+          npm --prefix=playwright install
 
   playwright-tests:
     needs: build
