@@ -17,10 +17,10 @@ jobs:
         id: npm-cache
         with:
           path: |
-            - node_modules
-            - selenium/node_modules
-            - playwright/node_modules
-          key: npm-workspace-cache-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**/playwright/package-lock.json') }}-${{ hashFiles('**/selenium/package-lock.json') }}
+            - ./node_modules
+            - ./selenium/node_modules
+            - ./playwright/node_modules
+          key: npm-workspace-cache-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**/selenium/package-lock.json') }}-${{ hashFiles('**/playwright/package-lock.json') }}
           restore-keys: |
             npm-workspace-cache-${{ runner.os }}-
       - name: Cache Maven dependencies
