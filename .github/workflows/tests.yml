@@ -41,7 +41,21 @@ jobs:
           distribution: "temurin"
       - name: Maven Clean and Install
         run: mvn clean install
+  playwright-tests:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Start fixture server
+        run: npm --prefix=playwright start &
       - name: Run Playwright tests
-        run: mvn test -q -pl playwright
+        run: mvn test -pl playwright
       - name: Run Selenium tests
-        run: mvn test -q -pl selenium
+        run: selenium/node_modules/axe-test-fixtures/fixtures && python2 -m SimpleHTTPServer 8001 & mvn test -q -pl selenium
+  selenium-tests:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Start fixture server
+        run: selenium/node_modules/axe-test-fixtures/fixtures &
+      - name: Run Playwright tests
+        run: mvn test -pl selenium
