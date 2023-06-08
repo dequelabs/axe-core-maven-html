@@ -56,7 +56,7 @@ jobs:
       - name: Start fixture server
         run: npm --prefix=playwright start &
       - name: Run Playwright tests
-        run: mvn test -pl playwright
+        run: mvn test -q -pl playwright
       - name: Run Selenium tests
         run: selenium/node_modules/axe-test-fixtures/fixtures && python2 -m SimpleHTTPServer 8001 & mvn test -q -pl selenium
 
@@ -66,6 +66,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Start fixture server
-        run: selenium/node_modules/axe-test-fixtures/fixtures &
+        run: python2 -m SimpleHTTPServer 8001 &
+        working-directory: selenium/node_modules/axe-test-fixtures/fixtures
       - name: Run Playwright tests
-        run: mvn test -pl selenium
+        run: mvn test -q -pl selenium
