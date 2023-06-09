@@ -55,18 +55,18 @@ jobs:
       - name: Check Selenium licenses
         run: |
           output=$(node $GITHUB_WORKSPACE/.circleci/license-check.js selenium/target/generated-sources/license/THIRD-PARTY.txt)
-          exit_code=$?
-          echo "::set-output name=license-output::$output"
-          if [[ $exit_code -eq 1 ]]; then
+          exitCode=$?
+          echo "license-output=$output" >> $GITHUB_ENV
+          if [[ $exitCode -eq 1 ]]; then
             echo "Prohibited license(s) found. Exiting."
             exit 1
           fi
       - name: Check Playwright licenses
         run: |
           output=$(node $GITHUB_WORKSPACE/.circleci/license-check.js playwright/target/generated-sources/license/THIRD-PARTY.txt)
-          exit_code=$?
-          echo "::set-output name=license-output::$output"
-          if [[ $exit_code -eq 1 ]]; then
+          exitCode=$?
+          echo "license-output=$output" >> $GITHUB_ENV
+          if [[ $exitCode -eq 1 ]]; then
             echo "Prohibited license(s) found. Exiting."
             exit 1
           fi

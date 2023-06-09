@@ -6,9 +6,9 @@ const file = fs.readFileSync(filePath, { encoding: "utf-8" });
 const gplRegex = /gpl/i;
 for (const line of file.split("\n")) {
   const parts = line.split("\t");
-  if (parts.length < 2) {
-    continue;
-  }
+  // if (parts.length < 2) {
+  //   continue;
+  // }
 
   let hasNonGPL = false;
   for (let i = 1; i < parts.length; i++) {
