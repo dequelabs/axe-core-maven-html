@@ -63,12 +63,21 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: actions/cache@v3
+        name: Restore npm cache
         id: npm-cache
         with:
           path: "**/node_modules"
           key: npm-workspace-cache-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             npm-workspace-cache-${{ runner.os }}-
+      - uses: actions/cache@v3
+        name: Restore Maven cache
+        id: maven-cache
+        with:
+          path: ~/.m2/repository
+          key: maven-cache-v1-${{ runner.os }}-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            maven-cache-v1-${{ runner.os }}-
       - name: Start fixture server
         run: npm --prefix=playwright start &
       - name: Run Playwright tests
@@ -79,14 +88,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
       - uses: actions/cache@v3
+        name: Restore npm cache
         id: npm-cache
         with:
           path: "**/node_modules"
           key: npm-workspace-cache-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             npm-workspace-cache-${{ runner.os }}-
-      - uses: actions/setup-python@v4
+      - uses: actions/cache@v3
+        name: Restore Maven cache
+        id: maven-cache
+        with:
+          path: ~/.m2/repository
+          key: maven-cache-v1-${{ runner.os }}-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            maven-cache-v1-${{ runner.os }}-
       - name: Start fixture server
         run: python -m http.server 8001 &
         working-directory: selenium/node_modules/axe-test-fixtures/fixtures
