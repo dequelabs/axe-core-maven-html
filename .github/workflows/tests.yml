@@ -53,23 +53,9 @@ jobs:
       - name: Maven compile licenses
         run: mvn compile license:add-third-party
       - name: Check Selenium licenses
-        run: |
-          output=$(node $GITHUB_WORKSPACE/.circleci/license-check.js selenium/target/generated-sources/license/THIRD-PARTY.txt)
-          exitCode=$?
-          echo "license-output=$output" >> $GITHUB_OUTPUT
-          if [[ $exitCode -eq 1 ]]; then
-            echo "Prohibited license(s) found. Exiting."
-            exit 1
-          fi
+        run: node $GITHUB_WORKSPACE/.circleci/license-check.js selenium/target/generated-sources/license/THIRD-PARTY.txt
       - name: Check Playwright licenses
-        run: |
-          output=$(node $GITHUB_WORKSPACE/.circleci/license-check.js playwright/target/generated-sources/license/THIRD-PARTY.txt)
-          exitCode=$?
-          echo "license-output=$output" >> $GITHUB_OUTPUT
-          if [[ $exitCode -eq 1 ]]; then
-            echo "Prohibited license(s) found. Exiting."
-            exit 1
-          fi
+        run: node $GITHUB_WORKSPACE/.circleci/license-check.js playwright/target/generated-sources/license/THIRD-PARTY.txt
 
   playwright-tests:
     needs: [license-check, build]
