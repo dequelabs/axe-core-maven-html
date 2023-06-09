@@ -50,19 +50,26 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/cache@v3
-        id: maven-cache
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
       - name: Maven compile licenses
         run: mvn compile license:add-third-party
       - name: Check Selenium licenses
-        run: node .circleci/license-check.js selenium/target/generated-sources/license/THIRD-PARTY.txt
+        run: |
+          output=$(node ../../.circleci/license-check.js selenium/target/generated-sources/license/THIRD-PARTY.txt)
+          exit_code=$?
+          echo "::set-output name=license-output::$output"
+          if [[ $exit_code -eq 1 ]]; then
+            echo "License check failed with exit code 1. Failing the job."
+            exit 1
+          fi
       - name: Check Playwright licenses
-        run: node .circleci/license-check.js playwright/target/generated-sources/license/THIRD-PARTY.txt
+        run: |
+          output=$(node ../../.circleci/license-check.js playwright/target/generated-sources/license/THIRD-PARTY.txt)
+          exit_code=$?
+          echo "::set-output name=license-output::$output"
+          if [[ $exit_code -eq 1 ]]; then
+            echo "License check failed with exit code 1. Failing the job."
+            exit 1
+          fi
 
   playwright-tests:
     needs: [license-check, build]
