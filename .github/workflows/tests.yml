@@ -45,8 +45,27 @@ jobs:
           npm --prefix=selenium install &&
           npm --prefix=playwright install
 
-  playwright-tests:
+  license-check:
     needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/cache@v3
+        id: maven-cache
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+      - name: Maven compile licenses
+        run: mvn compile license:add-third-party
+      - name: Check Selenium licenses
+        run: node .circleci/license-check.js selenium/target/generated-sources/license/THIRD-PARTY.txt
+      - name: Check Playwright licenses
+        run: node .circleci/license-check.js playwright/target/generated-sources/license/THIRD-PARTY.txt
+
+  playwright-tests:
+    needs: [license-check, build]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -63,7 +82,7 @@ jobs:
         run: mvn test -q -pl playwright
 
   selenium-tests:
-    needs: build
+    needs: [license-check, build]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
