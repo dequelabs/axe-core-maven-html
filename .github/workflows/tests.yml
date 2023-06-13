@@ -39,7 +39,6 @@ jobs:
         # https://github.com/actions/cache#skipping-steps-based-on-cache-hit
         if: steps.maven-cache.outputs.cache-hit != 'true'
         run: mvn clean install -DskipTests
-
       - name: Install NPM dependencies
         # https://github.com/actions/cache#skipping-steps-based-on-cache-hit
         if: steps.npm-cache.outputs.cache-hit != 'true'
