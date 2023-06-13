@@ -1,0 +1,112 @@
+name: Tests
+
+on:
+  push:
+    branches:
+      - "**" # all branches
+      - "!master" # except master
+      - "!develop" # except develop
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Cache npm dependencies
+        uses: actions/cache@v3
+        id: npm-cache
+        with:
+          path: "**/node_modules"
+          key: npm-cache-v1-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            npm-workspace-cache-${{ runner.os }}-
+      - name: Cache Maven dependencies
+        uses: actions/cache@v3
+        id: maven-cache
+        with:
+          path: ~/.m2/repository
+          key: maven-cache-v1-${{ runner.os }}-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+      - name: Set up JDK 8
+        uses: actions/setup-java@v3
+        with:
+          java-version: "8"
+          distribution: "temurin"
+      - name: Install Maven dependencies
+        # https://github.com/actions/cache#skipping-steps-based-on-cache-hit
+        if: steps.maven-cache.outputs.cache-hit != 'true'
+        run: mvn clean install -DskipTests
+      - name: Install NPM dependencies
+        # https://github.com/actions/cache#skipping-steps-based-on-cache-hit
+        if: steps.npm-cache.outputs.cache-hit != 'true'
+        run: |
+          npm install &&
+          npm --prefix=selenium install &&
+          npm --prefix=playwright install
+
+  license-check:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Maven compile licenses
+        run: mvn compile license:add-third-party
+      - name: Check Selenium licenses
+        run: node scripts/license-check.js selenium/target/generated-sources/license/THIRD-PARTY.txt
+      - name: Check Playwright licenses
+        run: node scripts/license-check.js playwright/target/generated-sources/license/THIRD-PARTY.txt
+
+  playwright-tests:
+    needs: [license-check, build]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/cache@v3
+        name: Restore npm cache
+        id: npm-cache
+        with:
+          path: "**/node_modules"
+          key: npm-workspace-cache-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            npm-workspace-cache-${{ runner.os }}-
+      - uses: actions/cache@v3
+        name: Restore Maven cache
+        id: maven-cache
+        with:
+          path: ~/.m2/repository
+          key: maven-cache-v1-${{ runner.os }}-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            maven-cache-v1-${{ runner.os }}-
+      - name: Start fixture server
+        run: npm --prefix=playwright start &
+      - name: Run Playwright tests
+        run: mvn test -q -pl playwright
+
+  selenium-tests:
+    needs: [license-check, build]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+      - uses: actions/cache@v3
+        name: Restore npm cache
+        id: npm-cache
+        with:
+          path: "**/node_modules"
+          key: npm-workspace-cache-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            npm-workspace-cache-${{ runner.os }}-
+      - uses: actions/cache@v3
+        name: Restore Maven cache
+        id: maven-cache
+        with:
+          path: ~/.m2/repository
+          key: maven-cache-v1-${{ runner.os }}-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            maven-cache-v1-${{ runner.os }}-
+      - name: Start fixture server
+        run: python -m http.server 8001 &
+        working-directory: selenium/node_modules/axe-test-fixtures/fixtures
+      - name: Run Selenium tests
+        run: mvn test -q -pl selenium
