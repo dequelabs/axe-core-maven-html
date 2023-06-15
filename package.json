@@ -11,7 +11,6 @@
     "prepare": "husky install"
   },
   "devDependencies": {
-    "axe-test-fixtures": "github:dequelabs/axe-test-fixtures#v1",
     "conventional-changelog-cli": "^3.0.0",
     "copyfiles": "^2.4.1",
     "del-cli": "^5.0.0",
