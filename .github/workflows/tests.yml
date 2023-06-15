@@ -105,11 +105,6 @@ jobs:
           key: maven-cache-v1-${{ runner.os }}-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             maven-cache-v1-${{ runner.os }}-
-      - run: pwd
-      - run: ls
-      - run: ls selenium
-      - run: ls selenium/node_modules
-      - run: ls selenium/node_modules/axe-test-fixtures
       - name: Start fixture server
         run: python -m http.server 8001 &
         working-directory: selenium/node_modules/axe-test-fixtures/fixtures
