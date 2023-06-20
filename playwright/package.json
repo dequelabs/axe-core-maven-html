@@ -5,7 +5,7 @@
   "private": true,
   "repository": "dequelabs/axe-core-maven-html",
   "scripts": {
-    "start": "http-server ./node_modules/axe-test-fixtures/fixtures -p 1337"
+    "start": "http-server ./node_modules/axe-test-fixtures/fixtures -a \"\" -p 1337 --silent"
   },
   "dependencies": {
     "axe-core": "^4.7.0"
