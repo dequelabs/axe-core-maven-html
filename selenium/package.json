@@ -4,11 +4,14 @@
   "license": "UNLICENSED",
   "private": true,
   "repository": "dequelabs/axe-core-maven-html",
-  "scripts": {},
+  "scripts": {
+    "start": "http-server ./node_modules/axe-test-fixtures/fixtures -a \"\" -p 8001 --silent"
+  },
   "dependencies": {
     "axe-core": "^4.7.0"
   },
   "devDependencies": {
-    "axe-test-fixtures": "github:dequelabs/axe-test-fixtures#v1"
+    "axe-test-fixtures": "github:dequelabs/axe-test-fixtures#v1",
+    "http-server": "^14.1.1"
   }
 }
