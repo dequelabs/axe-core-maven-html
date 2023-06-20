@@ -56,7 +56,7 @@ mvn clean install
 To run the tests and start the test fixture server:
 
 ```shell
-cd selenium/node_modules/axe-test-fixtures/fixtures && python -m http.server 8001
+npm start
 ```
 
 ```shell
