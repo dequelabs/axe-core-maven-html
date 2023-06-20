@@ -6,6 +6,7 @@
   <version>4.6.0</version>
   <packaging>pom</packaging>
   <name>Axe-core-maven-html Superpackage</name>
+
   <description>axe-core-maven-html superpackage containing; selenium, playwright, and, utilities</description>
   <url>https://github.com/dequelabs/axe-core-maven-html</url>
   <modules>
