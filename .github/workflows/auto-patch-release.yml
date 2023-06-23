@@ -9,14 +9,8 @@ jobs:
     name: Create release
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
-        with:
-          token: ${{ inputs.token }}
-          fetch-depth: 0
-
       - name: Create release
-        uses: dequelabs/axe-api-team-public/.github/actions/auto-patch-release.yml@ci-auto-patch-release
+        uses: dequelabs/axe-api-team-public/.github/actions/auto-patch-release@ci-auto-patch-release
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           project_token: ${{ secrets.GH_PROJECT_TOKEN }}
