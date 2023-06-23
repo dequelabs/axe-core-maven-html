@@ -9,6 +9,7 @@ jobs:
     name: Create release
     runs-on: ubuntu-latest
     steps:
+
       - name: Create release
         uses: dequelabs/axe-api-team-public/.github/actions/auto-patch-release@ci-auto-patch-release
         with:
