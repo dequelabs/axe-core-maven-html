@@ -1,13 +1,20 @@
 name: Automatically create patch release every 2 weeks
 on:
-  schedule:
-    # Run every Friday right before midnight
-    - cron: '30 16 * * *'
+  pull_request
+  # schedule:
+  #   # Run every Friday right before midnight
+  #   - cron: '30 16 * * *'
 jobs:
   create_patch_release:
-    uses: dequelabs/axe-api-team/.github/workflows/auto-patch-release.yml@main
-    secrets: inherit
-    with:
-      release-command: bash .github/scripts/prepare_release.sh
-      release-branch: master
-      default-branch: develop
+    name: Create release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create release
+        uses: dequelabs/axe-api-team-public/.github/workflows/auto-patch-release.yml@ci-auto-patch-release
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          project_token: ${{ secrets.GH_PROJECT_TOKEN }}
+          slack_webhook: ${{ secrets.SLACK_WEBHOOK }}
+          release-command: bash .github/scripts/prepare_release.sh
+          release-branch: master
+          default-branch: develop
