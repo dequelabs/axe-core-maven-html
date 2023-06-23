@@ -14,7 +14,6 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 0
-
       - name: Create release
         uses: dequelabs/axe-api-team-public/.github/actions/auto-patch-release@ci-auto-patch-release
         with:
