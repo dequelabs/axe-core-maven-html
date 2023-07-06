@@ -550,6 +550,38 @@ public class Axe43xIntegrationTest {
     assertEquals(passes.get(0).getId(), "duplicate-id");
   }
 
+  @Test
+  public void withUnloadedIframes() {
+    webDriver.get(fixture("/lazy-loaded-iframe.html"));
+    String title = webDriver.getTitle();
+    AxeBuilder axeBuilder = new AxeBuilder().withRules(Arrays.asList("label", "frame-tested"));
+    Results axeResults = axeBuilder.analyze(webDriver);
+
+    assertNotEquals(title, "Error");
+    assertEquals(axeResults.getIncomplete().size(), 1);
+    assertEquals(axeResults.getIncomplete().get(0).getId(), "frame-tested");
+    assertEquals(axeResults.getIncomplete().get(0).getNodes().size(), 1);
+    assertTargetEquals(
+        axeResults.getIncomplete().get(0).getNodes().get(0).getTarget(),
+        new String[] {"#ifr-lazy", "#lazy-iframe"});
+    assertEquals(axeResults.getViolations().size(), 2);
+    assertEquals(axeResults.getViolations().get(1).getId(), "label");
+    assertEquals(axeResults.getViolations().get(1).getNodes().size(), 1);
+    assertTargetEquals(
+        axeResults.getViolations().get(1).getNodes().get(0).getTarget(),
+        new String[] {"#ifr-lazy", "#lazy-baz", "input"});
+  }
+
+  public void assertTargetEquals(Object target, String[] expected) {
+    if (target instanceof Collection) {
+      Collection<?> c = (Collection<?>) target;
+      String[] actual = c.toArray(new String[c.size()]);
+      assertArrayEquals(actual, expected);
+    } else {
+      fail("Passed object is not a Collection");
+    }
+  }
+
   /**
    * initiates a web browser for Chrome and Firefox.
    *
