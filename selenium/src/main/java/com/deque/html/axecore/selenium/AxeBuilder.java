@@ -873,7 +873,7 @@ public class AxeBuilder {
                       (boolean)
                           WebDriverInjectorExtensions.executeScript(
                               webDriver, "return document.readyState === 'complete'"))
-              .get(FRAME_LOAD_TIMEOUT.plusMillis(500).toMillis(), TimeUnit.MILLISECONDS);
+              .get(FRAME_LOAD_TIMEOUT.toMillis(), TimeUnit.MILLISECONDS);
       if (!ready) {
         throw new RuntimeException("Page/frame is not ready");
       }
