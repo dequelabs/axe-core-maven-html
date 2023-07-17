@@ -877,9 +877,7 @@ public class AxeBuilder {
       if (!ready) {
         throw new RuntimeException("Page/frame is not ready");
       }
-    } catch (TimeoutException e) {
-      throw new RuntimeException("Page/frame is not ready");
-    } catch (InterruptedException | ExecutionException e) {
+    } catch (TimeoutException | InterruptedException | ExecutionException e) {
       throw new RuntimeException("Page/frame is not ready");
     }
   }
