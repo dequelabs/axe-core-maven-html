@@ -2,6 +2,7 @@
 
 # Fail on first error.
 set -e
+echo "HELLO this file is being run"
 
 releaseLevel="$1"
 
