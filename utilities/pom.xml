@@ -4,14 +4,14 @@
   <parent>
     <groupId>com.deque.html.axe-core</groupId>
     <artifactId>virtual-superpackage</artifactId>
-    <version>4.7.0</version>
+    <version>4.7.1</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   <name>Axe-core maven utilities</name>
   <description>axe-core-maven-html utility classes used in all packages</description>
   <url>https://github.com/dequelabs/axe-core-maven-html</url>
   <artifactId>dequeutilites</artifactId>
-  <version>4.7.0</version>
+  <version>4.7.1</version>
   <packaging>jar</packaging>
   <distributionManagement>
     <repository>
