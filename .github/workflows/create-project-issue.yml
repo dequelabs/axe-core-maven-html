@@ -11,3 +11,4 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           title: "I am a new issue, hazaar!"
           body: "I am new issue body, also hazaar!"
+          project_id: 66
