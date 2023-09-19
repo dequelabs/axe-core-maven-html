@@ -1,7 +1,6 @@
 name: Create Project Issue
 
-on:
-  workflow_dispatch:
+on: push
 jobs:
   create-project-issue:
     runs-on: ubuntu-latest
