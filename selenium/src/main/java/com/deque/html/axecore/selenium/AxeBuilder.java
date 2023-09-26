@@ -642,8 +642,8 @@ public class AxeBuilder {
     validateNotNullParameter(webDriver);
     webDriver.manage().timeouts().scriptTimeout(Duration.ofSeconds(timeout));
     Duration pageTimeout = webDriver.manage().timeouts().getPageLoadTimeout();
+    boolean doNewAxeRun = false;
     try {
-      webDriver.manage().timeouts().pageLoadTimeout(FRAME_LOAD_TIMEOUT);
 
       if (noSandbox) {
         try {
@@ -658,13 +658,17 @@ public class AxeBuilder {
 
       boolean hasRunPartial =
           (Boolean) WebDriverInjectorExtensions.executeScript(webDriver, hasRunPartialScript);
-      if (hasRunPartial && !legacyMode) {
+      doNewAxeRun = hasRunPartial && !legacyMode;
+      if (doNewAxeRun) {
+        webDriver.manage().timeouts().pageLoadTimeout(FRAME_LOAD_TIMEOUT);
         return analyzePost43x(webDriver, rawContextArg);
       } else {
         return analyzePre43x(webDriver, rawContextArg);
       }
     } finally {
-      webDriver.manage().timeouts().pageLoadTimeout(pageTimeout);
+      if (doNewAxeRun) {
+        webDriver.manage().timeouts().pageLoadTimeout(pageTimeout);
+      }
     }
   }
 
@@ -712,7 +716,6 @@ public class AxeBuilder {
         try {
           Object frameContext = AxeReporter.serialize(fc.getFrameContext());
           Object frameSelector = AxeReporter.serialize(fc.getFrameSelector());
-          frameStack.push(frameSelector);
           Object frame =
               WebDriverInjectorExtensions.executeScript(
                   webDriver, shadowSelectScript, frameSelector);
@@ -727,12 +730,13 @@ public class AxeBuilder {
             partialResults.add(null);
             continue;
           }
+          frameStack.push(frameSelector);
+
           ArrayList<String> morePartialResults =
               runPartialRecursive(webDriver, options, frameContext, false, frameStack);
           partialResults.addAll(morePartialResults);
         } catch (org.openqa.selenium.TimeoutException e) {
           webDriver.switchTo().window(windowHandle);
-          frameStack.pop();
           for (Object frameSelector : frameStack) {
             Object frame =
                 WebDriverInjectorExtensions.executeScript(
