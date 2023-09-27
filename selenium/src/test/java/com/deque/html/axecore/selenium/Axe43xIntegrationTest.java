@@ -551,6 +551,17 @@ public class Axe43xIntegrationTest {
   }
 
   @Test
+  public void putsBackPageLoad() {
+    webDriver.get(fixture("/lazy-loaded-iframe.html"));
+    Duration newDur = Duration.ofSeconds(3);
+    webDriver.manage().timeouts().pageLoadTimeout(newDur);
+    String title = webDriver.getTitle();
+    Results axeResults = new AxeBuilder().analyze(webDriver);
+    Duration afterDur = webDriver.manage().timeouts().getPageLoadTimeout();
+    assertEquals(newDur, afterDur);
+  }
+
+  @Test
   public void withUnloadedIframes() {
     webDriver.get(fixture("/lazy-loaded-iframe.html"));
     String title = webDriver.getTitle();
