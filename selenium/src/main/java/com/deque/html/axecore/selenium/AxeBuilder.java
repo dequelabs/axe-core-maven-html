@@ -640,35 +640,31 @@ public class AxeBuilder {
    */
   private Results analyzeRawContext(final WebDriver webDriver, final Object rawContextArg) {
     validateNotNullParameter(webDriver);
-    webDriver.manage().timeouts().scriptTimeout(Duration.ofSeconds(timeout));
-    Duration pageTimeout = webDriver.manage().timeouts().getPageLoadTimeout();
-    boolean doNewAxeRun = false;
-    try {
 
-      if (noSandbox) {
-        try {
-          WebDriverInjectorExtensions.injectAsync(
-              webDriver, sandboxBusterScript, disableIframeTesting);
-        } catch (Exception e) {
-          throw new RuntimeException("Error when removing sandbox from iframes", e);
-        }
+    if (noSandbox) {
+      try {
+        WebDriverInjectorExtensions.injectAsync(
+            webDriver, sandboxBusterScript, disableIframeTesting);
+      } catch (Exception e) {
+        throw new RuntimeException("Error when removing sandbox from iframes", e);
       }
+    }
 
-      injectAxe(webDriver);
+    injectAxe(webDriver);
 
-      boolean hasRunPartial =
-          (Boolean) WebDriverInjectorExtensions.executeScript(webDriver, hasRunPartialScript);
-      doNewAxeRun = hasRunPartial && !legacyMode;
-      if (doNewAxeRun) {
-        webDriver.manage().timeouts().pageLoadTimeout(FRAME_LOAD_TIMEOUT);
+    boolean hasRunPartial =
+        (Boolean) WebDriverInjectorExtensions.executeScript(webDriver, hasRunPartialScript);
+    if (hasRunPartial && !legacyMode) {
+      webDriver.manage().timeouts().scriptTimeout(Duration.ofSeconds(timeout));
+      Duration pageTimeout = webDriver.manage().timeouts().getPageLoadTimeout();
+      webDriver.manage().timeouts().pageLoadTimeout(FRAME_LOAD_TIMEOUT);
+      try {
         return analyzePost43x(webDriver, rawContextArg);
-      } else {
-        return analyzePre43x(webDriver, rawContextArg);
-      }
-    } finally {
-      if (doNewAxeRun) {
+      } finally {
         webDriver.manage().timeouts().pageLoadTimeout(pageTimeout);
       }
+    } else {
+      return analyzePre43x(webDriver, rawContextArg);
     }
   }
 
