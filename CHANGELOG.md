@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.8.0](https://github.com/dequelabs/axe-core-maven-html/compare/v4.7.0...v4.8.0) (2023-09-27)
+
+
+### Features
+
+* Update axe-core to v4.8.1 ([#349](https://github.com/dequelabs/axe-core-maven-html/issues/349)) ([bfb4928](https://github.com/dequelabs/axe-core-maven-html/commit/bfb4928a498cd56069b504ed8527e9d7f8311d39))
+
+
+### Bug Fixes
+
+* **playwright,selenium:** pin axe-core version to accept patch updates only ([#362](https://github.com/dequelabs/axe-core-maven-html/issues/362)) ([0b529fd](https://github.com/dequelabs/axe-core-maven-html/commit/0b529fd43772bffbb28a2317c0e959dc8407807c))
+* Update axe-core to v4.8.2 ([#361](https://github.com/dequelabs/axe-core-maven-html/issues/361)) ([29df855](https://github.com/dequelabs/axe-core-maven-html/commit/29df855d0d25f7f08a3f8ac4672b3a2f7290bb7b))
+
 ## [4.7.0](https://github.com/dequelabs/axe-core-maven-html/compare/v4.5.1...v4.7.0) (2023-04-26)
 
 

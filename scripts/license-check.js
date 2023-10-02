@@ -1,11 +1,11 @@
-const fs = require('fs');
+const fs = require("fs");
 
 const filePath = process.argv[2];
-const file = fs.readFileSync(filePath, { 'encoding': 'utf-8' });
+const file = fs.readFileSync(filePath, { encoding: "utf-8" });
 
 const gplRegex = /gpl/i;
-for (const line of file.split('\n')) {
-  const parts = line.split('\t');
+for (const line of file.split("\n")) {
+  const parts = line.split("\t");
   if (parts.length < 2) {
     continue;
   }

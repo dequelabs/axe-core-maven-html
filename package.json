@@ -1,6 +1,6 @@
 {
   "name": "axe-core-maven-html",
-  "version": "4.7.0",
+  "version": "4.8.0",
   "license": "ISC",
   "repository": "dequelabs/axe-core-maven-html",
   "scripts": {
@@ -11,6 +11,7 @@
     "prepare": "husky install"
   },
   "devDependencies": {
+    "conventional-changelog-cli": "^3.0.0",
     "copyfiles": "^2.4.1",
     "del-cli": "^5.0.0",
     "husky": "^8.0.3",
