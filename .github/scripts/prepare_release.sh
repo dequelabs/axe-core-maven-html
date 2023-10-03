@@ -6,11 +6,16 @@ set -e
 releaseLevel="$1"
 
 oldVersion="$(node -pe 'require("./package.json").version')"
-npx standard-version --release-as "$releaseLevel" --skip.commit=true --skip.changelog=true --skip.tag=true
 
-cd selenium
-npx standard-version --release-as "$releaseLevel" --skip.commit=true --skip.changelog=true --skip.tag=true
-cd ..
+# TODO: standard-version is now deprecated: https://github.com/dequelabs/axe-core-maven-html/issues/366
+# If no release level is specified, let standard-version handle versioning
+if [ -z "$releaseLevel" ] 
+then
+  npx standard-version --skip.commit=true --skip.changelog=true --skip.tag=true
+else
+  npx standard-version --release-as "$releaseLevel" --skip.commit=true --skip.changelog=true --skip.tag=true
+fi
+
 newVersion="$(node -pe 'require("./package.json").version')"
 
 
