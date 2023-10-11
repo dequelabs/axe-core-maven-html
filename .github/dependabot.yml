@@ -39,6 +39,9 @@ updates:
     open-pull-requests-limit: 10
     commit-message:
       prefix: "chore"
+    ignore:
+      # TODO: https://github.com/dequelabs/axe-core-maven-html/issues/378
+      - dependency-name: "org.seleniumhq.selenium:selenium-java"
     groups:
       # Any updates not caught by the group config will get individual PRs
       maven-low-risk:
