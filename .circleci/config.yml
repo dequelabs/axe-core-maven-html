@@ -74,7 +74,9 @@ workflows:
             - dependencies_npm
           filters:
             branches:
-              only: develop
+              only:
+                - develop
+                - release
       - release:
           context: html-tools
           requires:

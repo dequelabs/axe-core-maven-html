@@ -1,13 +1,18 @@
 name: Update axe-core
 
-on: [workflow_dispatch]
+on:
+  schedule:
+    # Run every night at midnight
+    - cron: "0 0 * * *"
+  workflow_dispatch:
 
+#TODO: This entire flow will be replaced with https://github.com/dequelabs/axe-api-team-public/issues/30 once it's ready
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 16
       - uses: dequelabs/axe-api-team-public/.github/actions/create-update-axe-core-pull-request-v1@main
