@@ -6,7 +6,6 @@ on:
     - cron: "0 0 * * *"
   workflow_dispatch:
 
-#TODO: This entire flow will be replaced with https://github.com/dequelabs/axe-api-team-public/issues/30 once it's ready
 jobs:
   build:
     runs-on: ubuntu-latest
