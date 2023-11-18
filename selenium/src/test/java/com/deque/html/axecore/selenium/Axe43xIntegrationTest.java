@@ -64,8 +64,6 @@ public class Axe43xIntegrationTest {
   private static String integrationTestTargetUrl = integrationTestTargetFile.getAbsolutePath();
   private static String runPartialThrows =
       ";axe.runPartial = () => { throw new Error('No runPartial')}";
-  private static String windowOpenThrows =
-      ";window.open = () => { throw new Error('No window.open')}";
   private static String finishRunThrows =
       ";axe.finishRun = () => { throw new Error('No finishRun')}";
 
@@ -329,12 +327,34 @@ public class Axe43xIntegrationTest {
   }
 
   @Test
-  public void finishRunThrowsWhenWindowOpenThrows() throws Exception {
-    expectedException.expectMessage("switchToWindow failed");
-    webDriver.get(fixture("/index.html"));
-    new AxeBuilder()
-        .setAxeScriptProvider(new StringAxeScriptProvider(axePost43x + windowOpenThrows))
-        .analyze(webDriver);
+  public void finishRunThrowsWhenWindowOpenThrows() {
+
+    // Create a mock driver to throw an exception when switchTo() is called
+    // This is to simulate `switchTo()` failing and throwing an exception
+    // We expect the exception to be caught and handled correctly.
+    class MockedDriver extends ChromeDriver {
+      public MockedDriver(ChromeOptions chromeOptions) {
+        super(chromeOptions);
+      }
+
+      @Override
+      public WebDriver.TargetLocator switchTo() {
+        throw new RuntimeException("BOOM!");
+      }
+    }
+
+    MockedDriver mockedDriver = new MockedDriver(new ChromeOptions().addArguments("--headless"));
+    mockedDriver.get(fixture("/index.html"));
+
+    Exception exception =
+        assertThrows(
+            RuntimeException.class,
+            () -> {
+              new AxeBuilder().analyze(mockedDriver);
+            });
+
+    assertTrue(exception.getMessage().contains("switchToWindow failed."));
+    mockedDriver.quit();
   }
 
   @Test
