@@ -16,11 +16,10 @@ import com.deque.html.axecore.results.Results;
 import com.deque.html.axecore.selenium.AxeBuilder;
 import com.deque.html.axecore.selenium.AxeBuilderOptions;
 import java.io.IOException;
-import java.util.ArrayList;
 import javax.naming.OperationNotSupportedException;
-import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.WindowType;
 
 /** web driver extension that has extra analyze methods. */
 public final class WebDriverExtensions {
@@ -121,11 +120,7 @@ public final class WebDriverExtensions {
     String currentWindow = webDriver.getWindowHandle();
 
     try {
-      JavascriptExecutor driver = (JavascriptExecutor) webDriver;
-      driver.executeScript("window.open('about:blank', '_blank')");
-      ArrayList<String> handles = new ArrayList<String>(webDriver.getWindowHandles());
-      String abHandle = handles.get(handles.size() - 1);
-      webDriver.switchTo().window(abHandle);
+      webDriver.switchTo().newWindow(WindowType.TAB);
       webDriver.get("about:blank");
     } catch (Exception e) {
       throw new RuntimeException(
