@@ -3,12 +3,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <artifactId>selenium</artifactId>
-    <version>4.7.0</version>
+    <version>4.8.0</version>
     <packaging>jar</packaging>
     <parent>
         <groupId>com.deque.html.axe-core</groupId>
         <artifactId>virtual-superpackage</artifactId>
-        <version>4.7.0</version>
+        <version>4.8.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <build>
@@ -209,7 +209,7 @@
         <dependency>
             <groupId>com.deque.html.axe-core</groupId>
             <artifactId>dequeutilites</artifactId>
-            <version>4.7.0</version>
+            <version>4.8.0</version>
             <scope>compile</scope>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.mockito/mockito-core -->
