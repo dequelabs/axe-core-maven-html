@@ -1,15 +1,11 @@
 name: Tests
 
-on:
-  push:
-    branches:
-      - "**" # all branches
-      - "!master" # except master
-      - "!develop" # except develop
+on: push
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
       - name: Cache npm dependencies
@@ -48,6 +44,7 @@ jobs:
   license-check:
     needs: build
     runs-on: ubuntu-latest
+    timeout-minutes: 2
     steps:
       - uses: actions/checkout@v4
       - name: Maven compile licenses
@@ -60,6 +57,7 @@ jobs:
   playwright-tests:
     needs: [license-check, build]
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
       - uses: actions/cache@v3
@@ -85,6 +83,7 @@ jobs:
 
   selenium-tests:
     needs: [license-check, build]
+    timeout-minutes: 5
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
