@@ -9,6 +9,7 @@ jobs:
   create_sync_pull_request:
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
+    timeout-minutes: 1
     steps:
       - uses: dequelabs/action-sync-branches@v1
         with:
