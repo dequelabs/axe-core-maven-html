@@ -138,7 +138,7 @@ public final class WebDriverExtensions {
       newHandles.removeAll(beforeHandles);
 
       if (newHandles.size() != 1) {
-        throw new RuntimeException("Unable to determine new window handle");
+        throw new RuntimeException("Unable to determine window handle");
       }
 
       String aboutBlankHandle = newHandles.get(0);

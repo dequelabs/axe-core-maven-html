@@ -122,4 +122,31 @@ public class WebDriverExtensionsTest {
 
     Assert.assertTrue(exception.getMessage().contains("switchToWindow failed."));
   }
+
+  @Test
+  public void shouldThrowWhenUnableToDetermineWindowHandle() {
+    class MockedDriver extends ChromeDriver {
+      public MockedDriver(ChromeOptions chromeOptions) {
+        super(chromeOptions);
+      }
+
+      @Override
+      public Object executeScript(String script, Object... args) {
+        super.executeScript(script, args);
+        return super.executeScript(script, args);
+      }
+    }
+
+    MockedDriver webDriver = new MockedDriver(new ChromeOptions().addArguments("--headless"));
+    webDriver.get("http://localhost:8001/index.html");
+
+    RuntimeException exception =
+        Assert.assertThrows(
+            RuntimeException.class,
+            () -> {
+              WebDriverExtensions.openAboutBlank(webDriver);
+            });
+
+    Assert.assertEquals(exception.getCause().getMessage(), "Unable to determine window handle");
+  }
 }
