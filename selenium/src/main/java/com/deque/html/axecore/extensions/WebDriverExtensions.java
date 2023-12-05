@@ -127,7 +127,7 @@ public final class WebDriverExtensions {
       driver.executeScript("window.open('about:blank', '_blank')");
       Set<String> afterHandles = webDriver.getWindowHandles();
 
-      // Note: this ia work around for handling opening about:blank within the Safari driver.
+      // Note: this is a work around for handling opening about:blank within the Safari driver.
       // As we need to support Selenium 3 and 4, we cannot use the new window API.
       // However, we compare the handles before and after opening about:blank and find the new
       // handle.

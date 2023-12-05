@@ -132,6 +132,9 @@ public class WebDriverExtensionsTest {
 
       @Override
       public Object executeScript(String script, Object... args) {
+        // Note: This is to simulate another window being created along with the about:blank
+        // window. This is to simulate the case where the about:blank window is not the
+        // only window being created and the window handle cannot be determined.
         super.executeScript(script, args);
         return super.executeScript(script, args);
       }
