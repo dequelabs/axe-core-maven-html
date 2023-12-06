@@ -17,6 +17,7 @@ import com.deque.html.axecore.selenium.AxeBuilder;
 import com.deque.html.axecore.selenium.AxeBuilderOptions;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Set;
 import javax.naming.OperationNotSupportedException;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
@@ -122,10 +123,26 @@ public final class WebDriverExtensions {
 
     try {
       JavascriptExecutor driver = (JavascriptExecutor) webDriver;
+      Set<String> beforeHandles = webDriver.getWindowHandles();
       driver.executeScript("window.open('about:blank', '_blank')");
-      ArrayList<String> handles = new ArrayList<String>(webDriver.getWindowHandles());
-      String abHandle = handles.get(handles.size() - 1);
-      webDriver.switchTo().window(abHandle);
+      Set<String> afterHandles = webDriver.getWindowHandles();
+
+      // Note: this is a work around for handling opening about:blank within the Safari driver.
+      // As we need to support Selenium 3 and 4, we cannot use the new window API.
+      // However, we compare the handles before and after opening about:blank and find the new
+      // handle.
+      // This is not ideal, but it is the best we can do for now.
+      // TODO: Remove this workaround if/when we drop support for Selenium 3
+      // https://github.com/dequelabs/axe-core-maven-html/issues/411
+      ArrayList<String> newHandles = new ArrayList<>(afterHandles);
+      newHandles.removeAll(beforeHandles);
+
+      if (newHandles.size() != 1) {
+        throw new RuntimeException("Unable to determine window handle");
+      }
+
+      String aboutBlankHandle = newHandles.get(0);
+      webDriver.switchTo().window(aboutBlankHandle);
       webDriver.get("about:blank");
     } catch (Exception e) {
       throw new RuntimeException(
