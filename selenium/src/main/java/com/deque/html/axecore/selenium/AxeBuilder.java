@@ -31,10 +31,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 import java.util.StringJoiner;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
 import org.openqa.selenium.InvalidArgumentException;
 import org.openqa.selenium.JavascriptException;
@@ -863,27 +859,7 @@ public class AxeBuilder {
     return results;
   }
 
-  private void assertFrameReady(final WebDriver webDriver) {
-    // Wait so that we know there is an execution context.
-    // Assume that if we have an html node we have an execution context.
-    try {
-      boolean ready =
-          CompletableFuture.supplyAsync(
-                  () ->
-                      (boolean)
-                          WebDriverInjectorExtensions.executeScript(
-                              webDriver, "return document.readyState === 'complete'"))
-              .get(FRAME_LOAD_TIMEOUT.toMillis(), TimeUnit.MILLISECONDS);
-      if (!ready) {
-        throw new RuntimeException("Page/frame is not ready");
-      }
-    } catch (TimeoutException | InterruptedException | ExecutionException e) {
-      throw new RuntimeException("Page/frame is not ready");
-    }
-  }
-
   private void injectAxe(final WebDriver webDriver) {
-    assertFrameReady(webDriver);
     if (!doNotInjectAxe) {
       try {
         WebDriverInjectorExtensions.executeScript(
