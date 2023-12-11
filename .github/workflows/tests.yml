@@ -100,7 +100,7 @@ jobs:
         java: [8, 11, 17]
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
       - uses: actions/cache@v3
         name: Restore npm cache
         id: npm-cache
