@@ -1,3 +1,14 @@
+## [4.8.1](https://github.com/dequelabs/axe-core-maven-html/compare/v4.8.0...v4.8.1) (2024-01-09)
+
+
+### Bug Fixes
+
+* **selenium:** apply Selenium 3 and 4 workaround for `switchTo()` when using Safari Driver ([#412](https://github.com/dequelabs/axe-core-maven-html/issues/412)) ([e701429](https://github.com/dequelabs/axe-core-maven-html/commit/e70142932a067e6e9f05f74982d6bb5faa043b58))
+* skip unloaded iframes ([#330](https://github.com/dequelabs/axe-core-maven-html/issues/330)) ([66ff5bd](https://github.com/dequelabs/axe-core-maven-html/commit/66ff5bdaed903d4dc2f166313a8dd47260c05291)), closes [#323](https://github.com/dequelabs/axe-core-maven-html/issues/323)
+* Update axe-core to v4.8.3 ([#415](https://github.com/dequelabs/axe-core-maven-html/issues/415)) ([453dd25](https://github.com/dequelabs/axe-core-maven-html/commit/453dd2541379cae1dfbf1addab16c5dfe6d4a6aa))
+
+
+
 # Changelog
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
