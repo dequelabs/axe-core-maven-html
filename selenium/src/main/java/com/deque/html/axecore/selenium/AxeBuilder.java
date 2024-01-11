@@ -23,13 +23,14 @@ import com.deque.html.axecore.results.Rule;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 import java.util.StringJoiner;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import org.openqa.selenium.InvalidArgumentException;
 import org.openqa.selenium.JavascriptException;
@@ -65,6 +66,8 @@ public class AxeBuilder {
   private boolean doNotInjectAxe = false;
   /** timeout of how the the scan should run until an error occurs. */
   private int timeout = 30; // 30 seconds as default.
+
+  private Duration FRAME_LOAD_TIMEOUT = Duration.ofMillis(1000);
 
   private final ObjectMapper objectMapper;
 
@@ -633,7 +636,6 @@ public class AxeBuilder {
    */
   private Results analyzeRawContext(final WebDriver webDriver, final Object rawContextArg) {
     validateNotNullParameter(webDriver);
-    webDriver.manage().timeouts().setScriptTimeout(timeout, TimeUnit.SECONDS);
 
     if (noSandbox) {
       try {
@@ -649,7 +651,14 @@ public class AxeBuilder {
     boolean hasRunPartial =
         (Boolean) WebDriverInjectorExtensions.executeScript(webDriver, hasRunPartialScript);
     if (hasRunPartial && !legacyMode) {
-      return analyzePost43x(webDriver, rawContextArg);
+      webDriver.manage().timeouts().scriptTimeout(Duration.ofSeconds(timeout));
+      Duration pageTimeout = webDriver.manage().timeouts().getPageLoadTimeout();
+      webDriver.manage().timeouts().pageLoadTimeout(FRAME_LOAD_TIMEOUT);
+      try {
+        return analyzePost43x(webDriver, rawContextArg);
+      } finally {
+        webDriver.manage().timeouts().pageLoadTimeout(pageTimeout);
+      }
     } else {
       return analyzePre43x(webDriver, rawContextArg);
     }
@@ -672,11 +681,14 @@ public class AxeBuilder {
       final WebDriver webDriver,
       final Object options,
       final Object context,
-      final boolean isTopLevel) {
+      final boolean isTopLevel,
+      final Stack<Object> frameStack) {
     if (!isTopLevel) {
       injectAxe(webDriver);
     }
+    String windowHandle = webDriver.getWindowHandle();
 
+    ArrayList<String> partialResults = new ArrayList<String>();
     try {
       Object fcResponse =
           WebDriverInjectorExtensions.executeScript(webDriver, frameContextScript, context);
@@ -686,32 +698,53 @@ public class AxeBuilder {
       String resResponse =
           (String)
               WebDriverInjectorExtensions.executeAsyncScript(
-                  webDriver, runPartialScript, context, options);
-      ArrayList<String> partialResults = new ArrayList<String>();
+                  webDriver, runPartialScript, context, options, frameStack);
       partialResults.add(resResponse);
       if (disableIframeTesting) {
         return partialResults;
       }
 
       for (FrameContext fc : contexts) {
-        Object frameContext = AxeReporter.serialize(fc.getFrameContext());
-        Object frameSelector = AxeReporter.serialize(fc.getFrameSelector());
-        Object frame =
-            WebDriverInjectorExtensions.executeScript(webDriver, shadowSelectScript, frameSelector);
+        try {
+          Object frameContext = AxeReporter.serialize(fc.getFrameContext());
+          Object frameSelector = AxeReporter.serialize(fc.getFrameSelector());
+          Object frame =
+              WebDriverInjectorExtensions.executeScript(
+                  webDriver, shadowSelectScript, frameSelector);
 
-        if (frame instanceof String) {
-          webDriver.switchTo().frame((String) frame);
-        } else if (frame instanceof WebElement) {
-          webDriver.switchTo().frame((WebElement) frame);
-        } else if (frame instanceof Integer) {
-          webDriver.switchTo().frame((Integer) frame);
-        } else {
+          if (frame instanceof String) {
+            webDriver.switchTo().frame((String) frame);
+          } else if (frame instanceof WebElement) {
+            webDriver.switchTo().frame((WebElement) frame);
+          } else if (frame instanceof Integer) {
+            webDriver.switchTo().frame((Integer) frame);
+          } else {
+            partialResults.add(null);
+            continue;
+          }
+          frameStack.push(frameSelector);
+
+          ArrayList<String> morePartialResults =
+              runPartialRecursive(webDriver, options, frameContext, false, frameStack);
+          partialResults.addAll(morePartialResults);
+        } catch (org.openqa.selenium.TimeoutException e) {
+          webDriver.switchTo().window(windowHandle);
+          for (Object frameSelector : frameStack) {
+            Object frame =
+                WebDriverInjectorExtensions.executeScript(
+                    webDriver, shadowSelectScript, frameSelector);
+            if (frame instanceof String) {
+              webDriver.switchTo().frame((String) frame);
+            } else if (frame instanceof WebElement) {
+              webDriver.switchTo().frame((WebElement) frame);
+            } else if (frame instanceof Integer) {
+              webDriver.switchTo().frame((Integer) frame);
+            }
+          }
           partialResults.add(null);
           continue;
         }
-        ArrayList<String> morePartialResults =
-            runPartialRecursive(webDriver, options, frameContext, false);
-        partialResults.addAll(morePartialResults);
+        frameStack.pop();
       }
       return partialResults;
     } catch (RuntimeException e) {
@@ -759,7 +792,8 @@ public class AxeBuilder {
 
     ArrayList<String> partialResults;
     try {
-      partialResults = runPartialRecursive(webDriver, rawOptionsArg, rawContextArg, true);
+      partialResults =
+          runPartialRecursive(webDriver, rawOptionsArg, rawContextArg, true, new Stack<Object>());
     } catch (RuntimeException re) {
       if (re.getMessage().contains("Unable to inject axe script")) {
         throw re;

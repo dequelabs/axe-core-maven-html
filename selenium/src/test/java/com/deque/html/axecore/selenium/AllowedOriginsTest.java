@@ -39,7 +39,7 @@ public class AllowedOriginsTest {
 
   @Before
   public void setup() throws Exception {
-    webDriver = new ChromeDriver(new ChromeOptions().setHeadless(true));
+    webDriver = new ChromeDriver(new ChromeOptions().addArguments("--headless"));
     legacySource = downloadFromURL(addr() + "/axe-core@legacy.js");
   }
 
