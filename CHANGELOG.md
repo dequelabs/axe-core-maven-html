@@ -1,3 +1,12 @@
+## [4.8.2](https://github.com/dequelabs/axe-core-maven-html/compare/v4.8.1...v4.8.2) (2024-02-12)
+
+
+### Bug Fixes
+
+* Update axe-core to v4.8.4 ([#429](https://github.com/dequelabs/axe-core-maven-html/issues/429)) ([4205623](https://github.com/dequelabs/axe-core-maven-html/commit/420562350aa0ff8a2b1e98e1ec8ff53bdda56312))
+
+
+
 ## [4.8.1](https://github.com/dequelabs/axe-core-maven-html/compare/v4.8.0...v4.8.1) (2024-01-09)
 
 
