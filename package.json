@@ -1,6 +1,6 @@
 {
   "name": "axe-core-maven-html",
-  "version": "4.8.1",
+  "version": "4.8.2",
   "license": "ISC",
   "repository": "dequelabs/axe-core-maven-html",
   "scripts": {
@@ -14,7 +14,7 @@
     "conventional-changelog-cli": "^4.1.0",
     "copyfiles": "^2.4.1",
     "del-cli": "^5.1.0",
-    "husky": "^8.0.3",
+    "husky": "^9.0.7",
     "standard-version": "^9.5.0",
     "xml-js": "^1.6.11"
   }
