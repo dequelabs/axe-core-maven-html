@@ -2,12 +2,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <artifactId>selenium</artifactId>
-  <version>4.8.2</version>
+  <version>4.9.0</version>
   <packaging>jar</packaging>
   <parent>
     <groupId>com.deque.html.axe-core</groupId>
     <artifactId>virtual-superpackage</artifactId>
-    <version>4.8.2</version>
+    <version>4.9.0</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   <build>
@@ -180,7 +180,7 @@
     <dependency>
       <groupId>io.github.bonigarcia</groupId>
       <artifactId>webdrivermanager</artifactId>
-      <version>5.6.3</version>
+      <version>5.7.0</version>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
@@ -195,7 +195,7 @@
     <dependency>
       <groupId>org.junit.vintage</groupId>
       <artifactId>junit-vintage-engine</artifactId>
-      <version>5.10.1</version>
+      <version>5.10.2</version>
       <scope>test</scope>
     </dependency>
     <!-- Overrides junit used in junit-vintage-engine for security reasons -->
@@ -208,7 +208,7 @@
     <dependency>
       <groupId>com.deque.html.axe-core</groupId>
       <artifactId>dequeutilites</artifactId>
-      <version>4.8.2</version>
+      <version>4.9.0</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>
