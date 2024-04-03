@@ -152,7 +152,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-compiler-plugin</artifactId>
-            <version>3.12.1</version>
+            <version>3.13.0</version>
             <configuration>
               <source>1.8</source>
               <target>1.8</target>
@@ -170,7 +170,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-gpg-plugin</artifactId>
-            <version>3.1.0</version>
+            <version>3.2.2</version>
             <executions>
               <execution>
                 <id>sign-artifacts</id>
@@ -220,7 +220,7 @@
     <dependency>
       <groupId>com.microsoft.playwright</groupId>
       <artifactId>playwright</artifactId>
-      <version>1.41.2</version>
+      <version>1.42.0</version>
     </dependency>
     <!-- Overrides commons-codec used in httpclient for security reasons -->
     <dependency>
@@ -232,7 +232,7 @@
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-compress</artifactId>
-      <version>1.26.0</version>
+      <version>1.26.1</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
@@ -255,19 +255,19 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-annotations</artifactId>
-      <version>2.16.1</version>
+      <version>2.17.0</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>2.16.1</version>
+      <version>2.17.0</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
-      <version>2.15.1</version>
+      <version>2.16.0</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
