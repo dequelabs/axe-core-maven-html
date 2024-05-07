@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.deque.html.axe-core</groupId>
   <artifactId>virtual-superpackage</artifactId>
-  <version>4.8.2</version>
+  <version>4.9.0</version>
   <packaging>pom</packaging>
   <name>Axe-core-maven-html Superpackage</name>
   <description>axe-core-maven-html superpackage containing; selenium, playwright, and, utilities</description>
@@ -68,7 +68,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-compiler-plugin</artifactId>
-            <version>3.12.1</version>
+            <version>3.13.0</version>
             <configuration>
               <source>1.8</source>
               <target>1.8</target>
@@ -85,7 +85,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-gpg-plugin</artifactId>
-            <version>3.1.0</version>
+            <version>3.2.2</version>
             <executions>
               <execution>
                 <id>sign-artifacts</id>
