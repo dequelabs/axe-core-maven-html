@@ -37,19 +37,19 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.openqa.selenium.By;
-import org.openqa.selenium.UnexpectedAlertBehaviour;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeDriverService;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 /** Unit tests for Axe Integration. */
 public class Axe43xIntegrationTest {
-  @org.junit.Rule public ExpectedException expectedException = ExpectedException.none();
+
+  @org.junit.Rule
+  public ExpectedException expectedException = ExpectedException.none();
 
   private WebDriver webDriver;
   private WebDriverWait wait;
@@ -59,15 +59,16 @@ public class Axe43xIntegrationTest {
   private static String axeCrasherJS;
   private static String axeForceLegacyJS;
   private static String axeLargePartialJS;
-  private static File integrationTestTargetFile =
-      new File("src/test/resources/html/integration-test-target.html");
+  private static File integrationTestTargetFile = new File(
+    "src/test/resources/html/integration-test-target.html"
+  );
   private static String integrationTestTargetUrl = integrationTestTargetFile.getAbsolutePath();
   private static String runPartialThrows =
-      ";axe.runPartial = () => { throw new Error('No runPartial')}";
+    ";axe.runPartial = () => { throw new Error('No runPartial')}";
   private static String windowOpenThrows =
-      ";window.open = () => { throw new Error('No window.open')}";
+    ";window.open = () => { throw new Error('No window.open')}";
   private static String finishRunThrows =
-      ";axe.finishRun = () => { throw new Error('No finishRun')}";
+    ";axe.finishRun = () => { throw new Error('No finishRun')}";
 
   private static String fixture(String path) {
     return "http://localhost:8001" + path;
@@ -77,13 +78,14 @@ public class Axe43xIntegrationTest {
   @Before
   public void setup() {
     initDriver("Chrome");
-    this.webDriver.get("file:///" + new File(integrationTestTargetUrl).getAbsolutePath());
-    Function<WebDriver, WebElement> waitFunc =
-        new Function<WebDriver, WebElement>() {
-          public WebElement apply(WebDriver driver) {
-            return driver.findElement(By.cssSelector("main"));
-          }
-        };
+    this.webDriver.get(
+        "file:///" + new File(integrationTestTargetUrl).getAbsolutePath()
+      );
+    Function<WebDriver, WebElement> waitFunc = new Function<WebDriver, WebElement>() {
+      public WebElement apply(WebDriver driver) {
+        return driver.findElement(By.cssSelector("main"));
+      }
+    };
     wait.until(waitFunc);
   }
 
@@ -111,9 +113,11 @@ public class Axe43xIntegrationTest {
    * @return - list of targets selectors
    */
   private List<String> getPassTargets(Results axeResults) {
-    return axeResults.getPasses().stream()
-        .flatMap(r -> r.getNodes().stream().map(n -> n.getTarget().toString()))
-        .collect(Collectors.toList());
+    return axeResults
+      .getPasses()
+      .stream()
+      .flatMap(r -> r.getNodes().stream().map(n -> n.getTarget().toString()))
+      .collect(Collectors.toList());
   }
 
   /** closes and shuts down the web driver. */
@@ -128,14 +132,15 @@ public class Axe43xIntegrationTest {
    * @throws IOException if file writing fails
    * @throws OperationNotSupportedException if the operation errors out
    */
-  @Test()
+  @Test
   public void errorsIfTopLevelError() throws Exception {
     webDriver.get(fixture("/crash.html"));
 
-    Results res =
-        new AxeBuilder()
-            .setAxeScriptProvider(new StringAxeScriptProvider(axePost43x + axeCrasherJS))
-            .analyze(webDriver);
+    Results res = new AxeBuilder()
+      .setAxeScriptProvider(
+        new StringAxeScriptProvider(axePost43x + axeCrasherJS)
+      )
+      .analyze(webDriver);
 
     assertTrue(res.isErrored());
     assertTrue(res.getErrorMessage().contains("Boom!"));
@@ -146,21 +151,20 @@ public class Axe43xIntegrationTest {
     expectedException.expect(RuntimeException.class);
     webDriver.get(fixture("/crash.html"));
 
-    Results res =
-        new AxeBuilder()
-            .setAxeScriptProvider(new StringAxeScriptProvider("throw new Error()"))
-            .analyze(webDriver);
+    Results res = new AxeBuilder()
+      .setAxeScriptProvider(new StringAxeScriptProvider("throw new Error()"))
+      .analyze(webDriver);
   }
 
   @Test
   public void errorsWhenSetupFails() throws Exception {
     webDriver.get(fixture("/index.html"));
 
-    Results res =
-        new AxeBuilder()
-            .setAxeScriptProvider(
-                new StringAxeScriptProvider(axePost43x + "; window.axe.utils = {}"))
-            .analyze(webDriver);
+    Results res = new AxeBuilder()
+      .setAxeScriptProvider(
+        new StringAxeScriptProvider(axePost43x + "; window.axe.utils = {}")
+      )
+      .analyze(webDriver);
     assertTrue(res.isErrored());
   }
 
@@ -176,7 +180,9 @@ public class Axe43xIntegrationTest {
   public void injectsIntoNestedIframes() throws Exception {
     webDriver.get(fixture("/nested-iframes.html"));
 
-    Results res = new AxeBuilder().withOnlyRules(Arrays.asList("label")).analyze(webDriver);
+    Results res = new AxeBuilder()
+      .withOnlyRules(Arrays.asList("label"))
+      .analyze(webDriver);
 
     List<Rule> violations = res.getViolations();
     Rule rule = violations.get(0);
@@ -185,9 +191,17 @@ public class Axe43xIntegrationTest {
     List<CheckedNode> nodes = rule.getNodes();
     assertEquals(4, nodes.size());
     assertEquals(
-        Arrays.asList("#ifr-foo", "#foo-bar", "#bar-baz", "input"), nodes.get(0).getTarget());
-    assertEquals(Arrays.asList("#ifr-foo", "#foo-baz", "input"), nodes.get(1).getTarget());
-    assertEquals(Arrays.asList("#ifr-bar", "#bar-baz", "input"), nodes.get(2).getTarget());
+      Arrays.asList("#ifr-foo", "#foo-bar", "#bar-baz", "input"),
+      nodes.get(0).getTarget()
+    );
+    assertEquals(
+      Arrays.asList("#ifr-foo", "#foo-baz", "input"),
+      nodes.get(1).getTarget()
+    );
+    assertEquals(
+      Arrays.asList("#ifr-bar", "#bar-baz", "input"),
+      nodes.get(2).getTarget()
+    );
     assertEquals(Arrays.asList("#ifr-baz", "input"), nodes.get(3).getTarget());
   }
 
@@ -195,7 +209,9 @@ public class Axe43xIntegrationTest {
   public void injectsIntoNestedFrameset() throws Exception {
     webDriver.get(fixture("/nested-frameset.html"));
 
-    Results res = new AxeBuilder().withOnlyRules(Arrays.asList("label")).analyze(webDriver);
+    Results res = new AxeBuilder()
+      .withOnlyRules(Arrays.asList("label"))
+      .analyze(webDriver);
 
     List<Rule> violations = res.getViolations();
     Rule rule = violations.get(0);
@@ -204,9 +220,17 @@ public class Axe43xIntegrationTest {
     List<CheckedNode> nodes = rule.getNodes();
     assertEquals(4, nodes.size());
     assertEquals(
-        Arrays.asList("#frm-foo", "#foo-bar", "#bar-baz", "input"), nodes.get(0).getTarget());
-    assertEquals(Arrays.asList("#frm-foo", "#foo-baz", "input"), nodes.get(1).getTarget());
-    assertEquals(Arrays.asList("#frm-bar", "#bar-baz", "input"), nodes.get(2).getTarget());
+      Arrays.asList("#frm-foo", "#foo-bar", "#bar-baz", "input"),
+      nodes.get(0).getTarget()
+    );
+    assertEquals(
+      Arrays.asList("#frm-foo", "#foo-baz", "input"),
+      nodes.get(1).getTarget()
+    );
+    assertEquals(
+      Arrays.asList("#frm-bar", "#bar-baz", "input"),
+      nodes.get(2).getTarget()
+    );
     assertEquals(Arrays.asList("#frm-baz", "input"), nodes.get(3).getTarget());
   }
 
@@ -214,7 +238,9 @@ public class Axe43xIntegrationTest {
   public void worksOnShadowDOMIframes() throws Exception {
     webDriver.get(fixture("/shadow-frames.html"));
 
-    Results res = new AxeBuilder().withOnlyRules(Arrays.asList("label")).analyze(webDriver);
+    Results res = new AxeBuilder()
+      .withOnlyRules(Arrays.asList("label"))
+      .analyze(webDriver);
 
     List<Rule> violations = res.getViolations();
     Rule rule = violations.get(0);
@@ -222,27 +248,38 @@ public class Axe43xIntegrationTest {
 
     List<CheckedNode> nodes = rule.getNodes();
     assertEquals(3, nodes.size());
-    assertEquals(Arrays.asList("#light-frame", "input"), nodes.get(0).getTarget());
     assertEquals(
-        Arrays.asList(Arrays.asList("#shadow-root", "#shadow-frame"), "input"),
-        nodes.get(1).getTarget());
-    assertEquals(Arrays.asList("#slotted-frame", "input"), nodes.get(2).getTarget());
+      Arrays.asList("#light-frame", "input"),
+      nodes.get(0).getTarget()
+    );
+    assertEquals(
+      Arrays.asList(Arrays.asList("#shadow-root", "#shadow-frame"), "input"),
+      nodes.get(1).getTarget()
+    );
+    assertEquals(
+      Arrays.asList("#slotted-frame", "input"),
+      nodes.get(2).getTarget()
+    );
   }
 
   @Test
   public void reportsErrorFrames() throws Exception {
     webDriver.get(fixture("/crash-parent.html"));
 
-    Results res =
-        new AxeBuilder()
-            .setAxeScriptProvider(new StringAxeScriptProvider(axePost43x + axeCrasherJS))
-            .withOnlyRules(Arrays.asList("label", "frame-tested"))
-            .analyze(webDriver);
+    Results res = new AxeBuilder()
+      .setAxeScriptProvider(
+        new StringAxeScriptProvider(axePost43x + axeCrasherJS)
+      )
+      .withOnlyRules(Arrays.asList("label", "frame-tested"))
+      .analyze(webDriver);
 
     List<Rule> incomplete = res.getIncomplete();
     assertEquals("frame-tested", incomplete.get(0).getId());
     assertEquals(1, incomplete.get(0).getNodes().size());
-    assertEquals(Arrays.asList("#ifr-crash"), incomplete.get(0).getNodes().get(0).getTarget());
+    assertEquals(
+      Arrays.asList("#ifr-crash"),
+      incomplete.get(0).getNodes().get(0).getTarget()
+    );
 
     List<Rule> violations = res.getViolations();
     Rule rule = violations.get(0);
@@ -250,17 +287,21 @@ public class Axe43xIntegrationTest {
 
     List<CheckedNode> nodes = rule.getNodes();
     assertEquals(2, nodes.size());
-    assertEquals(Arrays.asList("#ifr-bar", "#bar-baz", "input"), nodes.get(0).getTarget());
+    assertEquals(
+      Arrays.asList("#ifr-bar", "#bar-baz", "input"),
+      nodes.get(0).getTarget()
+    );
     assertEquals(Arrays.asList("#ifr-baz", "input"), nodes.get(1).getTarget());
   }
 
   @Test
   public void returnsSameResultsRunPartialAndRun() throws Exception {
     webDriver.get(fixture("/nested-iframes"));
-    Results legacyResults =
-        new AxeBuilder()
-            .setAxeScriptProvider(new StringAxeScriptProvider(axePost43x + axeForceLegacyJS))
-            .analyze(webDriver);
+    Results legacyResults = new AxeBuilder()
+      .setAxeScriptProvider(
+        new StringAxeScriptProvider(axePost43x + axeForceLegacyJS)
+      )
+      .analyze(webDriver);
     assertFalse(legacyResults.isErrored());
     assertEquals("axe-legacy", legacyResults.getTestEngine().getName());
 
@@ -268,7 +309,9 @@ public class Axe43xIntegrationTest {
     Results normalResults = new AxeBuilder().analyze(webDriver);
 
     normalResults.setTimestamp(legacyResults.getTimestamp());
-    normalResults.getTestEngine().setName(legacyResults.getTestEngine().getName());
+    normalResults
+      .getTestEngine()
+      .setName(legacyResults.getTestEngine().getName());
     ObjectMapper mapper = new ObjectMapper();
     Map normal = mapper.convertValue(normalResults, Map.class);
     Map legacy = mapper.convertValue(legacyResults, Map.class);
@@ -295,34 +338,33 @@ public class Axe43xIntegrationTest {
   @Test
   public void runsLegacyModeWhenUsed() throws Exception {
     webDriver.get(fixture("/external/index.html"));
-    Results res =
-        new AxeBuilder()
-            .setLegacyMode()
-            .setAxeScriptProvider(new StringAxeScriptProvider(axePost43x + runPartialThrows))
-            .analyze(webDriver);
+    Results res = new AxeBuilder()
+      .setLegacyMode()
+      .setAxeScriptProvider(
+        new StringAxeScriptProvider(axePost43x + runPartialThrows)
+      )
+      .analyze(webDriver);
     assertFalse(res.isErrored());
   }
 
   @Test
   public void legacyModePreventsCrossOriginFrameTesting() throws Exception {
     webDriver.get(fixture("/cross-origin.html"));
-    Results res =
-        new AxeBuilder()
-            .withRules(Arrays.asList("frame-tested"))
-            .setLegacyMode()
-            .analyze(webDriver);
+    Results res = new AxeBuilder()
+      .withRules(Arrays.asList("frame-tested"))
+      .setLegacyMode()
+      .analyze(webDriver);
     assertFalse(res.getIncomplete().isEmpty());
   }
 
   @Test
   public void legacyModeCanBeDisabledAgain() throws Exception {
     webDriver.get(fixture("/cross-origin.html"));
-    Results res =
-        new AxeBuilder()
-            .withRules(Arrays.asList("frame-tested"))
-            .setLegacyMode()
-            .setLegacyMode(false)
-            .analyze(webDriver);
+    Results res = new AxeBuilder()
+      .withRules(Arrays.asList("frame-tested"))
+      .setLegacyMode()
+      .setLegacyMode(false)
+      .analyze(webDriver);
     for (Rule r : res.getIncomplete()) {
       assertNotEquals("frame-tested", r.getId());
     }
@@ -333,8 +375,10 @@ public class Axe43xIntegrationTest {
     expectedException.expectMessage("switchToWindow failed");
     webDriver.get(fixture("/index.html"));
     new AxeBuilder()
-        .setAxeScriptProvider(new StringAxeScriptProvider(axePost43x + windowOpenThrows))
-        .analyze(webDriver);
+      .setAxeScriptProvider(
+        new StringAxeScriptProvider(axePost43x + windowOpenThrows)
+      )
+      .analyze(webDriver);
   }
 
   @Test
@@ -342,18 +386,19 @@ public class Axe43xIntegrationTest {
     expectedException.expectMessage("axe.finishRun failed");
     webDriver.get(fixture("/index.html"));
     new AxeBuilder()
-        .setAxeScriptProvider(new StringAxeScriptProvider(axePost43x + finishRunThrows))
-        .analyze(webDriver);
+      .setAxeScriptProvider(
+        new StringAxeScriptProvider(axePost43x + finishRunThrows)
+      )
+      .analyze(webDriver);
   }
 
   @Test
   public void legacyRunAnalyze() {
     webDriver.get(fixture("/index.html"));
 
-    Results axeResults =
-        new AxeBuilder()
-            .setAxeScriptProvider(new StringAxeScriptProvider(axePre43x))
-            .analyze(webDriver);
+    Results axeResults = new AxeBuilder()
+      .setAxeScriptProvider(new StringAxeScriptProvider(axePre43x))
+      .analyze(webDriver);
 
     assertEquals(axeResults.getTestEngine().getVersion(), "4.2.3");
     assertNotNull(axeResults);
@@ -366,18 +411,18 @@ public class Axe43xIntegrationTest {
   @Test
   public void withLabelledFrame() {
     webDriver.get(fixture("/context-include-exclude.html"));
-    AxeBuilder axeBuilder =
-        new AxeBuilder()
-            .include(new FromFrames("#ifr-inc-excl", "html"))
-            .exclude(new FromFrames("#ifr-inc-excl", "#foo-bar"))
-            .include(new FromFrames("#ifr-inc-excl", "#foo-baz", "html"))
-            .exclude(new FromFrames("#ifr-inc-excl", "#foo-baz", "input"));
+    AxeBuilder axeBuilder = new AxeBuilder()
+      .include(new FromFrames("#ifr-inc-excl", "html"))
+      .exclude(new FromFrames("#ifr-inc-excl", "#foo-bar"))
+      .include(new FromFrames("#ifr-inc-excl", "#foo-baz", "html"))
+      .exclude(new FromFrames("#ifr-inc-excl", "#foo-baz", "input"));
 
     Results axeResults = axeBuilder.analyze(webDriver);
-    List<Rule> labelRule =
-        axeResults.getViolations().stream()
-            .filter(v -> v.getId().equalsIgnoreCase("label"))
-            .collect(Collectors.toList());
+    List<Rule> labelRule = axeResults
+      .getViolations()
+      .stream()
+      .filter(v -> v.getId().equalsIgnoreCase("label"))
+      .collect(Collectors.toList());
 
     assertEquals(labelRule.size(), 0);
 
@@ -390,19 +435,19 @@ public class Axe43xIntegrationTest {
   @Test
   public void withCommaListIFrames() {
     webDriver.get(fixture("/context-include-exclude.html"));
-    AxeBuilder axeBuilder =
-        new AxeBuilder()
-            .include("#ifr-inc-excl", "html")
-            .exclude("#ifr-inc-excl", "#foo-bar")
-            .include("#ifr-inc-excl", "#foo-baz", "html")
-            .exclude("#ifr-inc-excl", "#foo-baz", "input");
+    AxeBuilder axeBuilder = new AxeBuilder()
+      .include("#ifr-inc-excl", "html")
+      .exclude("#ifr-inc-excl", "#foo-bar")
+      .include("#ifr-inc-excl", "#foo-baz", "html")
+      .exclude("#ifr-inc-excl", "#foo-baz", "input");
 
     Results axeResults = axeBuilder.analyze(webDriver);
 
-    List<Rule> labelRule =
-        axeResults.getViolations().stream()
-            .filter(v -> v.getId().equalsIgnoreCase("label"))
-            .collect(Collectors.toList());
+    List<Rule> labelRule = axeResults
+      .getViolations()
+      .stream()
+      .filter(v -> v.getId().equalsIgnoreCase("label"))
+      .collect(Collectors.toList());
 
     assertEquals(labelRule.size(), 0);
 
@@ -415,19 +460,19 @@ public class Axe43xIntegrationTest {
   @Test
   public void withIncludeIframe() {
     webDriver.get(fixture("/context-include-exclude.html"));
-    AxeBuilder axeBuilder =
-        new AxeBuilder()
-            .include(Arrays.asList("#ifr-inc-excl", "#foo-baz", "html"))
-            .include(Arrays.asList("#ifr-inc-excl", "#foo-baz", "input"))
-            // does not exist
-            .include(Arrays.asList("#hazaar", "html"));
+    AxeBuilder axeBuilder = new AxeBuilder()
+      .include(Arrays.asList("#ifr-inc-excl", "#foo-baz", "html"))
+      .include(Arrays.asList("#ifr-inc-excl", "#foo-baz", "input"))
+      // does not exist
+      .include(Arrays.asList("#hazaar", "html"));
 
     Results axeResults = axeBuilder.analyze(webDriver);
 
-    List<Rule> labelRule =
-        axeResults.getViolations().stream()
-            .filter(v -> v.getId().equalsIgnoreCase("label"))
-            .collect(Collectors.toList());
+    List<Rule> labelRule = axeResults
+      .getViolations()
+      .stream()
+      .filter(v -> v.getId().equalsIgnoreCase("label"))
+      .collect(Collectors.toList());
 
     assertEquals(labelRule.size(), 1);
 
@@ -443,18 +488,18 @@ public class Axe43xIntegrationTest {
   @Test
   public void withArrayListIframes() {
     webDriver.get(fixture("/context-include-exclude.html"));
-    AxeBuilder axeBuilder =
-        new AxeBuilder()
-            .include(Arrays.asList("#ifr-inc-excl", "html"))
-            .exclude(Arrays.asList("#ifr-inc-excl", "#foo-bar"))
-            .include(Arrays.asList("#ifr-inc-excl", "#foo-baz", "html"))
-            .exclude(Arrays.asList("#ifr-inc-excl", "#foo-baz", "input"));
+    AxeBuilder axeBuilder = new AxeBuilder()
+      .include(Arrays.asList("#ifr-inc-excl", "html"))
+      .exclude(Arrays.asList("#ifr-inc-excl", "#foo-bar"))
+      .include(Arrays.asList("#ifr-inc-excl", "#foo-baz", "html"))
+      .exclude(Arrays.asList("#ifr-inc-excl", "#foo-baz", "input"));
     Results axeResults = axeBuilder.analyze(webDriver);
 
-    List<Rule> labelRule =
-        axeResults.getViolations().stream()
-            .filter(v -> v.getId().equalsIgnoreCase("label"))
-            .collect(Collectors.toList());
+    List<Rule> labelRule = axeResults
+      .getViolations()
+      .stream()
+      .filter(v -> v.getId().equalsIgnoreCase("label"))
+      .collect(Collectors.toList());
 
     assertEquals(labelRule.size(), 0);
 
@@ -467,12 +512,18 @@ public class Axe43xIntegrationTest {
   @Test
   public void withIncludeShadowDOM() {
     webDriver.get(fixture("/shadow-dom.html"));
-    AxeBuilder axeBuilder =
-        new AxeBuilder()
-            /* output: { include: [ [["#shadow-root-1", "#shadow-button-1"]] ] } */
-            .include(Collections.singletonList(Arrays.asList("#shadow-root-1", "#shadow-button-1")))
-            .include(
-                Collections.singletonList(Arrays.asList("#shadow-root-2", "#shadow-button-2")));
+    AxeBuilder axeBuilder = new AxeBuilder()
+      /* output: { include: [ [["#shadow-root-1", "#shadow-button-1"]] ] } */
+      .include(
+        Collections.singletonList(
+          Arrays.asList("#shadow-root-1", "#shadow-button-1")
+        )
+      )
+      .include(
+        Collections.singletonList(
+          Arrays.asList("#shadow-root-2", "#shadow-button-2")
+        )
+      );
 
     Results axeResults = axeBuilder.analyze(webDriver);
 
@@ -486,11 +537,17 @@ public class Axe43xIntegrationTest {
   @Test
   public void withExcludeShadowDOM() {
     webDriver.get(fixture("/shadow-dom.html"));
-    AxeBuilder axeBuilder =
-        new AxeBuilder()
-            .exclude(Collections.singletonList(Arrays.asList("#shadow-root-1", "#shadow-button-1")))
-            .exclude(
-                Collections.singletonList(Arrays.asList("#shadow-root-2", "#shadow-button-2")));
+    AxeBuilder axeBuilder = new AxeBuilder()
+      .exclude(
+        Collections.singletonList(
+          Arrays.asList("#shadow-root-1", "#shadow-button-1")
+        )
+      )
+      .exclude(
+        Collections.singletonList(
+          Arrays.asList("#shadow-root-2", "#shadow-button-2")
+        )
+      );
 
     Results axeResults = axeBuilder.analyze(webDriver);
 
@@ -504,10 +561,9 @@ public class Axe43xIntegrationTest {
   @Test
   public void withLabelledShadowDOM() {
     webDriver.get(fixture("/shadow-dom.html"));
-    AxeBuilder axeBuilder =
-        new AxeBuilder()
-            .include(new FromShadowDom("#shadow-root-1", "#shadow-button-1"))
-            .exclude(new FromShadowDom("#shadow-root-2", "#shadow-button-2"));
+    AxeBuilder axeBuilder = new AxeBuilder()
+      .include(new FromShadowDom("#shadow-root-1", "#shadow-button-1"))
+      .exclude(new FromShadowDom("#shadow-root-2", "#shadow-button-2"));
 
     Results axeResults = axeBuilder.analyze(webDriver);
 
@@ -520,10 +576,14 @@ public class Axe43xIntegrationTest {
   @Test
   public void withLabelledIFrameAndShadowDOM() {
     webDriver.get(fixture("/shadow-frames.html"));
-    AxeBuilder axeBuilder =
-        new AxeBuilder()
-            .exclude(new FromFrames(new FromShadowDom("#shadow-root", "#shadow-frame"), "input"))
-            .withOnlyRules(Collections.singletonList("label"));
+    AxeBuilder axeBuilder = new AxeBuilder()
+      .exclude(
+        new FromFrames(
+          new FromShadowDom("#shadow-root", "#shadow-frame"),
+          "input"
+        )
+      )
+      .withOnlyRules(Collections.singletonList("label"));
 
     Results axeResults = axeBuilder.analyze(webDriver);
     List<Rule> violations = axeResults.getViolations();
@@ -533,15 +593,19 @@ public class Axe43xIntegrationTest {
 
     List<CheckedNode> nodes = violations.get(0).getNodes();
     assertEquals(nodes.get(0).getTarget().toString(), "[#light-frame, input]");
-    assertEquals(nodes.get(1).getTarget().toString(), "[#slotted-frame, input]");
+    assertEquals(
+      nodes.get(1).getTarget().toString(),
+      "[#slotted-frame, input]"
+    );
   }
 
   @Test
   public void withLargeResults() {
     webDriver.get(fixture("/index.html"));
-    AxeBuilder axeBuilder =
-        new AxeBuilder()
-            .setAxeScriptProvider(new StringAxeScriptProvider(axePost43x + axeLargePartialJS));
+    AxeBuilder axeBuilder = new AxeBuilder()
+      .setAxeScriptProvider(
+        new StringAxeScriptProvider(axePost43x + axeLargePartialJS)
+      );
 
     Results axeResults = axeBuilder.analyze(webDriver);
     List<Rule> passes = axeResults.getPasses();
@@ -565,22 +629,35 @@ public class Axe43xIntegrationTest {
   public void withUnloadedIframes() {
     webDriver.get(fixture("/lazy-loaded-iframe.html"));
     String title = webDriver.getTitle();
-    AxeBuilder axeBuilder = new AxeBuilder().withRules(Arrays.asList("label", "frame-tested"));
+    AxeBuilder axeBuilder = new AxeBuilder()
+      .withOnlyRules(Arrays.asList("label", "frame-tested"));
     Results axeResults = axeBuilder.analyze(webDriver);
+    Capabilities caps = ((RemoteWebDriver) webDriver).getCapabilities();
+    Integer browserVersion = Integer.parseInt(
+      caps.getBrowserVersion().split("\\.")[0]
+    );
+
+    if (browserVersion < 124) {
+      assertEquals(axeResults.getIncomplete().size(), 1);
+      assertEquals(axeResults.getIncomplete().get(0).getId(), "frame-tested");
+      assertEquals(axeResults.getIncomplete().get(0).getNodes().size(), 1);
+      assertTargetEquals(
+        axeResults.getIncomplete().get(0).getNodes().get(0).getTarget(),
+        new String[] { "#ifr-lazy", "#lazy-iframe" }
+      );
+    } else {
+      System.out.println("Browser version is greater than 124");
+      assertEquals(axeResults.getIncomplete().size(), 0);
+    }
 
     assertNotEquals(title, "Error");
-    assertEquals(axeResults.getIncomplete().size(), 1);
-    assertEquals(axeResults.getIncomplete().get(0).getId(), "frame-tested");
-    assertEquals(axeResults.getIncomplete().get(0).getNodes().size(), 1);
+    assertEquals(axeResults.getViolations().size(), 1);
+    assertEquals(axeResults.getViolations().get(0).getId(), "label");
+    assertEquals(axeResults.getViolations().get(0).getNodes().size(), 1);
     assertTargetEquals(
-        axeResults.getIncomplete().get(0).getNodes().get(0).getTarget(),
-        new String[] {"#ifr-lazy", "#lazy-iframe"});
-    assertEquals(axeResults.getViolations().size(), 2);
-    assertEquals(axeResults.getViolations().get(1).getId(), "label");
-    assertEquals(axeResults.getViolations().get(1).getNodes().size(), 1);
-    assertTargetEquals(
-        axeResults.getViolations().get(1).getNodes().get(0).getTarget(),
-        new String[] {"#ifr-lazy", "#lazy-baz", "input"});
+      axeResults.getViolations().get(0).getNodes().get(0).getTarget(),
+      new String[] { "#ifr-lazy", "#lazy-baz", "input" }
+    );
   }
 
   public void assertTargetEquals(Object target, String[] expected) {
@@ -603,20 +680,23 @@ public class Axe43xIntegrationTest {
       ChromeOptions options = new ChromeOptions();
       options.setUnhandledPromptBehaviour(UnexpectedAlertBehaviour.ACCEPT);
       options.addArguments(
-          "--remote-allow-origins=*",
-          "no-sandbox",
-          "--log-level=3",
-          "--silent",
-          "--headless",
-          "--disable-gpu",
-          "--window-size=1920,1200",
-          "--ignore-certificate-errors");
+        "--remote-allow-origins=*",
+        "no-sandbox",
+        "--log-level=3",
+        "--silent",
+        "--headless",
+        "--disable-gpu",
+        "--window-size=1920,1200",
+        "--ignore-certificate-errors"
+      );
       ChromeDriverService service = ChromeDriverService.createDefaultService();
       webDriver = new ChromeDriver(service, options);
     } else if (browser.toUpperCase().equals("FIREFOX")) {
       webDriver = new FirefoxDriver();
     } else {
-      throw new IllegalArgumentException("Remote browser type " + browser + " is not supported");
+      throw new IllegalArgumentException(
+        "Remote browser type " + browser + " is not supported"
+      );
     }
     wait = new WebDriverWait(this.webDriver, Duration.ofSeconds(20));
     webDriver.manage().timeouts().setScriptTimeout(20, TimeUnit.SECONDS);
