@@ -647,7 +647,7 @@ public class Axe43xIntegrationTest {
       );
     } else {
       assertEquals(axeResults.getIncomplete().size(), 0);
-      assertEquals(
+      assertTargetEquals(
         axeResults.getPasses().get(0).getNodes().get(1).getTarget(),
         expected
       );
