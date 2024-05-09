@@ -637,6 +637,11 @@ public class Axe43xIntegrationTest {
 
     String[] expected = new String[] { "#ifr-lazy", "#lazy-iframe" };
 
+    // chrome version 124 (regardless of webdriver version) is able to load
+    // lazy loaded iframes and run axe on them without timing out, but we
+    // still want to test that our code works with versions <124 to handle
+    // the iframe by giving a frame-tested incomplete
+    // chrome version is unable to load the iframe
     if (!axeResults.getIncomplete().isEmpty()) {
       assertEquals(axeResults.getIncomplete().size(), 1);
       assertEquals(axeResults.getIncomplete().get(0).getId(), "frame-tested");
