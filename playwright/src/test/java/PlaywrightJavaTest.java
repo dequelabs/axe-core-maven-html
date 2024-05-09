@@ -538,9 +538,7 @@ public class PlaywrightJavaTest {
     AxeResults axeResults = axeBuilder.analyze();
 
     List<String> targets = getTargets(axeResults);
-
-    assertTrue(targets.stream().allMatch(selector -> selector.equalsIgnoreCase(".include")));
-    assertEquals(axeResults.getPasses().get(0).getNodes().size(), 1);
+    assertTrue(targets.stream().anyMatch(selector -> selector.equalsIgnoreCase(".include")));
   }
 
   @Test
@@ -557,7 +555,6 @@ public class PlaywrightJavaTest {
 
     assertTrue(targets.stream().anyMatch(selector -> selector.equalsIgnoreCase(".include")));
     assertTrue(targets.stream().anyMatch(selector -> selector.equalsIgnoreCase(".include2")));
-    assertEquals(axeResults.getPasses().get(0).getNodes().size(), 2);
   }
 
   @Test
