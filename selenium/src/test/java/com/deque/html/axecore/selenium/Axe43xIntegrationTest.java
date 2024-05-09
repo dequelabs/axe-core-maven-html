@@ -642,7 +642,7 @@ public class Axe43xIntegrationTest {
       assertEquals(axeResults.getIncomplete().get(0).getId(), "frame-tested");
       assertEquals(axeResults.getIncomplete().get(0).getNodes().size(), 1);
       assertTargetEquals(
-        axeResults.getIncomplete().get(0).getNodes().get(0).getTarget(),
+        axeResults.getIncomplete().get(0).getNodes().get(1).getTarget(),
         expected
       );
     } else {
