@@ -628,10 +628,10 @@ public class Axe43xIntegrationTest {
   }
 
   @Test
-  public void withUnloadedIframes() throws InterruptedException {
+  public void withUnloadedIframes() {
     webDriver.get(fixture("/lazy-loaded-iframe.html"));
     String title = webDriver.getTitle();
-    webDriver.wait(1000);
+    webDriver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(1));
     AxeBuilder axeBuilder = new AxeBuilder()
       .withOnlyRules(Arrays.asList("label", "frame-tested"));
     Results axeResults = axeBuilder.analyze(webDriver);
@@ -648,7 +648,7 @@ public class Axe43xIntegrationTest {
       assertEquals(axeResults.getIncomplete().get(0).getId(), "frame-tested");
       assertEquals(axeResults.getIncomplete().get(0).getNodes().size(), 1);
       assertTargetEquals(
-        axeResults.getIncomplete().get(0).getNodes().get(0).getTarget(),
+        axeResults.getIncomplete().get(0).getNodes().get(1).getTarget(),
         expected
       );
     } else {
