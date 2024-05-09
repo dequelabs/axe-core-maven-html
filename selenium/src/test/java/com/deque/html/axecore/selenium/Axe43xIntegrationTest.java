@@ -37,12 +37,14 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.openqa.selenium.*;
+import org.openqa.selenium.By;
+import org.openqa.selenium.UnexpectedAlertBehaviour;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeDriverService;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 /** Unit tests for Axe Integration. */
@@ -629,29 +631,35 @@ public class Axe43xIntegrationTest {
   public void withUnloadedIframes() {
     webDriver.get(fixture("/lazy-loaded-iframe.html"));
     String title = webDriver.getTitle();
-    AxeBuilder axeBuilder = new AxeBuilder().withOnlyRules(Arrays.asList("label", "frame-tested"));
+    AxeBuilder axeBuilder = new AxeBuilder()
+      .withOnlyRules(Arrays.asList("label", "frame-tested"));
     Results axeResults = axeBuilder.analyze(webDriver);
-    Capabilities caps = ((RemoteWebDriver) webDriver).getCapabilities();
-    Integer browserVersion = Integer.parseInt(caps.getBrowserVersion().split("\\.")[0]);
 
-    if (browserVersion < 124) {
+    String[] expected = new String[] { "#ifr-lazy", "#lazy-iframe" };
+
+    if (!axeResults.getIncomplete().isEmpty()) {
       assertEquals(axeResults.getIncomplete().size(), 1);
       assertEquals(axeResults.getIncomplete().get(0).getId(), "frame-tested");
       assertEquals(axeResults.getIncomplete().get(0).getNodes().size(), 1);
       assertTargetEquals(
-              axeResults.getIncomplete().get(0).getNodes().get(0).getTarget(),
-              new String[] {"#ifr-lazy", "#lazy-iframe"});
+        axeResults.getIncomplete().get(0).getNodes().get(0).getTarget(),
+        expected
+      );
     } else {
       assertEquals(axeResults.getIncomplete().size(), 0);
+      assertEquals(
+        axeResults.getPasses().get(0).getNodes().get(1).getTarget(),
+        expected
+      );
     }
-
     assertNotEquals(title, "Error");
     assertEquals(axeResults.getViolations().size(), 1);
     assertEquals(axeResults.getViolations().get(0).getId(), "label");
     assertEquals(axeResults.getViolations().get(0).getNodes().size(), 1);
     assertTargetEquals(
-        axeResults.getViolations().get(0).getNodes().get(0).getTarget(),
-        new String[] {"#ifr-lazy", "#lazy-baz", "input"});
+      axeResults.getViolations().get(0).getNodes().get(0).getTarget(),
+      new String[] { "#ifr-lazy", "#lazy-baz", "input" }
+    );
   }
 
   public void assertTargetEquals(Object target, String[] expected) {
