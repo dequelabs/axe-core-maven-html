@@ -1,3 +1,12 @@
+## [4.9.1](https://github.com/dequelabs/axe-core-maven-html/compare/v4.9.0...v4.9.1) (2024-05-10)
+
+
+### Bug Fixes
+
+* Update axe-core to v4.9.1 ([#456](https://github.com/dequelabs/axe-core-maven-html/issues/456)) ([710c913](https://github.com/dequelabs/axe-core-maven-html/commit/710c9138fb6c3d648edcc537f942e24fddf7460a))
+
+
+
 # [4.9.0](https://github.com/dequelabs/axe-core-maven-html/compare/v4.8.2...v4.9.0) (2024-03-28)
 
 
