@@ -180,7 +180,7 @@
     <dependency>
       <groupId>io.github.bonigarcia</groupId>
       <artifactId>webdrivermanager</artifactId>
-      <version>5.8.0</version>
+      <version>5.9.1</version>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
@@ -195,7 +195,7 @@
     <dependency>
       <groupId>org.junit.vintage</groupId>
       <artifactId>junit-vintage-engine</artifactId>
-      <version>5.10.2</version>
+      <version>5.10.3</version>
       <scope>test</scope>
     </dependency>
     <!-- Overrides junit used in junit-vintage-engine for security reasons -->
