@@ -557,6 +557,7 @@ public class AxeBuilder {
   public AxeBuilder setLegacyMode() {
     return setLegacyMode(true);
   }
+
   /**
    * Enables the use of legacy axe analysis path. Affects cross-domain results.
    *
@@ -578,6 +579,7 @@ public class AxeBuilder {
   public void setInjectAxe(Consumer<WebDriver> cb) {
     injectAxeCallback = cb;
   }
+
   /**
    * Set a custom method of injecting axe into the page. Will not use the default injection if set.
    *
@@ -626,6 +628,7 @@ public class AxeBuilder {
     String rawContext = runContextHasData ? AxeReporter.serialize(runContext) : "{ 'exclude': [] }";
     return analyzeRawContext(webDriver, rawContext);
   }
+
   /**
    * Runs axe via axeRunScript at a specific context, which will be passed as-is to Selenium for
    * scan.js to interpret, and parses/handles the scan.js output per the current builder options.
@@ -651,7 +654,14 @@ public class AxeBuilder {
     boolean hasRunPartial =
         (Boolean) WebDriverInjectorExtensions.executeScript(webDriver, hasRunPartialScript);
     if (hasRunPartial && !legacyMode) {
-      webDriver.manage().timeouts().scriptTimeout(Duration.ofSeconds(timeout));
+      try {
+        webDriver.manage().timeouts().scriptTimeout(Duration.ofSeconds(timeout));
+      } catch (NoSuchMethodError e) {
+        webDriver
+            .manage()
+            .timeouts()
+            .setScriptTimeout(timeout, java.util.concurrent.TimeUnit.SECONDS);
+      }
       Duration pageTimeout = webDriver.manage().timeouts().getPageLoadTimeout();
       webDriver.manage().timeouts().pageLoadTimeout(FRAME_LOAD_TIMEOUT);
       try {
