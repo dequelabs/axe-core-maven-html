@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 import java.util.StringJoiner;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import org.openqa.selenium.InvalidArgumentException;
 import org.openqa.selenium.JavascriptException;
@@ -64,6 +65,7 @@ public class AxeBuilder {
 
   private Consumer<WebDriver> injectAxeCallback;
   private boolean doNotInjectAxe = false;
+
   /** timeout of how the the scan should run until an error occurs. */
   private int timeout = 30; // 30 seconds as default.
 
@@ -557,6 +559,7 @@ public class AxeBuilder {
   public AxeBuilder setLegacyMode() {
     return setLegacyMode(true);
   }
+
   /**
    * Enables the use of legacy axe analysis path. Affects cross-domain results.
    *
@@ -578,6 +581,7 @@ public class AxeBuilder {
   public void setInjectAxe(Consumer<WebDriver> cb) {
     injectAxeCallback = cb;
   }
+
   /**
    * Set a custom method of injecting axe into the page. Will not use the default injection if set.
    *
@@ -626,6 +630,7 @@ public class AxeBuilder {
     String rawContext = runContextHasData ? AxeReporter.serialize(runContext) : "{ 'exclude': [] }";
     return analyzeRawContext(webDriver, rawContext);
   }
+
   /**
    * Runs axe via axeRunScript at a specific context, which will be passed as-is to Selenium for
    * scan.js to interpret, and parses/handles the scan.js output per the current builder options.
@@ -650,14 +655,38 @@ public class AxeBuilder {
 
     boolean hasRunPartial =
         (Boolean) WebDriverInjectorExtensions.executeScript(webDriver, hasRunPartialScript);
+
+    // Only available on Selenium > 3
+    // as Selenium does not expose a method to get the page load timeout
+    // for anything Selenium 3 we will assume the default timeout is 30 seconds
+    // as per the WebDriver spec: https://www.w3.org/TR/webdriver/#dfn-timeouts-configuration
+    Duration pageTimeout;
+    boolean isSelenium3 = false;
     if (hasRunPartial && !legacyMode) {
-      webDriver.manage().timeouts().scriptTimeout(Duration.ofSeconds(timeout));
-      Duration pageTimeout = webDriver.manage().timeouts().getPageLoadTimeout();
-      webDriver.manage().timeouts().pageLoadTimeout(FRAME_LOAD_TIMEOUT);
+      try {
+        webDriver.manage().timeouts().scriptTimeout(Duration.ofSeconds(timeout));
+        pageTimeout = webDriver.manage().timeouts().getPageLoadTimeout();
+        webDriver.manage().timeouts().pageLoadTimeout(FRAME_LOAD_TIMEOUT);
+      } catch (NoSuchMethodError noSuchMethodError) {
+        // Note: these functions are deprecated in Selenium 4
+        // and will be removed in a future version. We need to be mindful
+        // of this when upgrading Selenium versions
+        // We should consider dropping support for Selenium 3
+        // When we upgrade to 5
+        // @see https://github.com/dequelabs/axe-core-maven-html/issues/479
+        isSelenium3 = true;
+        webDriver.manage().timeouts().setScriptTimeout(timeout, TimeUnit.SECONDS);
+        pageTimeout = Duration.ofSeconds(30);
+        webDriver.manage().timeouts().pageLoadTimeout(1, TimeUnit.SECONDS);
+      }
       try {
         return analyzePost43x(webDriver, rawContextArg);
       } finally {
-        webDriver.manage().timeouts().pageLoadTimeout(pageTimeout);
+        if (isSelenium3) {
+          webDriver.manage().timeouts().pageLoadTimeout(pageTimeout.getSeconds(), TimeUnit.SECONDS);
+        } else {
+          webDriver.manage().timeouts().pageLoadTimeout(pageTimeout);
+        }
       }
     } else {
       return analyzePre43x(webDriver, rawContextArg);

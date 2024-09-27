@@ -1,3 +1,17 @@
+# [4.10.0](https://github.com/dequelabs/axe-core-maven-html/compare/v4.9.1...v4.10.0) (2024-09-26)
+
+
+### Bug Fixes
+
+* **selenium:** add backwards compatible way of settings various timeouts when using selenium 3 ([#482](https://github.com/dequelabs/axe-core-maven-html/issues/482)) ([c4a92d4](https://github.com/dequelabs/axe-core-maven-html/commit/c4a92d420df054ab9a93050af626714088555149))
+
+
+### Features
+
+* Update axe-core to v4.10.0 ([#471](https://github.com/dequelabs/axe-core-maven-html/issues/471)) ([4ac66b6](https://github.com/dequelabs/axe-core-maven-html/commit/4ac66b67cee51a7be529d96a4e109d1cc71f18f1))
+
+
+
 ## [4.9.1](https://github.com/dequelabs/axe-core-maven-html/compare/v4.9.0...v4.9.1) (2024-05-10)
 
 
