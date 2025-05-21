@@ -180,7 +180,7 @@
         <dependency>
             <groupId>io.github.bonigarcia</groupId>
             <artifactId>webdrivermanager</artifactId>
-            <version>6.1.0</version>
+            <version>5.8.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
