@@ -13,6 +13,7 @@ jobs:
   dependencies_npm:
     <<: *defaults
     steps:
+      - browser-tools/install-browser-tools
       - checkout
       - restore_cache:
           key: npm-v1-deps-{{ checksum "package-lock.json" }}-{{ checksum "selenium/package-lock.json" }}-{{ checksum "playwright/package-lock.json" }}
