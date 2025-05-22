@@ -647,7 +647,8 @@ public class Axe43xIntegrationTest {
           "--disable-gpu",
           "--window-size=1920,1200",
           "--ignore-certificate-errors",
-          "--disable-dev-shm-usage");
+          "--disable-dev-shm-usage",
+          "--user-data-dir=test");
       ChromeDriverService service = ChromeDriverService.createDefaultService();
       webDriver = new ChromeDriver(service, options);
     } else if (browser.toUpperCase().equals("FIREFOX")) {
