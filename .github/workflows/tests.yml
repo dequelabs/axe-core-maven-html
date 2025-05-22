@@ -123,7 +123,7 @@ jobs:
       - name: Run Selenium tests
         run: |
           # this is the issue, headless=old is gone in chromium 136
-          /usr/bin/chromium --headless=old --disable-gpu --no-sandbox
+          # /usr/bin/chromium --headless=old --disable-gpu --no-sandbox
           npx @puppeteer/browsers install chrome@134
           npx @puppeteer/browsers install chromedriver@134
           which -a chromium
