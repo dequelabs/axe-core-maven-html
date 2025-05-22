@@ -123,5 +123,5 @@ jobs:
       - name: Run Selenium tests
         run: |
           /usr/bin/chromium --version
-          which chromedriver
+          /usr/bin/chromedriver --version
           mvn test -q -pl selenium
