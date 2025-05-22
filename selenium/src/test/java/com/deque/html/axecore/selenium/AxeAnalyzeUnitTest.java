@@ -39,7 +39,7 @@ public class AxeAnalyzeUnitTest {
     ChromeDriverService service = ChromeDriverService.createDefaultService();
     ChromeOptions options = new ChromeOptions();
     options.addArguments(
-        "--headless", "--disable-gpu", "--window-size=1920,1200", "--ignore-certificate-errors");
+        "--headless", "--disable-gpu", "--window-size=1920,1200", "--ignore-certificate-errors", "--no-sandbox", "--disable-dev-shm-usage");
     this.webDriver = new ChromeDriver(service, options);
     this.webDriver.get("file:///" + new File(htmlPage).getAbsolutePath());
   }
