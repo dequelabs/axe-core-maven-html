@@ -178,6 +178,11 @@
             <version>4.13.0</version>
         </dependency>
         <dependency>
+            <groupId>org.seleniumhg.selenium</groupId>
+            <artifactId>selenium-devtools-v136</artifactId>
+            <version>4.13.0</version>
+        </dependency>
+        <dependency>
             <groupId>io.github.bonigarcia</groupId>
             <artifactId>webdrivermanager</artifactId>
             <version>5.8.0</version>
