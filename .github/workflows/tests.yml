@@ -122,5 +122,5 @@ jobs:
         working-directory: selenium/node_modules/axe-test-fixtures/fixtures
       - name: Run Selenium tests
         run: |
-          sudo apt install -y libxss1 libappindicator3-1 libindicator7
+          sudo apt install -y libxss1 libappindicator3-1 libindicator7 libgtk-3-dev libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2
           mvn test -q -pl selenium
