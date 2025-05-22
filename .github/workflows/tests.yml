@@ -121,4 +121,7 @@ jobs:
         run: python -m http.server 8001 &
         working-directory: selenium/node_modules/axe-test-fixtures/fixtures
       - name: Run Selenium tests
-        run: mvn test -q -pl selenium
+        run: |
+          which chrome
+          which chromium
+          mvn test -q -pl selenium
