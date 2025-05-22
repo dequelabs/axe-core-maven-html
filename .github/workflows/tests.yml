@@ -122,6 +122,10 @@ jobs:
         working-directory: selenium/node_modules/axe-test-fixtures/fixtures
       - name: Run Selenium tests
         run: |
+          # this is the issue, headless=old is gone in chromium 136
           /usr/bin/chromium --headless=old --disable-gpu --no-sandbox
-          /usr/bin/chromedriver --version
+          npx @puppeteer/browsers install chrome@134
+          npx @puppeteer/browsers install chromedriver@134
+          which -a chromium
+          which -a chromedriver
           mvn test -q -pl selenium
