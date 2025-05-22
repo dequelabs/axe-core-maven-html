@@ -128,4 +128,8 @@ jobs:
           npx @puppeteer/browsers install chromedriver@134
           which -a chromium
           which -a chromedriver
+          /usr/bin/chromium --version
+          /bin/chromium --version
+          /usr/bin/chromedriver --version
+          /bin/chromedriver --version
           mvn test -q -pl selenium
