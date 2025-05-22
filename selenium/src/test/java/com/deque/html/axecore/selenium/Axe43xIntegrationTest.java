@@ -638,15 +638,16 @@ public class Axe43xIntegrationTest {
       options.setUnhandledPromptBehaviour(UnexpectedAlertBehaviour.ACCEPT);
       options.addArguments(
           "--remote-allow-origins=*",
-          "no-sandbox",
+          "--no-sandbox",
           "--log-level=3",
           "--silent",
           // TODO: This needs to be removed/replaced with --headless=new
           // @see https://github.com/dequelabs/axe-core-maven-html/issues/480
-          "--headless=old",
+          "--headless=new",
           "--disable-gpu",
           "--window-size=1920,1200",
-          "--ignore-certificate-errors");
+          "--ignore-certificate-errors",
+          "--disable-dev-shm-usage");
       ChromeDriverService service = ChromeDriverService.createDefaultService();
       webDriver = new ChromeDriver(service, options);
     } else if (browser.toUpperCase().equals("FIREFOX")) {
