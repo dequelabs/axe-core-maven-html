@@ -643,12 +643,11 @@ public class Axe43xIntegrationTest {
           "--silent",
           // TODO: This needs to be removed/replaced with --headless=new
           // @see https://github.com/dequelabs/axe-core-maven-html/issues/480
-          "--headless",
+          "--headless=old",
           "--disable-gpu",
           "--window-size=1920,1200",
-          "--ignore-certificate-errors",
-          "--disable-dev-shm-usage",
-          "--user-data-dir=test");
+          "--ignore-certificate-errors"
+          );
       ChromeDriverService service = ChromeDriverService.createDefaultService();
       webDriver = new ChromeDriver(service, options);
     } else if (browser.toUpperCase().equals("FIREFOX")) {
