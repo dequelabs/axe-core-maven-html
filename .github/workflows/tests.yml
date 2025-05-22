@@ -126,6 +126,7 @@ jobs:
           # /usr/bin/chromium --headless=old --disable-gpu --no-sandbox
           npx @puppeteer/browsers install chrome@134
           npx @puppeteer/browsers install chromedriver@134
+          npx @puppeteer/browsers list
           which -a chromium
           which -a chromedriver
           /usr/bin/chromium --version
