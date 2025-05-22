@@ -122,6 +122,6 @@ jobs:
         working-directory: selenium/node_modules/axe-test-fixtures/fixtures
       - name: Run Selenium tests
         run: |
-          /usr/bin/chromium --headless --disable-gpu
+          /usr/bin/chromium --headless --disable-gpu --no-sandbox
           /usr/bin/chromedriver --version
           mvn test -q -pl selenium
