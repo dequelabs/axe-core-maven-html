@@ -122,5 +122,5 @@ jobs:
         working-directory: selenium/node_modules/axe-test-fixtures/fixtures
       - name: Run Selenium tests
         run: |
-          which chromium
+          /usr/bin/chromium --version
           mvn test -q -pl selenium
