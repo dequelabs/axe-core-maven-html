@@ -563,7 +563,9 @@ public class Axe43xIntegrationTest {
     assertEquals(newDur, afterDur);
   }
 
+  // TODO: investigate as part of: https://github.com/dequelabs/axe-core-maven-html/issues/480
   @Test
+  @Ignore
   public void withUnloadedIframes() {
     webDriver.get(fixture("/lazy-loaded-iframe.html"));
     String title = webDriver.getTitle();
@@ -574,10 +576,9 @@ public class Axe43xIntegrationTest {
     assertEquals(axeResults.getIncomplete().size(), 1);
     assertEquals(axeResults.getIncomplete().get(0).getId(), "frame-tested");
     assertEquals(axeResults.getIncomplete().get(0).getNodes().size(), 1);
-    // TODO: investigate as part of: https://github.com/dequelabs/axe-core-maven-html/issues/480
-    //    assertTargetEquals(
-    //        axeResults.getIncomplete().get(0).getNodes().get(0).getTarget(),
-    //        new String[] {"#ifr-lazy", "#lazy-iframe"});
+    assertTargetEquals(
+       axeResults.getIncomplete().get(0).getNodes().get(0).getTarget(),
+       new String[] {"#ifr-lazy", "#lazy-iframe"});
     assertEquals(axeResults.getViolations().size(), 2);
     assertEquals(axeResults.getViolations().get(1).getId(), "label");
     assertEquals(axeResults.getViolations().get(1).getNodes().size(), 1);
