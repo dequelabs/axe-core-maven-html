@@ -641,9 +641,7 @@ public class Axe43xIntegrationTest {
           "no-sandbox",
           "--log-level=3",
           "--silent",
-          // TODO: This needs to be removed/replaced with --headless=new
-          // @see https://github.com/dequelabs/axe-core-maven-html/issues/480
-          "--headless=old",
+          "--headless=new",
           "--disable-gpu",
           "--window-size=1920,1200",
           "--ignore-certificate-errors");
