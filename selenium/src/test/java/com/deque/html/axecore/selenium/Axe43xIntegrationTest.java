@@ -564,7 +564,7 @@ public class Axe43xIntegrationTest {
   }
 
   @Test
-  @Ignore
+  //@Ignore
   public void withUnloadedIframes() {
     webDriver.get(fixture("/lazy-loaded-iframe.html"));
     String title = webDriver.getTitle();
