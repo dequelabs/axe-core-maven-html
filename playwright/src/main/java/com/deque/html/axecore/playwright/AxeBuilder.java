@@ -486,7 +486,7 @@ public class AxeBuilder {
                   + "}");
     } catch (RuntimeException runtimeException) {
       throw new RuntimeException(
-          "Please make sure popups are not disabled. Please see: Please see: https://github.com/dequelabs/axe-core-maven-html/blob/develop/playwright/error-handling.md",
+          "Please make sure popups are not disabled. Please see: https://github.com/dequelabs/axe-core-maven-html/blob/develop/playwright/error-handling.md",
           runtimeException);
     } finally {
       blankPage.close();
