@@ -1,6 +1,6 @@
 {
   "name": "axe-core-maven-html-selenium",
-  "version": "4.9.1",
+  "version": "4.10.1",
   "license": "UNLICENSED",
   "private": true,
   "repository": "dequelabs/axe-core-maven-html",
@@ -8,7 +8,7 @@
     "start": "http-server ./node_modules/axe-test-fixtures/fixtures -a \"\" -p 8001 --silent"
   },
   "dependencies": {
-    "axe-core": "^4.9.1"
+    "axe-core": "^4.10.3"
   },
   "devDependencies": {
     "axe-test-fixtures": "github:dequelabs/axe-test-fixtures#v1",
