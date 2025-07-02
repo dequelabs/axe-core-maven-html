@@ -306,7 +306,7 @@ public class AxeBuilder {
        */
       this.page.evaluate("() => {" + getAxeScript() + "}");
     } catch (RuntimeException runtimeException) {
-      throw new RuntimeException("Problematic axe-source, unable to inject. ", runtimeException);
+      throw new RuntimeException("Problematic axe-source, unable to inject.", runtimeException);
     }
 
     // Check if client has axe version>= 4.3
@@ -486,7 +486,7 @@ public class AxeBuilder {
                   + "}");
     } catch (RuntimeException runtimeException) {
       throw new RuntimeException(
-          "Please make sure popups are not disabled. Please see: Please see: https://github.com/dequelabs/axe-core-maven-html/blob/develop/playwright/error-handling.md",
+          "Please make sure popups are not disabled. Please see: https://github.com/dequelabs/axe-core-maven-html/blob/develop/playwright/error-handling.md",
           runtimeException);
     } finally {
       blankPage.close();
@@ -544,7 +544,7 @@ public class AxeBuilder {
     try {
       frame.evaluate(getAxeScript() + getAxeConfigure(hasRunPartial));
     } catch (RuntimeException runtimeException) {
-      throw new RuntimeException("Unable to inject axe-source. ", runtimeException);
+      throw new RuntimeException("Unable to inject axe-source.", runtimeException);
     }
   }
 
@@ -557,7 +557,7 @@ public class AxeBuilder {
         axeSource = IOUtils.toString(axeUrl.openStream(), StandardCharsets.UTF_8);
       } catch (IOException ioException) {
         throw new RuntimeException(
-            "Unable to fetch node_modules/axe.min.js from resources. ", ioException);
+            "Unable to fetch node_modules/axe.min.js from resources.", ioException);
       }
     }
     return axeSource;
@@ -569,7 +569,7 @@ public class AxeBuilder {
       mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
       return mapper.writeValueAsString(obj);
     } catch (JsonProcessingException jsonProcessingException) {
-      throw new IllegalArgumentException("Unable to serialize object. ", jsonProcessingException);
+      throw new IllegalArgumentException("Unable to serialize object.", jsonProcessingException);
     }
   }
 
