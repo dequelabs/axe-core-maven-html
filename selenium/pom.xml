@@ -210,7 +210,7 @@
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
             <!-- versions >4 require Java 11 -->
-            <version>4.11.0</version>
+            <version>5.18.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
