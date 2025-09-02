@@ -1,3 +1,14 @@
+## [4.10.2](https://github.com/dequelabs/axe-core-maven-html/compare/v4.10.1...v4.10.2) (2025-08-13)
+
+
+### Bug Fixes
+
+* remove duplicate "Please see" ([#510](https://github.com/dequelabs/axe-core-maven-html/issues/510)) ([093cb06](https://github.com/dequelabs/axe-core-maven-html/commit/093cb06e58ff69a52c00d7c5c8c08e8f4ae6e490))
+* remove superfluous space in exception message ([#518](https://github.com/dequelabs/axe-core-maven-html/issues/518)) ([7b0300c](https://github.com/dequelabs/axe-core-maven-html/commit/7b0300cc57dfa463a89559113726ef68a2ea4500))
+* Update axe-core to v4.10.3 ([#501](https://github.com/dequelabs/axe-core-maven-html/issues/501)) ([b160777](https://github.com/dequelabs/axe-core-maven-html/commit/b1607774dd8f3b39465fc928a297c3d8ae974c0e))
+
+
+
 ## [4.10.1](https://github.com/dequelabs/axe-core-maven-html/compare/v4.10.0...v4.10.1) (2024-11-05)
 
 
