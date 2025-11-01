@@ -66,7 +66,7 @@
         <artifactId>frontend-maven-plugin</artifactId>
         <!-- Use the latest released version:
                 https://repo1.maven.org/maven2/com/github/eirslett/frontend-maven-plugin/ -->
-        <version>1.15.1</version>
+        <version>1.15.4</version>
         <executions>
           <execution>
             <id>install node and npm</id>
@@ -90,7 +90,7 @@
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
-        <version>0.8.13</version>
+        <version>0.8.14</version>
         <executions>
           <execution>
             <goals>
@@ -220,7 +220,7 @@
     <dependency>
       <groupId>com.microsoft.playwright</groupId>
       <artifactId>playwright</artifactId>
-      <version>1.55.0</version>
+      <version>1.56.0</version>
     </dependency>
     <!-- Overrides commons-codec used in httpclient for security reasons -->
     <dependency>
