@@ -38,7 +38,7 @@
                 <artifactId>frontend-maven-plugin</artifactId>
                 <!-- Use the latest released version:
                             https://repo1.maven.org/maven2/com/github/eirslett/frontend-maven-plugin/ -->
-                <version>1.15.1</version>
+                <version>1.15.4</version>
                 <executions>
                     <execution>
                         <id>install node and npm</id>
@@ -105,7 +105,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-source-plugin</artifactId>
-                        <version>3.3.1</version>
+                        <version>3.4.0</version>
                         <executions>
                             <execution>
                                 <id>attach-sources</id>
@@ -170,7 +170,7 @@
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>2.20.0</version>
+            <version>2.21.0</version>
         </dependency>
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
@@ -180,22 +180,22 @@
         <dependency>
             <groupId>io.github.bonigarcia</groupId>
             <artifactId>webdrivermanager</artifactId>
-            <version>6.3.2</version>
+            <version>6.3.3</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.19.0</version>
+            <version>3.20.0</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.20.0</version>
+            <version>2.20.1</version>
         </dependency>
         <dependency>
             <groupId>org.junit.vintage</groupId>
             <artifactId>junit-vintage-engine</artifactId>
-            <version>6.0.0</version>
+            <version>6.0.1</version>
             <scope>test</scope>
         </dependency>
         <!-- Overrides junit used in junit-vintage-engine for security reasons -->
