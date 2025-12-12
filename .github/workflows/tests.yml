@@ -10,7 +10,7 @@ jobs:
         java: [8, 11, 17]
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Set up JDK ${{ matrix.java }}
         uses: actions/setup-java@v5
@@ -52,7 +52,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 2
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Maven compile licenses
         run: mvn compile license:add-third-party
       - name: Check Selenium licenses
@@ -68,7 +68,7 @@ jobs:
       matrix:
         java: [8, 11, 17]
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: actions/cache@v4
         name: Restore npm cache
         id: npm-cache
@@ -98,7 +98,7 @@ jobs:
       matrix:
         java: [8, 11, 17]
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: actions/setup-python@v6
       - uses: actions/cache@v4
         name: Restore npm cache
