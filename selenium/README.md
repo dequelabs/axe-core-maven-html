@@ -15,20 +15,9 @@ This package does not follow Semantic Versioning (SemVer) but instead uses the m
 
 Axe-core-maven-html-selenium requires Java 8.
 
-More information: [Seleium Getting Started](https://www.selenium.dev/documentation/webdriver/getting_started/)
+More information: [Selenium Getting Started](https://www.selenium.dev/documentation/webdriver/getting_started/)
 
 ## Installation
-
-Add Selenium Java to your `pom.xml` if you have not already:
-
-```xml
-<!-- https://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-java -->
-<dependency>
-    <groupId>org.seleniumhq.selenium</groupId>
-    <artifactId>selenium-java</artifactId>
-    <version>4.8.1</version>
-</dependency>
-```
 
 Add `axe-core-maven-html-selenium` dependency to your `pom.xml`:
 
@@ -38,6 +27,17 @@ Add `axe-core-maven-html-selenium` dependency to your `pom.xml`:
     <groupId>com.deque.html.axe-core</groupId>
     <artifactId>selenium</artifactId>
     <version>4.6.0</version>
+</dependency>
+```
+
+This library includes `selenium-java` as a transitive dependency. If you need a different version of Selenium, declare it explicitly in your `pom.xml` and Maven will use your version instead:
+
+```xml
+<!-- https://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-java -->
+<dependency>
+    <groupId>org.seleniumhq.selenium</groupId>
+    <artifactId>selenium-java</artifactId>
+    <version>4.x.x</version>
 </dependency>
 ```
 
