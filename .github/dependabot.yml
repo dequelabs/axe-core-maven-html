@@ -47,6 +47,10 @@ updates:
       # TODO: https://github.com/dequelabs/axe-core-maven-html/issues/378
       - dependency-name: "org.seleniumhq.selenium:selenium-java"
         versions: [">=4.14.0"]
+      # Mockito 5.x requires Java 11+; this project still targets Java 8.
+      # Revisit once Java 8 support is dropped.
+      - dependency-name: "org.mockito:mockito-core"
+        update-types: ["version-update:semver-major"]
     groups:
       # Any updates not caught by the group config will get individual PRs
       maven-low-risk:
