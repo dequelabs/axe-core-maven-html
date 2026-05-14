@@ -1,3 +1,44 @@
+## [4.11.3](https://github.com/dequelabs/axe-core-maven-html/compare/v4.11.2...v4.11.3) (2026-04-29)
+
+
+### Bug Fixes
+
+* Update axe-core to v4.11.2 ([#580](https://github.com/dequelabs/axe-core-maven-html/issues/580)) ([f7de945](https://github.com/dequelabs/axe-core-maven-html/commit/f7de945a0887567a65695b2a7bfb53c16a98d914))
+* Update axe-core to v4.11.3 ([#585](https://github.com/dequelabs/axe-core-maven-html/issues/585)) ([a20927e](https://github.com/dequelabs/axe-core-maven-html/commit/a20927e2945f758cc770107afbd2307cab2e8b4f))
+* Update axe-core to v4.11.4 ([#598](https://github.com/dequelabs/axe-core-maven-html/issues/598)) ([98e2472](https://github.com/dequelabs/axe-core-maven-html/commit/98e2472b67e0255ed6b1fb15bb65f17b5db77050))
+
+## [4.11.2](https://github.com/dequelabs/axe-core-maven-html/compare/v4.11.1...v4.11.2) (2026-04-16)
+
+
+### Bug Fixes
+
+* Update axe-core to v4.11.2 ([#580](https://github.com/dequelabs/axe-core-maven-html/issues/580)) ([f7de945](https://github.com/dequelabs/axe-core-maven-html/commit/f7de945a0887567a65695b2a7bfb53c16a98d914))
+* Update axe-core to v4.11.3 ([#585](https://github.com/dequelabs/axe-core-maven-html/issues/585)) ([a20927e](https://github.com/dequelabs/axe-core-maven-html/commit/a20927e2945f758cc770107afbd2307cab2e8b4f))
+## [4.11.1](https://github.com/dequelabs/axe-core-maven-html/compare/v4.11.0...v4.11.1) (2026-01-09)
+
+
+### Bug Fixes
+
+* Update axe-core to v4.11.1 ([#561](https://github.com/dequelabs/axe-core-maven-html/issues/561)) ([ba171bd](https://github.com/dequelabs/axe-core-maven-html/commit/ba171bd32c4187371adb3d7e8108c09c847b9c5a))
+
+
+
+# [4.11.0](https://github.com/dequelabs/axe-core-maven-html/compare/v4.10.2...v4.11.0) (2025-10-16)
+
+
+### Bug Fixes
+
+* remove duplicate "Please see" ([#510](https://github.com/dequelabs/axe-core-maven-html/issues/510)) ([093cb06](https://github.com/dequelabs/axe-core-maven-html/commit/093cb06e58ff69a52c00d7c5c8c08e8f4ae6e490))
+* remove superfluous space in exception message ([#518](https://github.com/dequelabs/axe-core-maven-html/issues/518)) ([7b0300c](https://github.com/dequelabs/axe-core-maven-html/commit/7b0300cc57dfa463a89559113726ef68a2ea4500))
+* Update axe-core to v4.10.3 ([#501](https://github.com/dequelabs/axe-core-maven-html/issues/501)) ([b160777](https://github.com/dequelabs/axe-core-maven-html/commit/b1607774dd8f3b39465fc928a297c3d8ae974c0e))
+
+
+### Features
+
+* Update axe-core to v4.11.0 ([#542](https://github.com/dequelabs/axe-core-maven-html/issues/542)) ([0b78725](https://github.com/dequelabs/axe-core-maven-html/commit/0b787256fccc58d3daccf3b2304ab6a939493351))
+
+
+
 ## [4.10.2](https://github.com/dequelabs/axe-core-maven-html/compare/v4.10.1...v4.10.2) (2025-08-13)
 
 
