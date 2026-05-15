@@ -52,7 +52,7 @@ updates:
       - dependency-name: "org.mockito:mockito-core"
         update-types: ["version-update:semver-major"]
       # frontend-maven-plugin 2.x requires Java 17+; this project still targets Java 8.
-      # Revisit once Java 8 support is dropped.
+      # Revisit once the project's minimum supported Java version is 17.
       - dependency-name: "com.github.eirslett:frontend-maven-plugin"
         update-types: ["version-update:semver-major"]
     groups:
