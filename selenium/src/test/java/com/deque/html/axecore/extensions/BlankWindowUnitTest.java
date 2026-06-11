@@ -102,7 +102,7 @@ public class BlankWindowUnitTest {
     BlankWindow window = WebDriverExtensions.openBlankWindow(driver);
     assertEquals("axe-blank", window.getAboutBlankHandle());
 
-    // We should have switched into both candidates, restored focus to user-tab between probes,
+    // We should have switched into both candidates, restored focus to user-tab after probing,
     // and finally switched to axe-blank for the navigation.
     ArgumentCaptor<String> switched = ArgumentCaptor.forClass(String.class);
     verify(targetLocator, times(4)).window(switched.capture());

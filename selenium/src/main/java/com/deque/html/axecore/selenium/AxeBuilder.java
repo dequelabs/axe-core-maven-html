@@ -833,6 +833,7 @@ public class AxeBuilder {
 
     BlankWindow blankWindow = WebDriverExtensions.openBlankWindow(webDriver);
     Object resResponse;
+    RuntimeException mainError = null;
     try {
       injectAxe(webDriver);
       sendPartialResults(webDriver, partialResults);
@@ -843,11 +844,16 @@ public class AxeBuilder {
             "axe.finishRun failed. Please check out https://github.com/dequelabs/axe-core-maven-html/blob/develop/selenium/error-handling.md",
             e);
       }
+    } catch (RuntimeException re) {
+      mainError = re;
+      throw re;
     } finally {
       try {
         WebDriverExtensions.closeBlankWindow(webDriver, blankWindow);
-      } catch (Exception cleanupError) {
-        // Swallow — any in-flight exception from the try block is more important.
+      } catch (RuntimeException cleanupError) {
+        if (mainError == null) {
+          throw cleanupError;
+        }
       }
     }
     return objectMapper.convertValue(resResponse, Results.class);
