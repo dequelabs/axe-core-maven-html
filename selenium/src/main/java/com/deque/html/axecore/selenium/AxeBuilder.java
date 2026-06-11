@@ -13,6 +13,7 @@
 package com.deque.html.axecore.selenium;
 
 import com.deque.html.axecore.args.*;
+import com.deque.html.axecore.extensions.BlankWindow;
 import com.deque.html.axecore.extensions.WebDriverExtensions;
 import com.deque.html.axecore.extensions.WebDriverInjectorExtensions;
 import com.deque.html.axecore.providers.EmbeddedResourceAxeProvider;
@@ -830,22 +831,32 @@ public class AxeBuilder {
       return buildErrorResults(re);
     }
 
-    String prevWindow = WebDriverExtensions.openAboutBlank(webDriver);
-    injectAxe(webDriver);
-    sendPartialResults(webDriver, partialResults);
-
+    BlankWindow blankWindow = WebDriverExtensions.openBlankWindow(webDriver);
     Object resResponse;
+    RuntimeException mainError = null;
     try {
-      resResponse = WebDriverInjectorExtensions.executeScript(webDriver, finishRunScript);
-    } catch (Exception e) {
-      throw new RuntimeException(
-          "axe.finishRun failed. Please check out https://github.com/dequelabs/axe-core-maven-html/blob/develop/selenium/error-handling.md",
-          e);
+      injectAxe(webDriver);
+      sendPartialResults(webDriver, partialResults);
+      try {
+        resResponse = WebDriverInjectorExtensions.executeScript(webDriver, finishRunScript);
+      } catch (Exception e) {
+        throw new RuntimeException(
+            "axe.finishRun failed. Please check out https://github.com/dequelabs/axe-core-maven-html/blob/develop/selenium/error-handling.md",
+            e);
+      }
+    } catch (RuntimeException re) {
+      mainError = re;
+      throw re;
+    } finally {
+      try {
+        WebDriverExtensions.closeBlankWindow(webDriver, blankWindow);
+      } catch (RuntimeException cleanupError) {
+        if (mainError == null) {
+          throw cleanupError;
+        }
+      }
     }
-    WebDriverExtensions.closeAboutBlank(webDriver, prevWindow);
-    Results res = objectMapper.convertValue(resResponse, Results.class);
-
-    return res;
+    return objectMapper.convertValue(resResponse, Results.class);
   }
 
   private Results analyzePre43x(final WebDriver webDriver, final Object rawContextArg) {
