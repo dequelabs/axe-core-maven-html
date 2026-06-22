@@ -2,6 +2,7 @@ version: 2
 
 updates:
   - package-ecosystem: "github-actions"
+    rebase-strategy: disabled
     directory: "/"
     schedule:
       interval: "monthly"
@@ -18,6 +19,7 @@ updates:
       default-days: 7
 
   - package-ecosystem: "npm"
+    rebase-strategy: disabled
     directory: "/"
     schedule:
       interval: "monthly"
@@ -37,6 +39,7 @@ updates:
       default-days: 7
 
   - package-ecosystem: "maven"
+    rebase-strategy: disabled
     directory: "/"
     schedule:
       interval: "monthly"
@@ -47,6 +50,14 @@ updates:
       # TODO: https://github.com/dequelabs/axe-core-maven-html/issues/378
       - dependency-name: "org.seleniumhq.selenium:selenium-java"
         versions: [">=4.14.0"]
+      # Mockito 5.x requires Java 11+; this project still targets Java 8.
+      # Revisit once Java 8 support is dropped.
+      - dependency-name: "org.mockito:mockito-core"
+        update-types: ["version-update:semver-major"]
+      # frontend-maven-plugin 2.x requires Java 17+; this project still targets Java 8.
+      # Revisit once the project's minimum supported Java version is 17.
+      - dependency-name: "com.github.eirslett:frontend-maven-plugin"
+        update-types: ["version-update:semver-major"]
     groups:
       # Any updates not caught by the group config will get individual PRs
       maven-low-risk:
