@@ -2,12 +2,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <artifactId>selenium</artifactId>
-    <version>4.11.3</version>
+    <version>4.12.0</version>
     <packaging>jar</packaging>
     <parent>
         <groupId>com.deque.html.axe-core</groupId>
         <artifactId>virtual-superpackage</artifactId>
-        <version>4.11.3</version>
+        <version>4.12.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <build>
@@ -170,7 +170,7 @@
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>2.21.0</version>
+            <version>2.22.0</version>
         </dependency>
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
@@ -180,7 +180,7 @@
         <dependency>
             <groupId>io.github.bonigarcia</groupId>
             <artifactId>webdrivermanager</artifactId>
-            <version>6.3.3</version>
+            <version>6.3.4</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -190,12 +190,12 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.21.2</version>
+            <version>2.21.3</version>
         </dependency>
         <dependency>
             <groupId>org.junit.vintage</groupId>
             <artifactId>junit-vintage-engine</artifactId>
-            <version>6.0.3</version>
+            <version>6.1.0</version>
             <scope>test</scope>
         </dependency>
         <!-- Overrides junit used in junit-vintage-engine for security reasons -->
@@ -216,7 +216,7 @@
         <dependency>
             <groupId>com.deque.html.axe-core</groupId>
             <artifactId>dequeutilites</artifactId>
-            <version>4.11.3</version>
+            <version>4.12.0</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>

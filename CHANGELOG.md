@@ -1,3 +1,15 @@
+# [4.12.0](https://github.com/dequelabs/axe-core-maven-html/compare/v4.11.3...v4.12.0) (2026-06-22)
+
+
+### Bug Fixes
+
+* **selenium:** harden about:blank tab lifecycle in analyzePost43x ([#619](https://github.com/dequelabs/axe-core-maven-html/issues/619)) ([2688329](https://github.com/dequelabs/axe-core-maven-html/commit/268832942f06e0f7b3150af8adeb0afab7d7cbe9)), closes [#616](https://github.com/dequelabs/axe-core-maven-html/issues/616) [#391](https://github.com/dequelabs/axe-core-maven-html/issues/391) [#616](https://github.com/dequelabs/axe-core-maven-html/issues/616)
+* Update axe-core to v4.12.1 ([#618](https://github.com/dequelabs/axe-core-maven-html/issues/618)) ([f1f1f8d](https://github.com/dequelabs/axe-core-maven-html/commit/f1f1f8da4fa540aea49d53ac2718914725f67311))
+
+
+### Features
+
+* Update axe-core to v4.12.0 ([#615](https://github.com/dequelabs/axe-core-maven-html/issues/615)) ([84c62af](https://github.com/dequelabs/axe-core-maven-html/commit/84c62afb70849884dd66369f14bca045c36e03f2))
 ## [4.11.3](https://github.com/dequelabs/axe-core-maven-html/compare/v4.11.2...v4.11.3) (2026-04-29)
 
 
