@@ -217,6 +217,17 @@ new AxeBuilder(page)
         .setLegacyMode(true);
 ```
 
+## AxeBuilder#setFrameLoadTimeout(Duration frameLoadTimeout)
+
+How long a single frame switch may take before that frame is skipped and left out of the results. Defaults to 3
+seconds. Raise it on slow infrastructure — a frame that exceeds the limit is dropped silently apart from a logged
+warning, so its findings simply go missing from the scan.
+
+```java
+new AxeBuilder()
+        .setFrameLoadTimeout(Duration.ofSeconds(10));
+```
+
 ## Limit Frame Testing
 
 Including or excluding specific sections within a frame can be done with a `FromFrames` selector object.

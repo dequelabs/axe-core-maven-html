@@ -14,12 +14,14 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Scanner;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -31,14 +33,34 @@ public class AllowedOriginsTest {
 
   private static String axeSource;
 
+  private static Playwright playwright;
+
   private String addr() {
     return "http://localhost:1337";
   }
 
   @BeforeClass
   public static void reloadSource() throws IOException {
-    URL oldSourceUrl = AxeBuilder.class.getResource("/axe.min.js");
-    axeSource = URLReader(oldSourceUrl, StandardCharsets.UTF_8);
+    // Snapshot once, before any test can have overwritten the file. Re-reading it per test would
+    // adopt a corrupted source as the baseline and write it back permanently.
+    axeSource = URLReader(axeSourceUrl(), StandardCharsets.UTF_8);
+    playwright = Playwright.create();
+  }
+
+  @AfterClass
+  public static void closePlaywright() {
+    if (playwright != null) {
+      playwright.close();
+      playwright = null;
+    }
+  }
+
+  private static URL axeSourceUrl() {
+    return Objects.requireNonNull(AxeBuilder.class.getResource("/axe.min.js"));
+  }
+
+  private static Path axeSourcePath() throws URISyntaxException {
+    return Paths.get(axeSourceUrl().toURI());
   }
 
   private static String URLReader(URL url, Charset encoding) throws IOException {
@@ -57,8 +79,13 @@ public class AllowedOriginsTest {
   }
 
   private void overwriteAxeSourceWithString(String source) throws IOException, URISyntaxException {
-    URL axeUrl = AxeBuilder.class.getResource("/axe.min.js");
-    Files.write(Paths.get(axeUrl.toURI().getPath()), source.getBytes(), StandardOpenOption.WRITE);
+    // TRUNCATE_EXISTING: WRITE alone overwrites from offset zero and leaves the tail of any longer
+    // previous content in place, producing a concatenation of two axe sources.
+    Files.write(
+        axeSourcePath(),
+        source.getBytes(),
+        StandardOpenOption.WRITE,
+        StandardOpenOption.TRUNCATE_EXISTING);
   }
 
   private Object getAllowedOrigins() {
@@ -66,23 +93,18 @@ public class AllowedOriginsTest {
   }
 
   @Before
-  public void setup() throws Exception {
-    Playwright playwright = Playwright.create();
+  public void setup() {
     browser = playwright.chromium().launch(new BrowserType.LaunchOptions().setHeadless(true));
-    axeSource =
-        URLReader(
-            Objects.requireNonNull(AxeBuilder.class.getResource("/axe.min.js")),
-            StandardCharsets.UTF_8);
-
     page = browser.newPage();
   }
 
   @After
-  public void teardown() throws IOException {
-    URL currentSource = AxeBuilder.class.getResource("/axe.min.js");
-    Files.write(Paths.get(currentSource.getPath()), axeSource.getBytes());
-
-    browser.close();
+  public void teardown() throws IOException, URISyntaxException {
+    try {
+      Files.write(axeSourcePath(), axeSource.getBytes());
+    } finally {
+      browser.close();
+    }
   }
 
   @Test
