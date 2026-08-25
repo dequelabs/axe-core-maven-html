@@ -52,20 +52,21 @@ jobs:
       - name: Check Playwright licenses
         run: node scripts/license-check.js playwright/target/generated-sources/license/THIRD-PARTY.txt
 
-  # The browser suites run on a single JDK. The `build` matrix is what verifies JDK 8/11/17
-  # compilation; running the same browser tests three times adds no coverage and triples the
-  # contention that the fixture servers and browsers are already timing-sensitive to.
   playwright-tests:
     needs: [license-check, build]
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    strategy:
+      matrix:
+        java: [8, 11, 17]
     steps:
       - uses: actions/checkout@v7
 
-      - name: Set up JDK 17
+      # Without this the matrix is decorative: every leg runs the runner's default JDK.
+      - name: Set up JDK ${{ matrix.java }}
         uses: actions/setup-java@v5
         with:
-          java-version: 17
+          java-version: ${{ matrix.java }}
           distribution: "temurin"
 
       - uses: actions/cache@v6.1.0
@@ -77,7 +78,7 @@ jobs:
         name: Restore Maven cache
         with:
           path: ~/.m2/repository
-          key: maven-cache-v1-${{ runner.os }}-${{ hashFiles('**/pom.xml') }}-17
+          key: maven-cache-v1-${{ runner.os }}-${{ hashFiles('**/pom.xml') }}-${{ matrix.java }}
 
       # Unconditional: a partial cache hit can restore a node_modules or ~/.m2 that predates the
       # current version, and the fixture download and artifact resolution below both depend on it.
@@ -103,13 +104,17 @@ jobs:
     needs: [license-check, build]
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    strategy:
+      matrix:
+        java: [8, 11, 17]
     steps:
       - uses: actions/checkout@v7
 
-      - name: Set up JDK 17
+      # Without this the matrix is decorative: every leg runs the runner's default JDK.
+      - name: Set up JDK ${{ matrix.java }}
         uses: actions/setup-java@v5
         with:
-          java-version: 17
+          java-version: ${{ matrix.java }}
           distribution: "temurin"
 
       - uses: actions/cache@v6.1.0
@@ -121,7 +126,7 @@ jobs:
         name: Restore Maven cache
         with:
           path: ~/.m2/repository
-          key: maven-cache-v1-${{ runner.os }}-${{ hashFiles('**/pom.xml') }}-17
+          key: maven-cache-v1-${{ runner.os }}-${{ hashFiles('**/pom.xml') }}-${{ matrix.java }}
 
       - name: Install NPM dependencies
         run: |
