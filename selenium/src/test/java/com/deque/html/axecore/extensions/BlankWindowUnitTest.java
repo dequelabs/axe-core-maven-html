@@ -76,15 +76,31 @@ public class BlankWindowUnitTest {
   }
 
   @Test
+  public void openBlankWindow_handleAppearsOnLaterPoll_succeeds() {
+    when(driver.getWindowHandle()).thenReturn("user-tab");
+    when(driver.getWindowHandles())
+        .thenReturn(handles("user-tab"))
+        // window.open has returned but the driver has not published the new handle yet.
+        .thenReturn(handles("user-tab"))
+        .thenReturn(handles("user-tab", "axe-blank"));
+
+    BlankWindow window = WebDriverExtensions.openBlankWindow(driver);
+
+    assertEquals("axe-blank", window.getAboutBlankHandle());
+    verify(targetLocator).window("axe-blank");
+    verify(driver).get("about:blank");
+  }
+
+  @Test
   public void openBlankWindow_zeroNewHandles_throws() {
     when(driver.getWindowHandle()).thenReturn("user-tab");
     when(driver.getWindowHandles()).thenReturn(handles("user-tab"));
 
     RuntimeException ex =
         assertThrows(RuntimeException.class, () -> WebDriverExtensions.openBlankWindow(driver));
-    // Outer message is the stable wrapper; the specific reason is in the cause.
-    assertContains(ex.getMessage(), "switchToWindow failed");
-    assertContains(ex.getCause().getMessage(), "no new window");
+    // Handle-resolution failures carry their own message rather than the driver-version advice,
+    // which would send readers after the wrong problem.
+    assertContains(ex.getMessage(), "about:blank did not appear in the driver's window list");
     verify(targetLocator, never()).window(anyString());
   }
 
@@ -121,8 +137,7 @@ public class BlankWindowUnitTest {
 
     RuntimeException ex =
         assertThrows(RuntimeException.class, () -> WebDriverExtensions.openBlankWindow(driver));
-    assertContains(ex.getMessage(), "switchToWindow failed");
-    assertContains(ex.getCause().getMessage(), "none matching about:blank");
+    assertContains(ex.getMessage(), "none matching about:blank");
     verify(driver, never()).get("about:blank");
   }
 
