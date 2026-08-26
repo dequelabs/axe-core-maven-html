@@ -98,9 +98,28 @@ public class BlankWindowUnitTest {
 
     RuntimeException ex =
         assertThrows(RuntimeException.class, () -> WebDriverExtensions.openBlankWindow(driver));
-    // Handle-resolution failures carry their own message rather than the driver-version advice,
-    // which would send readers after the wrong problem.
+    // Handle-resolution failures name their own cause rather than the driver-version advice, which
+    // would send readers after the wrong problem — but they keep the token and the link that
+    // selenium/error-handling.md tells users to search for.
     assertContains(ex.getMessage(), "about:blank did not appear in the driver's window list");
+    assertContains(ex.getMessage(), "switchToWindow");
+    assertContains(ex.getMessage(), "selenium/error-handling.md");
+    verify(targetLocator, never()).window(anyString());
+  }
+
+  @Test
+  @SuppressWarnings("deprecation")
+  public void openAboutBlank_zeroNewHandles_throwsTheSameDiagnosticAsOpenBlankWindow() {
+    when(driver.getWindowHandle()).thenReturn("user-tab");
+    when(driver.getWindowHandles()).thenReturn(handles("user-tab"));
+
+    RuntimeException ex =
+        assertThrows(RuntimeException.class, () -> WebDriverExtensions.openAboutBlank(driver));
+    // The deprecated entry point must not fall back to the misleading "update your browser
+    // drivers" advice for a failure that is really a handle-publication race.
+    assertContains(ex.getMessage(), "about:blank did not appear in the driver's window list");
+    assertContains(ex.getMessage(), "switchToWindow");
+    assertContains(ex.getMessage(), "selenium/error-handling.md");
     verify(targetLocator, never()).window(anyString());
   }
 
@@ -138,6 +157,8 @@ public class BlankWindowUnitTest {
     RuntimeException ex =
         assertThrows(RuntimeException.class, () -> WebDriverExtensions.openBlankWindow(driver));
     assertContains(ex.getMessage(), "none matching about:blank");
+    assertContains(ex.getMessage(), "switchToWindow");
+    assertContains(ex.getMessage(), "selenium/error-handling.md");
     verify(driver, never()).get("about:blank");
   }
 

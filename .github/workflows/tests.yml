@@ -3,48 +3,16 @@ name: Tests
 on: push
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        java: [8, 11, 17]
-    timeout-minutes: 15
-    steps:
-      - uses: actions/checkout@v7
-
-      - name: Set up JDK ${{ matrix.java }}
-        uses: actions/setup-java@v5
-        with:
-          java-version: ${{ matrix.java }}
-          distribution: "temurin"
-
-      # No restore-keys: a prefix match can hand back a node_modules or ~/.m2 from an earlier
-      # version, which resolves as a successful build against stale inputs.
-      - name: Cache npm dependencies
-        uses: actions/cache@v6.1.0
-        with:
-          path: "**/node_modules"
-          key: npm-cache-v1-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
-      - name: Cache Maven dependencies
-        uses: actions/cache@v6.1.0
-        with:
-          path: ~/.m2/repository
-          key: maven-cache-v1-${{ runner.os }}-${{ hashFiles('**/pom.xml') }}-${{ matrix.java }}
-
-      - name: Install Maven dependencies
-        run: mvn clean install -DskipTests
-      - name: Install NPM dependencies
-        run: |
-          npm ci &&
-          npm --prefix=selenium ci &&
-          npm --prefix=playwright ci
-
   license-check:
-    needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 2
     steps:
       - uses: actions/checkout@v7
+      - name: Set up JDK 17
+        uses: actions/setup-java@v5
+        with:
+          java-version: 17
+          distribution: "temurin"
       - name: Maven compile licenses
         run: mvn compile license:add-third-party
       - name: Check Selenium licenses
@@ -53,7 +21,6 @@ jobs:
         run: node scripts/license-check.js playwright/target/generated-sources/license/THIRD-PARTY.txt
 
   playwright-tests:
-    needs: [license-check, build]
     runs-on: ubuntu-latest
     timeout-minutes: 20
     strategy:
@@ -101,19 +68,20 @@ jobs:
       - name: Run Playwright tests
         run: mvn test -q -pl playwright
 
-  # No JDK matrix: junit-vintage-engine 6.x pulls a JUnit Platform compiled for Java 17, so this
-  # module's tests cannot run on 8 or 11 regardless of the library's own target.
   selenium-tests:
-    needs: [license-check, build]
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        java: [8, 11, 17]
     steps:
       - uses: actions/checkout@v7
 
-      - name: Set up JDK 17
+      - name: Set up JDK ${{ matrix.java }}
         uses: actions/setup-java@v5
         with:
-          java-version: 17
+          java-version: ${{ matrix.java }}
           distribution: "temurin"
 
       - uses: actions/cache@v6.1.0
@@ -125,7 +93,7 @@ jobs:
         name: Restore Maven cache
         with:
           path: ~/.m2/repository
-          key: maven-cache-v1-${{ runner.os }}-${{ hashFiles('**/pom.xml') }}-17
+          key: maven-cache-v1-${{ runner.os }}-${{ hashFiles('**/pom.xml') }}-${{ matrix.java }}
 
       - name: Install NPM dependencies
         run: |

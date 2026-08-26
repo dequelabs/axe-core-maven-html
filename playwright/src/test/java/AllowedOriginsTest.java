@@ -48,10 +48,21 @@ public class AllowedOriginsTest {
   }
 
   @AfterClass
-  public static void closePlaywright() {
-    if (playwright != null) {
-      playwright.close();
-      playwright = null;
+  public static void closePlaywright() throws IOException, URISyntaxException {
+    try {
+      // Leave the packaged source pristine for whichever class runs next; see
+      // PlaywrightJavaTest#restorePristineAxeSource.
+      Files.write(axeSourcePath(), axeSource.getBytes(StandardCharsets.UTF_8));
+      if (!axeSource.equals(URLReader(axeSourceUrl(), StandardCharsets.UTF_8))) {
+        throw new IllegalStateException(
+            "axe.min.js was not restored to its packaged contents; run a clean build before"
+                + " trusting further results");
+      }
+    } finally {
+      if (playwright != null) {
+        playwright.close();
+        playwright = null;
+      }
     }
   }
 
@@ -83,7 +94,7 @@ public class AllowedOriginsTest {
     // previous content in place, producing a concatenation of two axe sources.
     Files.write(
         axeSourcePath(),
-        source.getBytes(),
+        source.getBytes(StandardCharsets.UTF_8),
         StandardOpenOption.WRITE,
         StandardOpenOption.TRUNCATE_EXISTING);
   }
@@ -101,7 +112,7 @@ public class AllowedOriginsTest {
   @After
   public void teardown() throws IOException, URISyntaxException {
     try {
-      Files.write(axeSourcePath(), axeSource.getBytes());
+      Files.write(axeSourcePath(), axeSource.getBytes(StandardCharsets.UTF_8));
     } finally {
       browser.close();
     }

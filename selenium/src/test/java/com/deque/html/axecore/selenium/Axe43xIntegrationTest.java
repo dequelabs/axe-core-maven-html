@@ -555,7 +555,9 @@ public class Axe43xIntegrationTest {
   @Test
   public void putsBackPageLoad() {
     webDriver.get(fixture("/lazy-loaded-iframe.html"));
-    Duration newDur = Duration.ofSeconds(3);
+    // Deliberately not 3s: that is the default frameLoadTimeout, so narrow() and restore() would
+    // write the same value and a dropped restore would still leave this assertion green.
+    Duration newDur = Duration.ofSeconds(17);
     webDriver.manage().timeouts().pageLoadTimeout(newDur);
     String title = webDriver.getTitle();
     Results axeResults = new AxeBuilder().analyze(webDriver);
@@ -593,54 +595,105 @@ public class Axe43xIntegrationTest {
     ChromeDriver realDriver = new ChromeDriver(new ChromeOptions().addArguments("--headless=new"));
     WebDriver driver = Mockito.spy(realDriver);
 
-    WebDriver.Options options = Mockito.mock(WebDriver.Options.class);
-    WebDriver.Timeouts timeouts = Mockito.mock(WebDriver.Timeouts.class);
+    try {
+      WebDriver.Options options = Mockito.mock(WebDriver.Options.class);
+      WebDriver.Timeouts timeouts = Mockito.mock(WebDriver.Timeouts.class);
 
-    Mockito.when(driver.manage()).thenReturn(options);
-    Mockito.when(options.timeouts()).thenReturn(timeouts);
-    // Mimic the behaviour of Selenium 3 where scriptTimeout does not exist and as a result throw a
-    // NoSuchMethodError
-    Mockito.when(timeouts.scriptTimeout(any())).thenThrow(new NoSuchMethodError("BOOM"));
+      Mockito.when(driver.manage()).thenReturn(options);
+      Mockito.when(options.timeouts()).thenReturn(timeouts);
+      // Mimic the behaviour of Selenium 3 where scriptTimeout does not exist and as a result throw
+      // a NoSuchMethodError
+      Mockito.when(timeouts.scriptTimeout(any())).thenThrow(new NoSuchMethodError("BOOM"));
 
-    driver.get((fixture("/nested-iframes.html")));
+      driver.get((fixture("/nested-iframes.html")));
 
-    new AxeBuilder().setFrameLoadTimeout(Duration.ofMillis(500)).analyze(driver);
+      new AxeBuilder().setFrameLoadTimeout(Duration.ofMillis(500)).analyze(driver);
 
-    // Verify that when we catch the NoSuchMethodError we use the Selenium 3 way of setting the
-    // various timeouts
-    InOrder inOrder = Mockito.inOrder(timeouts);
-    inOrder.verify(timeouts).setScriptTimeout(30, TimeUnit.SECONDS);
-    inOrder.verify(timeouts).pageLoadTimeout(500L, TimeUnit.MILLISECONDS);
-    inOrder.verify(timeouts).pageLoadTimeout(30_000L, TimeUnit.MILLISECONDS);
-    Mockito.verify(timeouts, Mockito.never()).pageLoadTimeout(any(Duration.class));
+      // Verify that when we catch the NoSuchMethodError we use the Selenium 3 way of setting the
+      // various timeouts
+      InOrder inOrder = Mockito.inOrder(timeouts);
+      inOrder.verify(timeouts).setScriptTimeout(30, TimeUnit.SECONDS);
+      inOrder.verify(timeouts).pageLoadTimeout(500L, TimeUnit.MILLISECONDS);
+      inOrder.verify(timeouts).pageLoadTimeout(30_000L, TimeUnit.MILLISECONDS);
+      Mockito.verify(timeouts, Mockito.never()).pageLoadTimeout(any(Duration.class));
+    } finally {
+      driver.quit();
+    }
+  }
 
-    driver.quit();
+  /**
+   * Drives the TimeoutException branch of runPartialRecursive by making the frame switch itself
+   * time out, and pins what a caller can observe: the scan still returns, and the skipped frame is
+   * reported rather than silently dropped.
+   */
+  @Test
+  public void reportsFramesSkippedByTheFrameLoadTimeout() {
+    ChromeDriver realDriver = new ChromeDriver(new ChromeOptions().addArguments("--headless=new"));
+    WebDriver driver = Mockito.spy(realDriver);
+    try {
+      driver.get(fixture("/nested-iframes.html"));
+
+      WebDriver.TargetLocator realLocator = realDriver.switchTo();
+      WebDriver.TargetLocator locator = Mockito.mock(WebDriver.TargetLocator.class);
+      Mockito.when(driver.switchTo()).thenReturn(locator);
+      Mockito.when(locator.window(Mockito.anyString()))
+          .thenAnswer(invocation -> realLocator.window(invocation.getArgument(0)));
+      Mockito.when(locator.parentFrame()).thenAnswer(invocation -> realLocator.parentFrame());
+      // switchToFrame dispatches on the descriptor type axe-core hands back, so every overload has
+      // to time out or the scan would quietly switch frames for real and nothing would be skipped.
+      Mockito.when(locator.frame(Mockito.any(WebElement.class)))
+          .thenThrow(new org.openqa.selenium.TimeoutException("frame never loaded"));
+      Mockito.when(locator.frame(Mockito.anyString()))
+          .thenThrow(new org.openqa.selenium.TimeoutException("frame never loaded"));
+      Mockito.when(locator.frame(Mockito.anyInt()))
+          .thenThrow(new org.openqa.selenium.TimeoutException("frame never loaded"));
+
+      Results results =
+          new AxeBuilder().setFrameLoadTimeout(Duration.ofMillis(500)).analyze(driver);
+
+      assertFalse("a skipped frame must not report as a complete scan", results.isComplete());
+      assertFalse("the skipped frame must be named", results.getSkippedFrames().isEmpty());
+      assertNotNull("the top-level page must still be scanned", results.getViolations());
+    } finally {
+      driver.quit();
+    }
   }
 
   @Test
   public void narrowsTheFrameTimeoutOnlyAroundFrameSwitches() {
     ChromeDriver realDriver = new ChromeDriver(new ChromeOptions().addArguments("--headless=new"));
     WebDriver driver = Mockito.spy(realDriver);
+    try {
+      WebDriver.Options options = Mockito.mock(WebDriver.Options.class);
+      WebDriver.Timeouts timeouts = Mockito.mock(WebDriver.Timeouts.class);
 
-    WebDriver.Options options = Mockito.mock(WebDriver.Options.class);
-    WebDriver.Timeouts timeouts = Mockito.mock(WebDriver.Timeouts.class);
+      Mockito.when(driver.manage()).thenReturn(options);
+      Mockito.when(options.timeouts()).thenReturn(timeouts);
+      Mockito.when(timeouts.getPageLoadTimeout()).thenReturn(Duration.ofSeconds(20));
 
-    Mockito.when(driver.manage()).thenReturn(options);
-    Mockito.when(options.timeouts()).thenReturn(timeouts);
-    Mockito.when(timeouts.getPageLoadTimeout()).thenReturn(Duration.ofSeconds(20));
+      driver.get(fixture("/nested-iframes.html"));
 
-    driver.get(fixture("/nested-iframes.html"));
+      new AxeBuilder().setFrameLoadTimeout(Duration.ofMillis(500)).analyze(driver);
 
-    new AxeBuilder().setFrameLoadTimeout(Duration.ofMillis(500)).analyze(driver);
+      long narrowed = countPageLoadTimeouts(timeouts, Duration.ofMillis(500));
+      long restored = countPageLoadTimeouts(timeouts, Duration.ofSeconds(20));
 
-    // Every narrow is paired with a restore, so the about:blank navigation, sendPartialResults and
-    // axe.finishRun never run under the frame budget.
-    long narrowed = countPageLoadTimeouts(timeouts, Duration.ofMillis(500));
-    long restored = countPageLoadTimeouts(timeouts, Duration.ofSeconds(20));
-    assertTrue("expected at least one frame switch", narrowed > 0);
-    assertEquals(narrowed, restored);
+      // Applied once per frame switch, not once around the whole scan: a single narrow/restore
+      // pair is exactly the bug this test exists to catch, so the count must exceed 1.
+      assertTrue(
+          "expected the frame budget to be applied per frame switch, saw " + narrowed,
+          narrowed > 1);
+      assertEquals("every narrow must be paired with a restore", narrowed, restored);
 
-    driver.quit();
+      // Nothing may still be narrowed when the scan finishes, or about:blank navigation,
+      // sendPartialResults and axe.finishRun would inherit the frame budget.
+      assertEquals(
+          "the scan must end with the caller's timeout restored",
+          Duration.ofSeconds(20),
+          lastPageLoadTimeout(timeouts));
+    } finally {
+      driver.quit();
+    }
   }
 
   private static long countPageLoadTimeouts(WebDriver.Timeouts timeouts, Duration duration) {
@@ -648,6 +701,14 @@ public class Axe43xIntegrationTest {
         .filter(invocation -> "pageLoadTimeout".equals(invocation.getMethod().getName()))
         .filter(invocation -> duration.equals(invocation.getArgument(0)))
         .count();
+  }
+
+  private static Duration lastPageLoadTimeout(WebDriver.Timeouts timeouts) {
+    return Mockito.mockingDetails(timeouts).getInvocations().stream()
+        .filter(invocation -> "pageLoadTimeout".equals(invocation.getMethod().getName()))
+        .reduce((first, second) -> second)
+        .<Duration>map(invocation -> invocation.getArgument(0))
+        .orElse(null);
   }
 
   public void assertTargetEquals(Object target, String[] expected) {

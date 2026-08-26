@@ -54,7 +54,8 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <version>3.5.6</version>
         <configuration>
-          <!-- The default filesystem order varies by OS, and test classes share mutable fixtures. -->
+          <!-- Reproducible ordering only; the default varies by OS. Test isolation must not depend
+               on it — the Playwright classes assert the axe fixture is pristine in @AfterClass. -->
           <runOrder>alphabetical</runOrder>
         </configuration>
       </plugin>

@@ -51,10 +51,29 @@ public class PlaywrightJavaTest {
   }
 
   @AfterClass
-  public static void closePlaywright() {
-    if (playwright != null) {
-      playwright.close();
-      playwright = null;
+  public static void closePlaywright() throws IOException, URISyntaxException {
+    try {
+      restorePristineAxeSource(oldSource);
+    } finally {
+      if (playwright != null) {
+        playwright.close();
+        playwright = null;
+      }
+    }
+  }
+
+  /**
+   * Puts the packaged axe source back and fails loudly if it did not round-trip. Without this a
+   * test that dies mid-write leaves a corrupted axe.min.js that the next class snapshots as its
+   * baseline, turning one failure into a confusing cascade.
+   */
+  static void restorePristineAxeSource(String pristine) throws IOException, URISyntaxException {
+    Files.write(axeSourcePath(), pristine.getBytes(StandardCharsets.UTF_8));
+    String onDisk = URLReader(axeSourceUrl(), StandardCharsets.UTF_8);
+    if (!pristine.equals(onDisk)) {
+      throw new IllegalStateException(
+          "axe.min.js was not restored to its packaged contents; run a clean build before"
+              + " trusting further results");
     }
   }
 
@@ -67,7 +86,7 @@ public class PlaywrightJavaTest {
   @After
   public void teardown() throws IOException, URISyntaxException {
     try {
-      Files.write(axeSourcePath(), oldSource.getBytes());
+      Files.write(axeSourcePath(), oldSource.getBytes(StandardCharsets.UTF_8));
     } finally {
       browser.close();
     }
@@ -113,13 +132,14 @@ public class PlaywrightJavaTest {
     // previous content in place, producing a concatenation of two axe sources.
     Files.write(
         axeSourcePath(),
-        source.getBytes(),
+        source.getBytes(StandardCharsets.UTF_8),
         StandardOpenOption.WRITE,
         StandardOpenOption.TRUNCATE_EXISTING);
   }
 
   private void appendAxeSourceWithString(String source) throws IOException, URISyntaxException {
-    Files.write(axeSourcePath(), source.getBytes(), StandardOpenOption.APPEND);
+    Files.write(
+        axeSourcePath(), source.getBytes(StandardCharsets.UTF_8), StandardOpenOption.APPEND);
   }
 
   private String downloadFromURL(String url) throws Exception {
@@ -266,7 +286,7 @@ public class PlaywrightJavaTest {
     page.navigate(server + "nested-iframes.html");
 
     AxeBuilder normalRun = new AxeBuilder(page);
-    Files.write(axeSourcePath(), oldSource.getBytes());
+    Files.write(axeSourcePath(), oldSource.getBytes(StandardCharsets.UTF_8));
     AxeResults normalResults = normalRun.analyze();
 
     // set timestamp and name of engine to match legacy to compare results

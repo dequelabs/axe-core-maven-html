@@ -22,6 +22,7 @@ import com.deque.html.axecore.results.Results;
 import com.deque.html.axecore.results.Rule;
 import java.io.File;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -104,6 +105,36 @@ public class AxeBuilderUnitTest {
    * @throws IOException if file writing fails
    * @throws OperationNotSupportedException if the operation errors out
    */
+  /** The frame load timeout defaults to 3 seconds; the README documents this value. */
+  @Test
+  public void frameLoadTimeoutDefaultsToThreeSeconds() {
+    Assert.assertEquals(Duration.ofMillis(3000), new AxeBuilder().getFrameLoadTimeout());
+  }
+
+  @Test
+  public void frameLoadTimeoutRoundTripsAndChains() {
+    AxeBuilder axeBuilder = new AxeBuilder();
+    AxeBuilder returned = axeBuilder.setFrameLoadTimeout(Duration.ofSeconds(9));
+
+    Assert.assertSame("the setter must be chainable", axeBuilder, returned);
+    Assert.assertEquals(Duration.ofSeconds(9), axeBuilder.getFrameLoadTimeout());
+  }
+
+  @Test(expected = NullPointerException.class)
+  public void throwWhenFrameLoadTimeoutIsNull() {
+    new AxeBuilder().setFrameLoadTimeout(null);
+  }
+
+  @Test(expected = InvalidArgumentException.class)
+  public void throwWhenFrameLoadTimeoutIsZero() {
+    new AxeBuilder().setFrameLoadTimeout(Duration.ZERO);
+  }
+
+  @Test(expected = InvalidArgumentException.class)
+  public void throwWhenFrameLoadTimeoutIsNegative() {
+    new AxeBuilder().setFrameLoadTimeout(Duration.ofMillis(-1));
+  }
+
   @Test(expected = NullPointerException.class)
   public void throwWhenDriverIsNull() throws IOException, OperationNotSupportedException {
     // arrange / act /assert
