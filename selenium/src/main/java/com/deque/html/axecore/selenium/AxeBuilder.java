@@ -90,6 +90,14 @@ public class AxeBuilder {
   /** Selectors of frames skipped by the frame load timeout, reset at the start of each analyze. */
   private final List<String> skippedFrames = new ArrayList<String>();
 
+  /**
+   * Set once a frame load timeout leaves the driver somewhere other than the frame the scan was
+   * in. Every level of the recursion has to stop when this is set, not just the level that lost
+   * the stack, since ancestors would otherwise resolve their remaining frames against whatever
+   * document the driver ends up in.
+   */
+  private boolean frameStackLost;
+
   private final ObjectMapper objectMapper;
 
   public final String axeRunScript =
@@ -835,6 +843,10 @@ public class AxeBuilder {
               runPartialRecursive(
                   webDriver, options, frameContext, false, frameStack, frameSwitchTimeout);
           partialResults.addAll(morePartialResults);
+          if (frameStackLost) {
+            frameStack.pop();
+            return partialResults;
+          }
         } catch (org.openqa.selenium.TimeoutException e) {
           String skipped = AxeReporter.serialize(fc.getFrameSelector());
           LOGGER.warning(
@@ -852,9 +864,11 @@ public class AxeBuilder {
             // A selector in the stack no longer resolves, so we cannot get back to the context the
             // remaining siblings live in. Returning here loses those siblings, but scanning them
             // from the wrong frame would report findings against the wrong document.
+            frameStackLost = true;
             LOGGER.warning(
                 "Could not return to the frame the scan was in after a frame load timeout;"
-                    + " remaining sibling frames at this level were not scanned.");
+                    + " that frame's remaining siblings and every enclosing frame's remaining"
+                    + " siblings were not scanned.");
             return partialResults;
           }
           continue;
@@ -957,6 +971,7 @@ public class AxeBuilder {
         getOptions().equals("{}") ? AxeReporter.serialize(runOptions) : getOptions();
 
     skippedFrames.clear();
+    frameStackLost = false;
 
     ArrayList<String> partialResults;
     try {

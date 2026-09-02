@@ -659,6 +659,86 @@ public class Axe43xIntegrationTest {
     }
   }
 
+  /**
+   * A frame load timeout at depth two whose recovery walk cannot get back into the frame it was in
+   * must abort every level, not just the level that lost the stack. The fixture gives a's second
+   * frame the same selector as a top-level frame, so an ancestor that keeps iterating siblings
+   * while the driver sits at top-level resolves that selector against the wrong document and
+   * reports the decoy's violations as if they came from inside a.
+   */
+  @Test
+  public void abortsAncestorLevelsWhenTheFrameStackCannotBeRestored() {
+    ChromeDriver realDriver = new ChromeDriver(new ChromeOptions().addArguments("--headless=new"));
+    WebDriver driver = Mockito.spy(realDriver);
+    try {
+      driver.get(
+          "file:///"
+              + new File("src/test/resources/html/lost-frame-stack.html").getAbsolutePath());
+
+      WebDriver.TargetLocator realLocator = realDriver.switchTo();
+      WebDriver.TargetLocator locator = Mockito.mock(WebDriver.TargetLocator.class);
+      Mockito.when(driver.switchTo()).thenReturn(locator);
+
+      int[] frameSwitches = {0};
+      boolean[] frameRemoved = {false};
+
+      // The scan reaches d through a then b, so the third switch is the one into d.
+      Mockito.when(locator.frame(Mockito.any(WebElement.class)))
+          .thenAnswer(
+              invocation -> {
+                if (++frameSwitches[0] == 3) {
+                  throw new org.openqa.selenium.TimeoutException("frame never loaded");
+                }
+                return realLocator.frame((WebElement) invocation.getArgument(0));
+              });
+      Mockito.when(locator.frame(Mockito.anyString()))
+          .thenAnswer(
+              invocation -> {
+                if (++frameSwitches[0] == 3) {
+                  throw new org.openqa.selenium.TimeoutException("frame never loaded");
+                }
+                return realLocator.frame((String) invocation.getArgument(0));
+              });
+      Mockito.when(locator.frame(Mockito.anyInt()))
+          .thenAnswer(
+              invocation -> {
+                if (++frameSwitches[0] == 3) {
+                  throw new org.openqa.selenium.TimeoutException("frame never loaded");
+                }
+                return realLocator.frame((Integer) invocation.getArgument(0));
+              });
+      Mockito.when(locator.parentFrame()).thenAnswer(invocation -> realLocator.parentFrame());
+      // The recovery walk is the first window switch of the scan. Removing b as it starts makes
+      // the walk's own switch into b unresolvable, which is the lost-stack case under test.
+      Mockito.when(locator.window(Mockito.anyString()))
+          .thenAnswer(
+              invocation -> {
+                WebDriver returned = realLocator.window(invocation.getArgument(0));
+                if (!frameRemoved[0]) {
+                  frameRemoved[0] = true;
+                  realLocator.frame(realDriver.findElement(By.id("a")));
+                  realDriver.executeScript("document.getElementById('b').remove()");
+                  realLocator.defaultContent();
+                }
+                return returned;
+              });
+
+      Results results =
+          new AxeBuilder().setFrameLoadTimeout(Duration.ofMillis(500)).analyze(driver);
+
+      assertFalse("a lost frame stack must not report as a complete scan", results.isComplete());
+      for (Rule violation : results.getViolations()) {
+        for (CheckedNode node : violation.getNodes()) {
+          assertFalse(
+              "a frame resolved against the wrong document was scanned: " + node.getTarget(),
+              node.getTarget().toString().contains("decoy-violation"));
+        }
+      }
+    } finally {
+      driver.quit();
+    }
+  }
+
   @Test
   public void narrowsTheFrameTimeoutOnlyAroundFrameSwitches() {
     ChromeDriver realDriver = new ChromeDriver(new ChromeOptions().addArguments("--headless=new"));

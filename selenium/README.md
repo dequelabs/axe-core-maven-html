@@ -240,6 +240,10 @@ if (!results.isComplete()) {
 }
 ```
 
+After a skip the scan returns to the frame it was in and carries on with the remaining frames.
+If it cannot get back there — the frame it was in is gone from the page by then — it stops descending frames entirely, since it can no longer tell which document it is looking at.
+`isComplete()` is false in that case as well, but frames abandoned that way are not named in `getSkippedFrames()`.
+
 This option has no effect when `setLegacyMode(true)` is used, or when the page's axe-core predates 4.3 — neither path switches frames itself.
 
 ## Limit Frame Testing
