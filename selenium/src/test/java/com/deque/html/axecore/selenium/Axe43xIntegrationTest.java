@@ -699,16 +699,17 @@ public class Axe43xIntegrationTest {
       WebDriver.TargetLocator locator = Mockito.mock(WebDriver.TargetLocator.class);
       Mockito.when(driver.switchTo()).thenReturn(locator);
 
-      // The switch into d is the timeout under test. Deleting b on the way out is what the
-      // recovery walk then trips over: the driver is inside b, so its parent a is where the
-      // element lives, and the walk cannot resolve b to get back down.
+      // The switch into d is the timeout under test. Emptying a of frames on the way out is what
+      // the recovery walk then trips over: the driver is inside b, so its parent a is where those
+      // elements live, and no selector the walk holds can resolve there any more.
       Answer<WebDriver> switchToFrame =
           invocation -> {
             Object target = invocation.getArgument(0);
             if (target instanceof WebElement
                 && "d".equals(((WebElement) target).getAttribute("id"))) {
               realLocator.parentFrame();
-              realDriver.executeScript("document.getElementById('b').remove()");
+              realDriver.executeScript(
+                  "document.querySelectorAll('iframe').forEach(function (f) { f.remove(); })");
               throw new org.openqa.selenium.TimeoutException("frame never loaded");
             }
             if (target instanceof WebElement) {
