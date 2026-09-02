@@ -31,12 +31,16 @@ import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
+import java.util.logging.Handler;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javax.naming.OperationNotSupportedException;
 import org.junit.*;
 import org.junit.rules.ExpectedException;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
+import org.mockito.stubbing.Answer;
 import org.openqa.selenium.By;
 import org.openqa.selenium.UnexpectedAlertBehaviour;
 import org.openqa.selenium.WebDriver;
@@ -663,13 +667,29 @@ public class Axe43xIntegrationTest {
    * A frame load timeout at depth two whose recovery walk cannot get back into the frame it was in
    * must abort every level, not just the level that lost the stack. The fixture gives a's second
    * frame the same selector as a top-level frame, so an ancestor that keeps iterating siblings
-   * while the driver sits at top-level resolves that selector against the wrong document and
+   * while the driver sits at top-level resolves that selector against the top-level decoy and
    * reports the decoy's violations as if they came from inside a.
    */
   @Test
   public void abortsAncestorLevelsWhenTheFrameStackCannotBeRestored() {
     ChromeDriver realDriver = new ChromeDriver(new ChromeOptions().addArguments("--headless=new"));
     WebDriver driver = Mockito.spy(realDriver);
+    Logger axeBuilderLogger = Logger.getLogger(AxeBuilder.class.getName());
+    List<String> warnings = new ArrayList<>();
+    Handler capture =
+        new Handler() {
+          @Override
+          public void publish(LogRecord record) {
+            warnings.add(record.getMessage());
+          }
+
+          @Override
+          public void flush() {}
+
+          @Override
+          public void close() {}
+        };
+    axeBuilderLogger.addHandler(capture);
     try {
       driver.get(
           "file:///"
@@ -679,62 +699,53 @@ public class Axe43xIntegrationTest {
       WebDriver.TargetLocator locator = Mockito.mock(WebDriver.TargetLocator.class);
       Mockito.when(driver.switchTo()).thenReturn(locator);
 
-      int[] frameSwitches = {0};
-      boolean[] frameRemoved = {false};
-
-      // The scan reaches d through a then b, so the third switch is the one into d.
-      Mockito.when(locator.frame(Mockito.any(WebElement.class)))
-          .thenAnswer(
-              invocation -> {
-                if (++frameSwitches[0] == 3) {
-                  throw new org.openqa.selenium.TimeoutException("frame never loaded");
-                }
-                return realLocator.frame((WebElement) invocation.getArgument(0));
-              });
-      Mockito.when(locator.frame(Mockito.anyString()))
-          .thenAnswer(
-              invocation -> {
-                if (++frameSwitches[0] == 3) {
-                  throw new org.openqa.selenium.TimeoutException("frame never loaded");
-                }
-                return realLocator.frame((String) invocation.getArgument(0));
-              });
-      Mockito.when(locator.frame(Mockito.anyInt()))
-          .thenAnswer(
-              invocation -> {
-                if (++frameSwitches[0] == 3) {
-                  throw new org.openqa.selenium.TimeoutException("frame never loaded");
-                }
-                return realLocator.frame((Integer) invocation.getArgument(0));
-              });
+      // The switch into d is the timeout under test. Deleting b on the way out is what the
+      // recovery walk then trips over: the driver is inside b, so its parent a is where the
+      // element lives, and the walk cannot resolve b to get back down.
+      Answer<WebDriver> switchToFrame =
+          invocation -> {
+            Object target = invocation.getArgument(0);
+            if (target instanceof WebElement
+                && "d".equals(((WebElement) target).getAttribute("id"))) {
+              realLocator.parentFrame();
+              realDriver.executeScript("document.getElementById('b').remove()");
+              throw new org.openqa.selenium.TimeoutException("frame never loaded");
+            }
+            if (target instanceof WebElement) {
+              return realLocator.frame((WebElement) target);
+            }
+            if (target instanceof String) {
+              return realLocator.frame((String) target);
+            }
+            return realLocator.frame((Integer) target);
+          };
+      Mockito.when(locator.frame(Mockito.any(WebElement.class))).thenAnswer(switchToFrame);
+      Mockito.when(locator.frame(Mockito.anyString())).thenAnswer(switchToFrame);
+      Mockito.when(locator.frame(Mockito.anyInt())).thenAnswer(switchToFrame);
       Mockito.when(locator.parentFrame()).thenAnswer(invocation -> realLocator.parentFrame());
-      // The recovery walk is the first window switch of the scan. Removing b as it starts makes
-      // the walk's own switch into b unresolvable, which is the lost-stack case under test.
       Mockito.when(locator.window(Mockito.anyString()))
-          .thenAnswer(
-              invocation -> {
-                WebDriver returned = realLocator.window(invocation.getArgument(0));
-                if (!frameRemoved[0]) {
-                  frameRemoved[0] = true;
-                  realLocator.frame(realDriver.findElement(By.id("a")));
-                  realDriver.executeScript("document.getElementById('b').remove()");
-                  realLocator.defaultContent();
-                }
-                return returned;
-              });
+          .thenAnswer(invocation -> realLocator.window(invocation.getArgument(0)));
 
       Results results =
           new AxeBuilder().setFrameLoadTimeout(Duration.ofMillis(500)).analyze(driver);
 
+      assertTrue(
+          "the scan must have lost the frame stack for this test to mean anything: " + warnings,
+          warnings.stream().anyMatch(warning -> warning.contains("Could not return to the frame")));
       assertFalse("a lost frame stack must not report as a complete scan", results.isComplete());
       for (Rule violation : results.getViolations()) {
         for (CheckedNode node : violation.getNodes()) {
+          String target = node.getTarget().toString();
+          // The decoy is a legitimate top-level frame, so #c > #decoy-violation is a correct
+          // result. Reaching it through #a is not: that is a's missing sibling resolved against
+          // the top-level document.
           assertFalse(
-              "a frame resolved against the wrong document was scanned: " + node.getTarget(),
-              node.getTarget().toString().contains("decoy-violation"));
+              "a frame resolved against the wrong document was scanned: " + target,
+              target.contains("decoy-violation") && target.contains("#a"));
         }
       }
     } finally {
+      axeBuilderLogger.removeHandler(capture);
       driver.quit();
     }
   }
