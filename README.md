@@ -9,6 +9,29 @@ The packages are listed below:
 - [`Selenium`](selenium/README.md)
 - [`Playwright`](playwright/README.md)
 
+## Verifying releases
+
+Artifacts published to Maven Central are signed with Deque's code-signing key:
+
+```
+Deque Systems, Inc. <helpdesk@deque.com>
+F8AF 74A4 CDA6 E206 3C89  85E2 1A4A C53E FF73 AC0F
+```
+
+Fetch the key and check the `.asc` that accompanies the artifact:
+
+```console
+gpg --keyserver keyserver.ubuntu.com --recv-keys F8AF74A4CDA6E2063C8985E21A4AC53EFF73AC0F
+gpg --verify selenium-4.13.0.jar.asc selenium-4.13.0.jar
+```
+
+Check that the signature is from the fingerprint above: that fingerprint,
+published here, is what identifies the key as ours.
+
+Earlier releases were signed with key
+`7701193A898A849383D3E8B49F8AFEACBF07F7C4`, which has not been revoked, so they
+still verify.
+
 ## Development
 
 Install root dependencies:
