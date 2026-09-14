@@ -26,6 +26,29 @@ import org.openqa.selenium.WebElement;
 
 /** web driver extension that has extra analyze methods. */
 public final class WebDriverExtensions {
+  private static final long NEW_WINDOW_TIMEOUT_MS = 5000;
+  private static final long NEW_WINDOW_POLL_INTERVAL_MS = 50;
+
+  private static final String ERROR_HANDLING_URL =
+      "https://github.com/dequelabs/axe-core-maven-html/blob/develop/selenium/error-handling.md";
+
+  // Every failure out of the window helpers keeps the "switchToWindow failed" prefix that
+  // selenium/error-handling.md tells users to search for, plus the link to it.
+  private static final String DRIVER_VERSION_ADVICE =
+      "switchToWindow failed. Are you using updated browser drivers? Please check out "
+          + ERROR_HANDLING_URL;
+
+  private static String handleResolutionFailure(final String reason) {
+    return "switchToWindow failed: " + reason + ". Please check out " + ERROR_HANDLING_URL;
+  }
+
+  private static String newWindowTimedOut() {
+    return handleResolutionFailure(
+        "about:blank did not appear in the driver's window list within "
+            + NEW_WINDOW_TIMEOUT_MS
+            + "ms of window.open");
+  }
+
   /** class initializer for web driver extensions. */
   private WebDriverExtensions() {}
 
@@ -131,7 +154,7 @@ public final class WebDriverExtensions {
       JavascriptExecutor driver = (JavascriptExecutor) webDriver;
       Set<String> beforeHandles = webDriver.getWindowHandles();
       driver.executeScript("window.open('about:blank', '_blank')");
-      Set<String> afterHandles = webDriver.getWindowHandles();
+      Set<String> afterHandles = waitForNewWindow(webDriver, beforeHandles.size() + 1);
 
       // Note: this is a work around for handling opening about:blank within the Safari driver.
       // As we need to support Selenium 3 and 4, we cannot use the new window API.
@@ -143,17 +166,23 @@ public final class WebDriverExtensions {
       ArrayList<String> newHandles = new ArrayList<>(afterHandles);
       newHandles.removeAll(beforeHandles);
 
-      if (newHandles.size() != 1) {
-        throw new RuntimeException("Unable to determine window handle");
+      String aboutBlankHandle;
+      if (newHandles.isEmpty()) {
+        throw new IllegalStateException(newWindowTimedOut());
+      } else if (newHandles.size() == 1) {
+        aboutBlankHandle = newHandles.get(0);
+      } else {
+        aboutBlankHandle = pickAboutBlankHandle(webDriver, currentWindow, newHandles);
       }
 
-      String aboutBlankHandle = newHandles.get(0);
       webDriver.switchTo().window(aboutBlankHandle);
       webDriver.get("about:blank");
+    } catch (IllegalStateException e) {
+      // Our own handle-resolution failures already name the cause; do not bury them under the
+      // driver-version advice below.
+      throw new RuntimeException(e.getMessage(), e);
     } catch (Exception e) {
-      throw new RuntimeException(
-          "switchToWindow failed. Are you using updated browser drivers? Please check out https://github.com/dequelabs/axe-core-maven-html/blob/develop/error-handling.md",
-          e);
+      throw new RuntimeException(DRIVER_VERSION_ADVICE, e);
     }
 
     return currentWindow;
@@ -194,7 +223,7 @@ public final class WebDriverExtensions {
       JavascriptExecutor driver = (JavascriptExecutor) webDriver;
       Set<String> beforeHandles = webDriver.getWindowHandles();
       driver.executeScript("window.open('about:blank', '_blank')");
-      Set<String> afterHandles = webDriver.getWindowHandles();
+      Set<String> afterHandles = waitForNewWindow(webDriver, beforeHandles.size() + 1);
 
       // Diff before/after handles to identify the new window. See openAboutBlank for the
       // Selenium-3 rationale; the new-window API would let us skip this entirely (see #411).
@@ -202,8 +231,7 @@ public final class WebDriverExtensions {
       newHandles.removeAll(beforeHandles);
 
       if (newHandles.isEmpty()) {
-        throw new IllegalStateException(
-            "Unable to determine window handle: no new window was opened");
+        throw new IllegalStateException(newWindowTimedOut());
       } else if (newHandles.size() == 1) {
         aboutBlankHandle = newHandles.get(0);
       } else {
@@ -214,13 +242,14 @@ public final class WebDriverExtensions {
 
       webDriver.switchTo().window(aboutBlankHandle);
       webDriver.get("about:blank");
+    } catch (IllegalStateException e) {
+      // Our own handle-resolution failures carry a specific message; do not bury them under the
+      // driver-version advice below.
+      throw new RuntimeException(e.getMessage(), e);
     } catch (Exception e) {
-      // Wrap everything (including JavascriptException from driver.executeScript and our own
-      // IllegalStateException for ambiguous handle sets) so callers see one stable error
-      // message. The original exception is preserved as the cause.
-      throw new RuntimeException(
-          "switchToWindow failed. Are you using updated browser drivers? Please check out https://github.com/dequelabs/axe-core-maven-html/blob/develop/error-handling.md",
-          e);
+      // Wrap everything (including JavascriptException from driver.executeScript) so callers see
+      // one stable error message. The original exception is preserved as the cause.
+      throw new RuntimeException(DRIVER_VERSION_ADVICE, e);
     }
 
     return new BlankWindow(previousHandle, aboutBlankHandle);
@@ -266,6 +295,28 @@ public final class WebDriverExtensions {
     restoreFocus(webDriver, window.getPreviousHandle());
   }
 
+  /**
+   * Polls the driver's window list until it reports at least {@code expectedCount} handles. {@code
+   * window.open} returns as soon as the script call returns, but the driver publishes the new
+   * handle asynchronously, so reading the list immediately can miss it.
+   *
+   * @return the handles as of the last poll, whether or not the expected count was reached
+   */
+  private static Set<String> waitForNewWindow(final WebDriver webDriver, final int expectedCount) {
+    long deadline = System.currentTimeMillis() + NEW_WINDOW_TIMEOUT_MS;
+    Set<String> handles = webDriver.getWindowHandles();
+    while (handles.size() < expectedCount && System.currentTimeMillis() < deadline) {
+      try {
+        Thread.sleep(NEW_WINDOW_POLL_INTERVAL_MS);
+      } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
+        break;
+      }
+      handles = webDriver.getWindowHandles();
+    }
+    return handles;
+  }
+
   private static String pickAboutBlankHandle(
       final WebDriver webDriver, final String previousHandle, final ArrayList<String> candidates) {
     String picked = null;
@@ -288,7 +339,7 @@ public final class WebDriverExtensions {
     }
     if (picked == null) {
       throw new IllegalStateException(
-          "Unable to determine window handle: multiple new windows, none matching about:blank");
+          handleResolutionFailure("multiple new windows opened, none matching about:blank"));
     }
     return picked;
   }

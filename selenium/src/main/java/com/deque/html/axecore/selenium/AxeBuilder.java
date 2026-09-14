@@ -34,6 +34,7 @@ import java.util.Stack;
 import java.util.StringJoiner;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+import java.util.logging.Logger;
 import org.openqa.selenium.InvalidArgumentException;
 import org.openqa.selenium.JavascriptException;
 import org.openqa.selenium.JavascriptExecutor;
@@ -70,7 +71,32 @@ public class AxeBuilder {
   /** timeout of how the the scan should run until an error occurs. */
   private int timeout = 30; // 30 seconds as default.
 
-  private Duration FRAME_LOAD_TIMEOUT = Duration.ofMillis(1000);
+  /**
+   * How long a single frame switch may take before the frame is skipped. Scoped to the frame switch
+   * itself, not to the whole scan.
+   */
+  private Duration frameLoadTimeout = Duration.ofMillis(3000);
+
+  /**
+   * Selenium 3 exposes no getter for the page load timeout, so on that version we restore this
+   * conservative assumption rather than the caller's actual value. Deliberately not the WebDriver
+   * spec default, which is 300s — a value that long would mask hangs for callers who never set a
+   * page load timeout themselves.
+   */
+  private static final Duration SELENIUM_3_ASSUMED_PAGE_LOAD_TIMEOUT = Duration.ofSeconds(30);
+
+  private static final Logger LOGGER = Logger.getLogger(AxeBuilder.class.getName());
+
+  /** Selectors of frames skipped by the frame load timeout, reset at the start of each analyze. */
+  private final List<String> skippedFrames = new ArrayList<String>();
+
+  /**
+   * Set once a frame load timeout leaves the driver somewhere other than the frame the scan was
+   * in. Every level of the recursion has to stop when this is set, not just the level that lost
+   * the stack, since ancestors would otherwise resolve their remaining frames against whatever
+   * document the driver ends up in.
+   */
+  private boolean frameStackLost;
 
   private final ObjectMapper objectMapper;
 
@@ -172,6 +198,41 @@ public class AxeBuilder {
   public AxeBuilder setTimeout(final int newTimeout) {
     timeout = newTimeout;
     return this;
+  }
+
+  /**
+   * Sets how long a single frame switch may take before the frame is skipped and its results are
+   * left out of the scan. Raise this on slow infrastructure where frames legitimately take longer
+   * than the default to load. Any frame skipped this way is listed in {@link
+   * Results#getSkippedFrames()}.
+   *
+   * <p>Has no effect when {@link #setLegacyMode(boolean)} is enabled or when the page's axe-core
+   * predates 4.3, because neither path switches frames itself.
+   *
+   * @param newFrameLoadTimeout the maximum time to wait for one frame to load; must be non-null
+   *     and positive
+   * @return an Axe Builder object
+   * @throws NullPointerException if {@code newFrameLoadTimeout} is null
+   * @throws InvalidArgumentException if {@code newFrameLoadTimeout} is zero or negative
+   */
+  public AxeBuilder setFrameLoadTimeout(final Duration newFrameLoadTimeout) {
+    if (newFrameLoadTimeout == null) {
+      throw new NullPointerException("the frame load timeout is null");
+    }
+    if (newFrameLoadTimeout.isNegative() || newFrameLoadTimeout.isZero()) {
+      throw new InvalidArgumentException("the frame load timeout must be positive");
+    }
+    frameLoadTimeout = newFrameLoadTimeout;
+    return this;
+  }
+
+  /**
+   * Gets how long a single frame switch may take before the frame is skipped.
+   *
+   * @return the frame load timeout
+   */
+  public Duration getFrameLoadTimeout() {
+    return frameLoadTimeout;
   }
 
   /**
@@ -657,17 +718,10 @@ public class AxeBuilder {
     boolean hasRunPartial =
         (Boolean) WebDriverInjectorExtensions.executeScript(webDriver, hasRunPartialScript);
 
-    // Only available on Selenium > 3
-    // as Selenium does not expose a method to get the page load timeout
-    // for anything Selenium 3 we will assume the default timeout is 30 seconds
-    // as per the WebDriver spec: https://www.w3.org/TR/webdriver/#dfn-timeouts-configuration
-    Duration pageTimeout;
-    boolean isSelenium3 = false;
     if (hasRunPartial && !legacyMode) {
+      boolean isSelenium3 = false;
       try {
         webDriver.manage().timeouts().scriptTimeout(Duration.ofSeconds(timeout));
-        pageTimeout = webDriver.manage().timeouts().getPageLoadTimeout();
-        webDriver.manage().timeouts().pageLoadTimeout(FRAME_LOAD_TIMEOUT);
       } catch (NoSuchMethodError noSuchMethodError) {
         // Note: these functions are deprecated in Selenium 4
         // and will be removed in a future version. We need to be mindful
@@ -677,20 +731,49 @@ public class AxeBuilder {
         // @see https://github.com/dequelabs/axe-core-maven-html/issues/479
         isSelenium3 = true;
         webDriver.manage().timeouts().setScriptTimeout(timeout, TimeUnit.SECONDS);
-        pageTimeout = Duration.ofSeconds(30);
-        webDriver.manage().timeouts().pageLoadTimeout(1, TimeUnit.SECONDS);
       }
-      try {
-        return analyzePost43x(webDriver, rawContextArg);
-      } finally {
-        if (isSelenium3) {
-          webDriver.manage().timeouts().pageLoadTimeout(pageTimeout.getSeconds(), TimeUnit.SECONDS);
-        } else {
-          webDriver.manage().timeouts().pageLoadTimeout(pageTimeout);
-        }
-      }
+      Duration pageTimeout =
+          isSelenium3
+              ? SELENIUM_3_ASSUMED_PAGE_LOAD_TIMEOUT
+              : webDriver.manage().timeouts().getPageLoadTimeout();
+      return analyzePost43x(
+          webDriver, rawContextArg, new FrameSwitchTimeout(webDriver, pageTimeout, isSelenium3));
     } else {
       return analyzePre43x(webDriver, rawContextArg);
+    }
+  }
+
+  /**
+   * Narrows the driver's page load timeout around a single frame switch and restores the caller's
+   * value immediately afterwards, so that nothing else in the scan — notably the {@code
+   * about:blank} navigation and {@code axe.finishRun} — inherits the short frame budget.
+   */
+  private final class FrameSwitchTimeout {
+    private final WebDriver webDriver;
+    private final Duration callerTimeout;
+    private final boolean isSelenium3;
+
+    private FrameSwitchTimeout(
+        final WebDriver webDriver, final Duration callerTimeout, final boolean isSelenium3) {
+      this.webDriver = webDriver;
+      this.callerTimeout = callerTimeout;
+      this.isSelenium3 = isSelenium3;
+    }
+
+    private void narrow() {
+      set(frameLoadTimeout);
+    }
+
+    private void restore() {
+      set(callerTimeout);
+    }
+
+    private void set(final Duration duration) {
+      if (isSelenium3) {
+        webDriver.manage().timeouts().pageLoadTimeout(duration.toMillis(), TimeUnit.MILLISECONDS);
+      } else {
+        webDriver.manage().timeouts().pageLoadTimeout(duration);
+      }
     }
   }
 
@@ -712,7 +795,8 @@ public class AxeBuilder {
       final Object options,
       final Object context,
       final boolean isTopLevel,
-      final Stack<Object> frameStack) {
+      final Stack<Object> frameStack,
+      final FrameSwitchTimeout frameSwitchTimeout) {
     if (!isTopLevel) {
       injectAxe(webDriver);
     }
@@ -735,6 +819,7 @@ public class AxeBuilder {
       }
 
       for (FrameContext fc : contexts) {
+        boolean pushed = false;
         try {
           Object frameContext = AxeReporter.serialize(fc.getFrameContext());
           Object frameSelector = AxeReporter.serialize(fc.getFrameSelector());
@@ -742,36 +827,50 @@ public class AxeBuilder {
               WebDriverInjectorExtensions.executeScript(
                   webDriver, shadowSelectScript, frameSelector);
 
-          if (frame instanceof String) {
-            webDriver.switchTo().frame((String) frame);
-          } else if (frame instanceof WebElement) {
-            webDriver.switchTo().frame((WebElement) frame);
-          } else if (frame instanceof Integer) {
-            webDriver.switchTo().frame((Integer) frame);
-          } else {
-            partialResults.add(null);
-            continue;
+          frameSwitchTimeout.narrow();
+          try {
+            if (!switchToFrame(webDriver, frame)) {
+              partialResults.add(null);
+              continue;
+            }
+          } finally {
+            frameSwitchTimeout.restore();
           }
           frameStack.push(frameSelector);
+          pushed = true;
 
           ArrayList<String> morePartialResults =
-              runPartialRecursive(webDriver, options, frameContext, false, frameStack);
+              runPartialRecursive(
+                  webDriver, options, frameContext, false, frameStack, frameSwitchTimeout);
           partialResults.addAll(morePartialResults);
-        } catch (org.openqa.selenium.TimeoutException e) {
-          webDriver.switchTo().window(windowHandle);
-          for (Object frameSelector : frameStack) {
-            Object frame =
-                WebDriverInjectorExtensions.executeScript(
-                    webDriver, shadowSelectScript, frameSelector);
-            if (frame instanceof String) {
-              webDriver.switchTo().frame((String) frame);
-            } else if (frame instanceof WebElement) {
-              webDriver.switchTo().frame((WebElement) frame);
-            } else if (frame instanceof Integer) {
-              webDriver.switchTo().frame((Integer) frame);
-            }
+          if (frameStackLost) {
+            frameStack.pop();
+            return partialResults;
           }
+        } catch (org.openqa.selenium.TimeoutException e) {
+          String skipped = AxeReporter.serialize(fc.getFrameSelector());
+          LOGGER.warning(
+              "A frame did not load within "
+                  + frameLoadTimeout.toMillis()
+                  + "ms and was skipped; its results are missing from this scan. Raise the limit"
+                  + " with AxeBuilder#setFrameLoadTimeout if the frame is expected to be slow.");
+          skippedFrames.add(skipped);
           partialResults.add(null);
+          // The timeout may have come from the recursive call, after this frame was pushed.
+          if (pushed) {
+            frameStack.pop();
+          }
+          if (!restoreFrameStack(webDriver, windowHandle, frameStack, frameSwitchTimeout)) {
+            // A selector in the stack no longer resolves, so we cannot get back to the context the
+            // remaining siblings live in. Returning here loses those siblings, but scanning them
+            // from the wrong frame would report findings against the wrong document.
+            frameStackLost = true;
+            LOGGER.warning(
+                "Could not return to the frame the scan was in after a frame load timeout;"
+                    + " that frame's remaining siblings and every enclosing frame's remaining"
+                    + " siblings were not scanned.");
+            return partialResults;
+          }
           continue;
         }
         frameStack.pop();
@@ -790,6 +889,54 @@ public class AxeBuilder {
         webDriver.switchTo().parentFrame();
       }
     }
+  }
+
+  /**
+   * Walks back down {@code frameStack} from the top-level window after a frame load timeout, so
+   * the scan resumes in the frame it was in when the timeout fired.
+   *
+   * @return false if any selector in the stack no longer resolves, in which case the driver is
+   *     left part-way down the stack and the caller must not keep scanning at this level
+   */
+  private boolean restoreFrameStack(
+      final WebDriver webDriver,
+      final String windowHandle,
+      final Stack<Object> frameStack,
+      final FrameSwitchTimeout frameSwitchTimeout) {
+    webDriver.switchTo().window(windowHandle);
+    frameSwitchTimeout.narrow();
+    try {
+      for (Object frameSelector : frameStack) {
+        Object frame =
+            WebDriverInjectorExtensions.executeScript(
+                webDriver, shadowSelectScript, frameSelector);
+        if (!switchToFrame(webDriver, frame)) {
+          return false;
+        }
+      }
+      return true;
+    } finally {
+      frameSwitchTimeout.restore();
+    }
+  }
+
+  /**
+   * Switches into the frame identified by {@code frame}, which axe-core resolves to a name, element
+   * or index depending on the frame.
+   *
+   * @return false if the frame could not be identified, in which case no switch happened
+   */
+  private boolean switchToFrame(final WebDriver webDriver, final Object frame) {
+    if (frame instanceof String) {
+      webDriver.switchTo().frame((String) frame);
+    } else if (frame instanceof WebElement) {
+      webDriver.switchTo().frame((WebElement) frame);
+    } else if (frame instanceof Integer) {
+      webDriver.switchTo().frame((Integer) frame);
+    } else {
+      return false;
+    }
+    return true;
   }
 
   /**
@@ -816,14 +963,26 @@ public class AxeBuilder {
     }
   }
 
-  private Results analyzePost43x(final WebDriver webDriver, final Object rawContextArg) {
+  private Results analyzePost43x(
+      final WebDriver webDriver,
+      final Object rawContextArg,
+      final FrameSwitchTimeout frameSwitchTimeout) {
     String rawOptionsArg =
         getOptions().equals("{}") ? AxeReporter.serialize(runOptions) : getOptions();
+
+    skippedFrames.clear();
+    frameStackLost = false;
 
     ArrayList<String> partialResults;
     try {
       partialResults =
-          runPartialRecursive(webDriver, rawOptionsArg, rawContextArg, true, new Stack<Object>());
+          runPartialRecursive(
+              webDriver,
+              rawOptionsArg,
+              rawContextArg,
+              true,
+              new Stack<Object>(),
+              frameSwitchTimeout);
     } catch (RuntimeException re) {
       if (re.getMessage().contains("Unable to inject axe script")) {
         throw re;
@@ -856,7 +1015,9 @@ public class AxeBuilder {
         }
       }
     }
-    return objectMapper.convertValue(resResponse, Results.class);
+    Results results = objectMapper.convertValue(resResponse, Results.class);
+    results.setSkippedFrames(new ArrayList<String>(skippedFrames));
+    return results;
   }
 
   private Results analyzePre43x(final WebDriver webDriver, final Object rawContextArg) {

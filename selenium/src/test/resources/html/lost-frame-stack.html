@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Lost frame stack</title>
+  </head>
+  <body>
+    <h1>Lost frame stack</h1>
+    <iframe id="a" title="a" src="lost-frame-stack/a.html"></iframe>
+    <!-- Shares the selector of a's second frame, so a scan that walks a's siblings from the
+         top-level document lands here instead of resolving to nothing. -->
+    <iframe id="c" title="decoy" src="lost-frame-stack/decoy.html"></iframe>
+  </body>
+</html>

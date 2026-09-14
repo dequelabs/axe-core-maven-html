@@ -76,15 +76,50 @@ public class BlankWindowUnitTest {
   }
 
   @Test
+  public void openBlankWindow_handleAppearsOnLaterPoll_succeeds() {
+    when(driver.getWindowHandle()).thenReturn("user-tab");
+    when(driver.getWindowHandles())
+        .thenReturn(handles("user-tab"))
+        // window.open has returned but the driver has not published the new handle yet.
+        .thenReturn(handles("user-tab"))
+        .thenReturn(handles("user-tab", "axe-blank"));
+
+    BlankWindow window = WebDriverExtensions.openBlankWindow(driver);
+
+    assertEquals("axe-blank", window.getAboutBlankHandle());
+    verify(targetLocator).window("axe-blank");
+    verify(driver).get("about:blank");
+  }
+
+  @Test
   public void openBlankWindow_zeroNewHandles_throws() {
     when(driver.getWindowHandle()).thenReturn("user-tab");
     when(driver.getWindowHandles()).thenReturn(handles("user-tab"));
 
     RuntimeException ex =
         assertThrows(RuntimeException.class, () -> WebDriverExtensions.openBlankWindow(driver));
-    // Outer message is the stable wrapper; the specific reason is in the cause.
-    assertContains(ex.getMessage(), "switchToWindow failed");
-    assertContains(ex.getCause().getMessage(), "no new window");
+    // Handle-resolution failures name their own cause rather than the driver-version advice, which
+    // would send readers after the wrong problem — but they keep the token and the link that
+    // selenium/error-handling.md tells users to search for.
+    assertContains(ex.getMessage(), "about:blank did not appear in the driver's window list");
+    assertContains(ex.getMessage(), "switchToWindow");
+    assertContains(ex.getMessage(), "selenium/error-handling.md");
+    verify(targetLocator, never()).window(anyString());
+  }
+
+  @Test
+  @SuppressWarnings("deprecation")
+  public void openAboutBlank_zeroNewHandles_throwsTheSameDiagnosticAsOpenBlankWindow() {
+    when(driver.getWindowHandle()).thenReturn("user-tab");
+    when(driver.getWindowHandles()).thenReturn(handles("user-tab"));
+
+    RuntimeException ex =
+        assertThrows(RuntimeException.class, () -> WebDriverExtensions.openAboutBlank(driver));
+    // The deprecated entry point must not fall back to the misleading "update your browser
+    // drivers" advice for a failure that is really a handle-publication race.
+    assertContains(ex.getMessage(), "about:blank did not appear in the driver's window list");
+    assertContains(ex.getMessage(), "switchToWindow");
+    assertContains(ex.getMessage(), "selenium/error-handling.md");
     verify(targetLocator, never()).window(anyString());
   }
 
@@ -121,8 +156,9 @@ public class BlankWindowUnitTest {
 
     RuntimeException ex =
         assertThrows(RuntimeException.class, () -> WebDriverExtensions.openBlankWindow(driver));
-    assertContains(ex.getMessage(), "switchToWindow failed");
-    assertContains(ex.getCause().getMessage(), "none matching about:blank");
+    assertContains(ex.getMessage(), "none matching about:blank");
+    assertContains(ex.getMessage(), "switchToWindow");
+    assertContains(ex.getMessage(), "selenium/error-handling.md");
     verify(driver, never()).get("about:blank");
   }
 

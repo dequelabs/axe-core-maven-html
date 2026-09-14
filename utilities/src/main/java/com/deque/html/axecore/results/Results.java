@@ -2,6 +2,7 @@ package com.deque.html.axecore.results;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import java.util.ArrayList;
 import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -18,6 +19,9 @@ public class Results {
   private List<Rule> inapplicable;
   // The error message from `axe.run()`
   private AxeRuntimeException errorObject;
+  // Frames excluded from this scan because they exceeded the frame load timeout. Not part of the
+  // axe-core result payload; the binding fills it in after the run.
+  private List<String> skippedFrames = new ArrayList<>();
 
   public boolean isErrored() {
     return errorObject != null;
@@ -109,6 +113,31 @@ public class Results {
 
   public void setIncomplete(final List<Rule> incomplete) {
     this.incomplete = incomplete;
+  }
+
+  /**
+   * The frames that were skipped because they took longer than the frame load timeout to load.
+   * Their findings are absent from this result, so a non-empty list means the scan is incomplete.
+   *
+   * @return the selectors of the skipped frames; empty when every frame was scanned
+   */
+  public List<String> getSkippedFrames() {
+    return skippedFrames;
+  }
+
+  public void setSkippedFrames(final List<String> skippedFrames) {
+    this.skippedFrames = skippedFrames == null ? new ArrayList<String>() : skippedFrames;
+  }
+
+  /**
+   * Whether every frame on the page was scanned. When false, at least one frame exceeded the frame
+   * load timeout and its findings are missing from this result.
+   *
+   * @return true when no frame was skipped
+   */
+  @JsonIgnore
+  public boolean isComplete() {
+    return skippedFrames == null || skippedFrames.isEmpty();
   }
 
   public boolean violationFree() {

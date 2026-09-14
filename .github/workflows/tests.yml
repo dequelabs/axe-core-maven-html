@@ -3,12 +3,78 @@ name: Tests
 on: push
 
 jobs:
-  build:
+  license-check:
     runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - uses: actions/checkout@v7
+      - name: Set up JDK 17
+        uses: actions/setup-java@v5
+        with:
+          java-version: 17
+          distribution: "temurin"
+      - name: Maven compile licenses
+        run: mvn compile license:add-third-party
+      - name: Check Selenium licenses
+        run: node scripts/license-check.js selenium/target/generated-sources/license/THIRD-PARTY.txt
+      - name: Check Playwright licenses
+        run: node scripts/license-check.js playwright/target/generated-sources/license/THIRD-PARTY.txt
+
+  playwright-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
     strategy:
+      fail-fast: false
       matrix:
         java: [8, 11, 17]
-    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+
+      # Without this the matrix is decorative: every leg runs the runner's default JDK.
+      - name: Set up JDK ${{ matrix.java }}
+        uses: actions/setup-java@v5
+        with:
+          java-version: ${{ matrix.java }}
+          distribution: "temurin"
+
+      - uses: actions/cache@v6.1.0
+        name: Restore npm cache
+        with:
+          path: "**/node_modules"
+          key: npm-cache-v1-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+      - uses: actions/cache@v6.1.0
+        name: Restore Maven cache
+        with:
+          path: ~/.m2/repository
+          key: maven-cache-v1-${{ runner.os }}-${{ hashFiles('**/pom.xml') }}-${{ matrix.java }}
+
+      # Unconditional: a partial cache hit can restore a node_modules or ~/.m2 that predates the
+      # current version, and the fixture download and artifact resolution below both depend on it.
+      - name: Install NPM dependencies
+        run: |
+          npm ci &&
+          npm --prefix=playwright ci
+      - name: Install Maven dependencies
+        run: mvn clean install -DskipTests
+
+      - name: Start fixture server
+        run: |
+          npm --prefix=playwright start > /tmp/fixture-server-1337.log 2>&1 &
+          timeout 60 bash -c 'until curl -sf http://localhost:1337/index.html > /dev/null; do sleep 0.5; done' || {
+            echo "::error::fixture server on port 1337 never came up"
+            cat /tmp/fixture-server-1337.log
+            exit 1
+          }
+      - name: Run Playwright tests
+        run: mvn test -q -pl playwright
+
+  selenium-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        java: [8, 11, 17]
     steps:
       - uses: actions/checkout@v7
 
@@ -18,106 +84,34 @@ jobs:
           java-version: ${{ matrix.java }}
           distribution: "temurin"
 
-      - name: Cache npm dependencies
-        uses: actions/cache@v6.1.0
-        id: npm-cache
+      - uses: actions/cache@v6.1.0
+        name: Restore npm cache
         with:
           path: "**/node_modules"
           key: npm-cache-v1-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            npm-cache-v1-${{ runner.os }}-
-      - name: Cache Maven dependencies
-        uses: actions/cache@v6.1.0
-        id: maven-cache
+      - uses: actions/cache@v6.1.0
+        name: Restore Maven cache
         with:
           path: ~/.m2/repository
           key: maven-cache-v1-${{ runner.os }}-${{ hashFiles('**/pom.xml') }}-${{ matrix.java }}
-          restore-keys: |
-            maven-cache-v1-${{ runner.os }}-${{ matrix.java }}
 
-      - name: Install Maven dependencies
-        # https://github.com/actions/cache#skipping-steps-based-on-cache-hit
-        if: steps.maven-cache.outputs.cache-hit != 'true'
-        run: mvn clean install -DskipTests
       - name: Install NPM dependencies
-        # https://github.com/actions/cache#skipping-steps-based-on-cache-hit
-        if: steps.npm-cache.outputs.cache-hit != 'true'
         run: |
           npm ci &&
-          npm --prefix=selenium ci &&
-          npm --prefix=playwright ci
+          npm --prefix=selenium ci
+      - name: Install Maven dependencies
+        run: mvn clean install -DskipTests
 
-  license-check:
-    needs: build
-    runs-on: ubuntu-latest
-    timeout-minutes: 2
-    steps:
-      - uses: actions/checkout@v7
-      - name: Maven compile licenses
-        run: mvn compile license:add-third-party
-      - name: Check Selenium licenses
-        run: node scripts/license-check.js selenium/target/generated-sources/license/THIRD-PARTY.txt
-      - name: Check Playwright licenses
-        run: node scripts/license-check.js playwright/target/generated-sources/license/THIRD-PARTY.txt
-
-  playwright-tests:
-    needs: [license-check, build]
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    strategy:
-      matrix:
-        java: [8, 11, 17]
-    steps:
-      - uses: actions/checkout@v7
-      - uses: actions/cache@v6.1.0
-        name: Restore npm cache
-        id: npm-cache
-        with:
-          path: "**/node_modules"
-          key: npm-cache-v1-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            npm-cache-v1-${{ runner.os }}-
-      - uses: actions/cache@v6.1.0
-        name: Restore Maven cache
-        id: maven-cache
-        with:
-          path: ~/.m2/repository
-          key: maven-cache-v1-${{ runner.os }}-${{ hashFiles('**/pom.xml') }}-${{ matrix.java }}
-          restore-keys: |
-            maven-cache-v1-${{ runner.os }}-${{ matrix.java }}
+      # `npm --prefix=selenium start` rather than `python -m http.server`: the latter is
+      # single-threaded, so the parallel requests a nested-iframe fixture generates serialise and
+      # individual frames can exceed the per-frame load budget.
       - name: Start fixture server
-        run: npm --prefix=playwright start &
-      - name: Run Playwright tests
-        run: mvn test -q -pl playwright
-
-  selenium-tests:
-    needs: [license-check, build]
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    strategy:
-      matrix:
-        java: [8, 11, 17]
-    steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-python@v6
-      - uses: actions/cache@v6.1.0
-        name: Restore npm cache
-        id: npm-cache
-        with:
-          path: "**/node_modules"
-          key: npm-cache-v1-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            npm-cache-v1-${{ runner.os }}-
-      - uses: actions/cache@v6.1.0
-        name: Restore Maven cache
-        id: maven-cache
-        with:
-          path: ~/.m2/repository
-          key: maven-cache-v1-${{ runner.os }}-${{ hashFiles('**/pom.xml') }}-${{ matrix.java }}
-          restore-keys: |
-            maven-cache-v1-${{ runner.os }}-${{ matrix.java }}
-      - name: Start fixture server
-        run: python -m http.server 8001 &
-        working-directory: selenium/node_modules/axe-test-fixtures/fixtures
+        run: |
+          npm --prefix=selenium start > /tmp/fixture-server-8001.log 2>&1 &
+          timeout 60 bash -c 'until curl -sf http://localhost:8001/index.html > /dev/null; do sleep 0.5; done' || {
+            echo "::error::fixture server on port 8001 never came up"
+            cat /tmp/fixture-server-8001.log
+            exit 1
+          }
       - name: Run Selenium tests
         run: mvn test -q -pl selenium

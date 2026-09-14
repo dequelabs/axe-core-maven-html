@@ -124,7 +124,7 @@ public class WebDriverExtensionsTest {
   }
 
   @Test
-  public void shouldThrowWhenUnableToDetermineWindowHandle() {
+  public void shouldResolveAboutBlankWhenMultipleWindowsOpen() {
     class MockedDriver extends ChromeDriver {
       public MockedDriver(ChromeOptions chromeOptions) {
         super(chromeOptions);
@@ -132,24 +132,23 @@ public class WebDriverExtensionsTest {
 
       @Override
       public Object executeScript(String script, Object... args) {
-        // Note: This is to simulate another window being created along with the about:blank
-        // window. This is to simulate the case where the about:blank window is not the
-        // only window being created and the window handle cannot be determined.
+        // Open a second window alongside the about:blank one so that diffing the handles
+        // before and after cannot identify the new window on its own.
         super.executeScript(script, args);
         return super.executeScript(script, args);
       }
     }
 
     MockedDriver webDriver = new MockedDriver(new ChromeOptions().addArguments("--headless"));
-    webDriver.get("http://localhost:8001/index.html");
 
-    RuntimeException exception =
-        Assert.assertThrows(
-            RuntimeException.class,
-            () -> {
-              WebDriverExtensions.openAboutBlank(webDriver);
-            });
+    try {
+      webDriver.get("http://localhost:8001/index.html");
 
-    Assert.assertEquals(exception.getCause().getMessage(), "Unable to determine window handle");
+      WebDriverExtensions.openAboutBlank(webDriver);
+
+      Assert.assertEquals("about:blank", webDriver.getCurrentUrl());
+    } finally {
+      webDriver.quit();
+    }
   }
 }

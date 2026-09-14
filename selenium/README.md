@@ -217,6 +217,35 @@ new AxeBuilder(page)
         .setLegacyMode(true);
 ```
 
+## AxeBuilder#setFrameLoadTimeout(Duration frameLoadTimeout)
+
+How long a single frame switch may take before that frame is skipped and left out of the results.
+Defaults to 3 seconds.
+Must be a non-null, positive `Duration`; anything else is rejected with an exception.
+Raise it on slow infrastructure where frames legitimately take longer than that to load.
+
+```java
+new AxeBuilder()
+        .setFrameLoadTimeout(Duration.ofSeconds(10));
+```
+
+A frame that exceeds the limit is skipped, so its findings are missing from the scan.
+The skip is reported on the results, not just logged, so a passing scan cannot quietly hide an untested frame:
+
+```java
+Results results = new AxeBuilder().analyze(driver);
+if (!results.isComplete()) {
+  // These frames took longer than the frame load timeout and were not scanned.
+  System.out.println("frames skipped: " + results.getSkippedFrames());
+}
+```
+
+After a skip the scan returns to the frame it was in and carries on with the remaining frames.
+If it cannot get back there — the frame it was in is gone from the page by then — it stops descending frames entirely, since it can no longer tell which document it is looking at.
+`isComplete()` is false in that case as well, but frames abandoned that way are not named in `getSkippedFrames()`.
+
+This option has no effect when `setLegacyMode(true)` is used, or when the page's axe-core predates 4.3 — neither path switches frames itself.
+
 ## Limit Frame Testing
 
 Including or excluding specific sections within a frame can be done with a `FromFrames` selector object.
