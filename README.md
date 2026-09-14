@@ -22,15 +22,21 @@ Fetch the key and check the `.asc` that accompanies the artifact:
 
 ```console
 gpg --keyserver keyserver.ubuntu.com --recv-keys F8AF74A4CDA6E2063C8985E21A4AC53EFF73AC0F
-gpg --verify selenium-4.13.0.jar.asc selenium-4.13.0.jar
+gpg --verify selenium-<version>.jar.asc selenium-<version>.jar
 ```
 
 Check that the signature is from the fingerprint above: that fingerprint,
 published here, is what identifies the key as ours.
 
-Earlier releases were signed with key
-`7701193A898A849383D3E8B49F8AFEACBF07F7C4`, which has not been revoked, so they
-still verify.
+Releases published before this key was adopted, up to and including selenium
+4.13.0, were signed with key `7701193A898A849383D3E8B49F8AFEACBF07F7C4`. That
+key has not been revoked, so those releases still verify; fetch it instead
+when checking one of them:
+
+```console
+gpg --keyserver keyserver.ubuntu.com --recv-keys 7701193A898A849383D3E8B49F8AFEACBF07F7C4
+gpg --verify selenium-4.13.0.jar.asc selenium-4.13.0.jar
+```
 
 ## Development
 
