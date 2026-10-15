@@ -33,8 +33,8 @@ jobs:
       - restore_cache:
           key: npm-v1-deps-{{ checksum "package-lock.json" }}-{{ checksum "selenium/package-lock.json" }}-{{ checksum "playwright/package-lock.json" }}
       - run: mvn clean install -DskipTests
-      - run: echo "$GPG_PRIVATE_KEY" | base64 --decode | gpg --import
-      - run: echo "default-key 7701193A898A849383D3E8B49F8AFEACBF07F7C4" > ~/.gnupg/gpg.conf
+      - run: echo "$GPG_PRIVATE_KEY" | base64 --decode | gpg --batch --pinentry-mode loopback --passphrase-fd 3 --import 3< <(printf %s "$MAVEN_GPG_PASSPHRASE")
+      - run: echo "default-key F8AF74A4CDA6E2063C8985E21A4AC53EFF73AC0F" > ~/.gnupg/gpg.conf
       - run: sudo apt update && sudo apt install python3
       - run: python3 .circleci/snapshot.py
       - run: .circleci/publish.sh
@@ -46,8 +46,8 @@ jobs:
       - restore_cache:
           key: npm-v1-deps-{{ checksum "package-lock.json" }}-{{ checksum "selenium/package-lock.json" }}-{{ checksum "playwright/package-lock.json" }}
       - run: mvn clean install -DskipTests
-      - run: echo "$GPG_PRIVATE_KEY" | base64 --decode | gpg --import
-      - run: echo "default-key 7701193A898A849383D3E8B49F8AFEACBF07F7C4" > ~/.gnupg/gpg.conf
+      - run: echo "$GPG_PRIVATE_KEY" | base64 --decode | gpg --batch --pinentry-mode loopback --passphrase-fd 3 --import 3< <(printf %s "$MAVEN_GPG_PASSPHRASE")
+      - run: echo "default-key F8AF74A4CDA6E2063C8985E21A4AC53EFF73AC0F" > ~/.gnupg/gpg.conf
       - run: .circleci/publish.sh
 
   github_release:
