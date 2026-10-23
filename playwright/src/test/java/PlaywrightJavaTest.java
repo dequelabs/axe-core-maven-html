@@ -1,6 +1,7 @@
 import static org.junit.Assert.*;
 
 import com.deque.html.axecore.args.AxeRuleOptions;
+import com.deque.html.axecore.args.AxeRunOnlyOptions;
 import com.deque.html.axecore.args.AxeRunOptions;
 import com.deque.html.axecore.args.FromFrames;
 import com.deque.html.axecore.args.FromShadowDom;
@@ -12,6 +13,7 @@ import com.deque.html.axecore.results.Rule;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microsoft.playwright.Browser;
 import com.microsoft.playwright.BrowserType;
+import com.microsoft.playwright.Frame;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.Playwright;
 import java.io.File;
@@ -234,6 +236,54 @@ public class PlaywrightJavaTest {
     AxeResults axeResults = axeBuilder.analyze();
 
     assertTrue(axeResults.isErrored());
+  }
+
+  @Test
+  public void iframesFalseSkipsChildFrames() {
+    page.navigate(server + "nested-iframes.html");
+    AxeResults axeResults = new AxeBuilder(page).options(iframesFalse()).analyze();
+
+    assertEquals(Collections.emptyList(), axeResults.getViolations());
+    assertNoAxeInChildFrames();
+  }
+
+  @Test
+  public void iframesFalseSkipsChildFramesInLegacyMode() {
+    page.navigate(server + "nested-iframes.html");
+    AxeResults axeResults =
+        new AxeBuilder(page).options(iframesFalse()).setLegacyMode(true).analyze();
+
+    assertEquals(Collections.emptyList(), axeResults.getViolations());
+    assertNoAxeInChildFrames();
+  }
+
+  @Test
+  public void iframesFalseSkipsChildFramesWithoutRunPartial() throws Exception {
+    page.navigate(server + "nested-iframes.html");
+    overwriteAxeSourceWithString(downloadFromURL(server + "axe-core@legacy.js"));
+    AxeResults axeResults = new AxeBuilder(page).options(iframesFalse()).analyze();
+
+    assertEquals("4.2.3", axeResults.getTestEngine().getVersion());
+    assertEquals(Collections.emptyList(), axeResults.getViolations());
+    assertNoAxeInChildFrames();
+  }
+
+  private static AxeRunOptions iframesFalse() {
+    AxeRunOnlyOptions runOnly = new AxeRunOnlyOptions();
+    runOnly.setType("rule");
+    runOnly.setValues(Collections.singletonList("label"));
+    AxeRunOptions options = new AxeRunOptions();
+    options.setRunOnly(runOnly);
+    options.setIFrames(false);
+    return options;
+  }
+
+  private void assertNoAxeInChildFrames() {
+    List<Frame> childFrames = page.frames().subList(1, page.frames().size());
+    assertFalse(childFrames.isEmpty());
+    for (Frame frame : childFrames) {
+      assertEquals(frame.url(), "undefined", frame.evaluate("typeof window.axe"));
+    }
   }
 
   @Test
