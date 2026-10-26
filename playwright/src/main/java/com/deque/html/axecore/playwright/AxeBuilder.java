@@ -28,6 +28,19 @@ public class AxeBuilder {
   private final ObjectMapper objectMapper;
   private final Page page;
 
+  // a frame that blocks scripts skips event listeners and never fires timers,
+  // so axe.runPartial would hang in it
+  private static final String assertScriptsRunScript =
+      "(function () {"
+          + "  var ran = false;"
+          + "  var target = new EventTarget();"
+          + "  target.addEventListener('axe', function () { ran = true; });"
+          + "  target.dispatchEvent(new Event('axe'));"
+          + "  if (!ran) {"
+          + "    throw new Error('Frame cannot run scripts');"
+          + "  }"
+          + "})();";
+
   /**
    * Axe-core builder constructor for Playwright Java
    *
@@ -304,7 +317,7 @@ public class AxeBuilder {
        *
        * @see https://github.com/microsoft/playwright-java/issues/1070
        */
-      this.page.evaluate("() => {" + getAxeScript() + "}");
+      this.page.evaluate("() => {" + assertScriptsRunScript + getAxeScript() + "}");
     } catch (RuntimeException runtimeException) {
       throw new RuntimeException("Problematic axe-source, unable to inject.", runtimeException);
     }
@@ -363,7 +376,7 @@ public class AxeBuilder {
   private ArrayList<String> runPartialRecursive(Frame frame, String context, boolean isTopLevel) {
     try {
       if (!isTopLevel) {
-        injectAxeSource(frame);
+        injectAxeSource(frame, assertScriptsRunScript);
       }
       Object frameContextResult = getFrameContexts(frame, context);
 
@@ -408,7 +421,7 @@ public class AxeBuilder {
   private Object run(String axeContext, String axeOptions) {
     // inject axe source into each iframe if legacyMode is not enabled
     if (!legacyMode) {
-      this.page.frames().forEach(this::injectAxeSource);
+      this.page.frames().forEach(frame -> injectAxeSource(frame, ""));
     }
 
     return page.evaluate(
@@ -540,9 +553,9 @@ public class AxeBuilder {
         origins);
   }
 
-  private void injectAxeSource(Frame frame) {
+  private void injectAxeSource(Frame frame, String prefix) {
     try {
-      frame.evaluate(getAxeScript() + getAxeConfigure(hasRunPartial));
+      frame.evaluate(prefix + getAxeScript() + getAxeConfigure(hasRunPartial));
     } catch (RuntimeException runtimeException) {
       throw new RuntimeException("Unable to inject axe-source.", runtimeException);
     }
