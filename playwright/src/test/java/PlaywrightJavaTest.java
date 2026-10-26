@@ -329,6 +329,23 @@ public class PlaywrightJavaTest {
     assertTrue(frameTestedTargets(axeResults.getIncomplete()).isEmpty());
   }
 
+  @Test(timeout = 20000)
+  public void scansPagesAndFramesThatReplaceWindowEvent() {
+    page.navigate(server + "index.html");
+    page.evaluate("() => { window.Event = function () {}; }");
+    appendIframe("replaced-event", null, "/index.html");
+    page.evaluate(
+        "() => { document.getElementById('replaced-event').contentWindow.Event = function () {}; }");
+
+    AxeResults axeResults =
+        new AxeBuilder(page).withRules(Collections.singletonList("frame-tested")).analyze();
+
+    assertEquals(
+        Arrays.asList(Arrays.asList("#replaced-event")),
+        frameTestedTargets(axeResults.getPasses()));
+    assertTrue(frameTestedTargets(axeResults.getIncomplete()).isEmpty());
+  }
+
   @Test
   public void throwsWhenInjectingProblematicSource() throws URISyntaxException, IOException {
     page.navigate(server + "index.html");

@@ -698,6 +698,22 @@ public class Axe43xIntegrationTest {
     assertTrue(frameTestedTargets(res.getIncomplete()).isEmpty());
   }
 
+  @Test(timeout = 20000)
+  public void scansPagesAndFramesThatReplaceWindowEvent() {
+    webDriver.get(fixture("/index.html"));
+    ((JavascriptExecutor) webDriver).executeScript("window.Event = function () {};");
+    appendIframe("replaced-event", null, "/index.html");
+    ((JavascriptExecutor) webDriver)
+        .executeScript(
+            "document.getElementById('replaced-event').contentWindow.Event = function () {};");
+
+    Results res = new AxeBuilder().withRules(Arrays.asList("frame-tested")).analyze(webDriver);
+
+    assertEquals(
+        Arrays.asList(Arrays.asList("#replaced-event")), frameTestedTargets(res.getPasses()));
+    assertTrue(frameTestedTargets(res.getIncomplete()).isEmpty());
+  }
+
   @Test
   public void putsBackPageLoad() {
     webDriver.get(fixture("/lazy-loaded-iframe.html"));
