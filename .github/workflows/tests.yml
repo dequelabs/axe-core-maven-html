@@ -88,7 +88,7 @@ jobs:
       - name: Start fixture server
         run: npm --prefix=playwright start &
       - name: Run Playwright tests
-        run: mvn test -q -pl playwright
+        run: mvn test -q -pl playwright -am
 
   selenium-tests:
     needs: [license-check, build]
@@ -120,4 +120,4 @@ jobs:
         run: python -m http.server 8001 &
         working-directory: selenium/node_modules/axe-test-fixtures/fixtures
       - name: Run Selenium tests
-        run: mvn test -q -pl selenium
+        run: mvn test -q -pl selenium -am

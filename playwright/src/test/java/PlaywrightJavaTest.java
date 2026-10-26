@@ -243,6 +243,7 @@ public class PlaywrightJavaTest {
     page.navigate(server + "nested-iframes.html");
     AxeResults axeResults = new AxeBuilder(page).options(iframesFalse()).analyze();
 
+    assertFalse(axeResults.isErrored());
     assertEquals(Collections.emptyList(), axeResults.getViolations());
     assertNoAxeInChildFrames();
   }
@@ -253,6 +254,7 @@ public class PlaywrightJavaTest {
     AxeResults axeResults =
         new AxeBuilder(page).options(iframesFalse()).setLegacyMode(true).analyze();
 
+    assertFalse(axeResults.isErrored());
     assertEquals(Collections.emptyList(), axeResults.getViolations());
     assertNoAxeInChildFrames();
   }
@@ -263,6 +265,7 @@ public class PlaywrightJavaTest {
     overwriteAxeSourceWithString(downloadFromURL(server + "axe-core@legacy.js"));
     AxeResults axeResults = new AxeBuilder(page).options(iframesFalse()).analyze();
 
+    assertFalse(axeResults.isErrored());
     assertEquals("4.2.3", axeResults.getTestEngine().getVersion());
     assertEquals(Collections.emptyList(), axeResults.getViolations());
     assertNoAxeInChildFrames();
