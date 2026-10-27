@@ -97,9 +97,16 @@ public class AxeRunOptionsUnitTest {
     options.setFrameWaitTimeInMilliseconds(10);
 
     String expectedObject =
-        "{\"absolutePaths\":true,\"iFrames\":true,\"restoreScroll\":true,\"frameWaitTime\":10}";
+        "{\"absolutePaths\":true,\"iframes\":true,\"restoreScroll\":true,\"frameWaitTime\":10}";
     String serializedObject = AxeReporter.serialize(options);
     Assert.assertEquals(serializedObject, expectedObject);
+  }
+
+  @Test()
+  public void shouldDeserializeIFramesKey() throws JsonProcessingException {
+    ObjectMapper mapper = new ObjectMapper();
+    Assert.assertFalse(mapper.readValue("{\"iframes\":false}", AxeRunOptions.class).getIFrames());
+    Assert.assertFalse(mapper.readValue("{\"iFrames\":false}", AxeRunOptions.class).getIFrames());
   }
 
   /**

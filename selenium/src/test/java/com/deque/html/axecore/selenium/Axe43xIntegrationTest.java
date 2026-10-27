@@ -15,6 +15,8 @@ package com.deque.html.axecore.selenium;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 
+import com.deque.html.axecore.args.AxeRunOnlyOptions;
+import com.deque.html.axecore.args.AxeRunOptions;
 import com.deque.html.axecore.args.FromFrames;
 import com.deque.html.axecore.args.FromShadowDom;
 import com.deque.html.axecore.providers.EmbeddedResourceAxeProvider;
@@ -38,6 +40,7 @@ import org.junit.rules.ExpectedException;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.UnexpectedAlertBehaviour;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -189,6 +192,93 @@ public class Axe43xIntegrationTest {
     assertEquals(Arrays.asList("#ifr-foo", "#foo-baz", "input"), nodes.get(1).getTarget());
     assertEquals(Arrays.asList("#ifr-bar", "#bar-baz", "input"), nodes.get(2).getTarget());
     assertEquals(Arrays.asList("#ifr-baz", "input"), nodes.get(3).getTarget());
+  }
+
+  @Test
+  public void iframesFalseSkipsChildFrames() throws Exception {
+    webDriver.get(fixture("/nested-iframes.html"));
+    Results res = new AxeBuilder().withOptions(iframesFalse()).analyze(webDriver);
+
+    assertFalse(res.isErrored());
+    assertEquals(Collections.emptyList(), res.getViolations());
+    assertNoAxeInChildFrames();
+  }
+
+  @Test
+  public void iframesFalseSkipsChildFramesInLegacyMode() throws Exception {
+    webDriver.get(fixture("/nested-iframes.html"));
+    Results res = new AxeBuilder().withOptions(iframesFalse()).setLegacyMode().analyze(webDriver);
+
+    assertFalse(res.isErrored());
+    assertEquals(Collections.emptyList(), res.getViolations());
+    assertNoAxeInChildFrames();
+  }
+
+  @Test
+  public void iframesFalseSkipsChildFramesWithoutRunPartial() throws Exception {
+    webDriver.get(fixture("/nested-iframes.html"));
+    Results res =
+        new AxeBuilder()
+            .withOptions(iframesFalse())
+            .setAxeScriptProvider(new StringAxeScriptProvider(axePre43x))
+            .analyze(webDriver);
+
+    assertFalse(res.isErrored());
+    assertEquals("4.2.3", res.getTestEngine().getVersion());
+    assertEquals(Collections.emptyList(), res.getViolations());
+    assertNoAxeInChildFrames();
+  }
+
+  @Test
+  public void iframesFalseLeavesChildFrameSandboxes() throws Exception {
+    webDriver.get(fixture("/index.html"));
+    ((JavascriptExecutor) webDriver)
+        .executeAsyncScript(
+            "const done = arguments[arguments.length - 1];"
+                + "const outer = document.createElement('iframe');"
+                + "outer.onload = () => done();"
+                + "outer.srcdoc = '<iframe sandbox srcdoc=\"<p>inner</p>\"></iframe>';"
+                + "document.body.appendChild(outer);");
+
+    Results res =
+        new AxeBuilder().withOptions(iframesFalse()).withoutIframeSandboxes().analyze(webDriver);
+
+    assertFalse(res.isErrored());
+    assertEquals(
+        true,
+        ((JavascriptExecutor) webDriver)
+            .executeScript(
+                "return document.querySelector('iframe').contentDocument"
+                    + ".querySelector('iframe').hasAttribute('sandbox');"));
+  }
+
+  @Test
+  public void disableIframeTestingSkipsChildFrames() throws Exception {
+    webDriver.get(fixture("/nested-iframes.html"));
+    Results res =
+        new AxeBuilder()
+            .withOnlyRules(Collections.singletonList("label"))
+            .disableIframeTesting()
+            .analyze(webDriver);
+
+    assertFalse(res.isErrored());
+    assertEquals(Collections.emptyList(), res.getViolations());
+    assertNoAxeInChildFrames();
+  }
+
+  @Test
+  public void disableIframeTestingSkipsChildFramesInLegacyMode() throws Exception {
+    webDriver.get(fixture("/nested-iframes.html"));
+    Results res =
+        new AxeBuilder()
+            .withOnlyRules(Collections.singletonList("label"))
+            .disableIframeTesting()
+            .setLegacyMode()
+            .analyze(webDriver);
+
+    assertFalse(res.isErrored());
+    assertEquals(Collections.emptyList(), res.getViolations());
+    assertNoAxeInChildFrames();
   }
 
   @Test
@@ -577,8 +667,8 @@ public class Axe43xIntegrationTest {
     assertEquals(axeResults.getIncomplete().get(0).getId(), "frame-tested");
     assertEquals(axeResults.getIncomplete().get(0).getNodes().size(), 1);
     assertTargetEquals(
-       axeResults.getIncomplete().get(0).getNodes().get(0).getTarget(),
-       new String[] {"#ifr-lazy", "#lazy-iframe"});
+        axeResults.getIncomplete().get(0).getNodes().get(0).getTarget(),
+        new String[] {"#ifr-lazy", "#lazy-iframe"});
     assertEquals(axeResults.getViolations().size(), 2);
     assertEquals(axeResults.getViolations().get(1).getId(), "label");
     assertEquals(axeResults.getViolations().get(1).getNodes().size(), 1);
@@ -624,6 +714,33 @@ public class Axe43xIntegrationTest {
     } else {
       fail("Passed object is not a Collection");
     }
+  }
+
+  private static AxeRunOptions iframesFalse() {
+    AxeRunOnlyOptions runOnly = new AxeRunOnlyOptions();
+    runOnly.setType("rule");
+    runOnly.setValues(Collections.singletonList("label"));
+    AxeRunOptions options = new AxeRunOptions();
+    options.setRunOnly(runOnly);
+    options.setIFrames(false);
+    return options;
+  }
+
+  private void assertNoAxeInChildFrames() {
+    List<Object> axeTypes =
+        (List<Object>)
+            ((JavascriptExecutor) webDriver)
+                .executeScript(
+                    "return (function walk(win) {"
+                        + "  var found = [];"
+                        + "  for (var i = 0; i < win.frames.length; i++) {"
+                        + "    found.push(typeof win.frames[i].axe);"
+                        + "    found = found.concat(walk(win.frames[i]));"
+                        + "  }"
+                        + "  return found;"
+                        + "})(window);");
+    assertFalse(axeTypes.isEmpty());
+    assertEquals(Collections.nCopies(axeTypes.size(), "undefined"), axeTypes);
   }
 
   /**

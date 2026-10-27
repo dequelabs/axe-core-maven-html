@@ -12,6 +12,7 @@
 
 package com.deque.html.axecore.args;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -165,7 +166,7 @@ public class AxeRunOptions {
    *
    * @return if there are iFrames
    */
-  @JsonProperty(value = "iFrames")
+  @JsonProperty(value = "iframes")
   public Boolean getIFrames() {
     return this.iframe;
   }
@@ -175,7 +176,8 @@ public class AxeRunOptions {
    *
    * @param newIFrames the bool to be set if there are iFrames
    */
-  @JsonProperty(value = "iFrames")
+  @JsonProperty(value = "iframes")
+  @JsonAlias(value = "iFrames")
   public void setIFrames(final Boolean newIFrames) {
     this.iframe = newIFrames;
   }
