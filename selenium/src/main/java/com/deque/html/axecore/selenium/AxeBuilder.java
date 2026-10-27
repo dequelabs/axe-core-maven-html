@@ -110,6 +110,25 @@ public class AxeBuilder {
           + "};"
           + "Promise.all(iframes.map(replaceSandboxedIframe)).then(callback);";
 
+  // a frame that blocks scripts skips event listeners and never fires timers,
+  // so axe.runPartial would hang in it
+  private static String assertScriptsRunScript =
+      "(function () {"
+          + "  var ran = false;"
+          + "  try {"
+          + "    var target = document.createElement('div');"
+          + "    target.addEventListener('axe', function () { ran = true; });"
+          + "    var event = document.createEvent('Event');"
+          + "    event.initEvent('axe', false, false);"
+          + "    target.dispatchEvent(event);"
+          + "  } catch (e) {"
+          + "    return;"
+          + "  }"
+          + "  if (!ran) {"
+          + "    throw new Error('Frame cannot run scripts');"
+          + "  }"
+          + "})();";
+
   private static String shadowSelectScript =
       "return axe.utils.shadowSelect(JSON.parse(arguments[0]))";
 
@@ -719,13 +738,13 @@ public class AxeBuilder {
       final boolean isTopLevel,
       final boolean skipIframes,
       final Stack<Object> frameStack) {
-    if (!isTopLevel) {
-      injectAxe(webDriver);
-    }
     String windowHandle = webDriver.getWindowHandle();
 
     ArrayList<String> partialResults = new ArrayList<String>();
     try {
+      if (!isTopLevel) {
+        injectAxe(webDriver);
+      }
       Object fcResponse =
           WebDriverInjectorExtensions.executeScript(
               webDriver, frameContextScript, context, options);
@@ -921,7 +940,7 @@ public class AxeBuilder {
     if (!doNotInjectAxe) {
       try {
         WebDriverInjectorExtensions.executeScript(
-            webDriver, builderOptions.getScriptProvider().getScript());
+            webDriver, assertScriptsRunScript + builderOptions.getScriptProvider().getScript());
       } catch (Exception e) {
         throw new RuntimeException("Unable to inject axe script", e);
       }

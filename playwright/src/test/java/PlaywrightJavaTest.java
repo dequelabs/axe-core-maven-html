@@ -16,9 +16,12 @@ import com.microsoft.playwright.BrowserType;
 import com.microsoft.playwright.Frame;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.Playwright;
+import com.sun.net.httpserver.HttpServer;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.InetSocketAddress;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.Charset;
@@ -38,6 +41,7 @@ public class PlaywrightJavaTest {
   private Browser browser;
 
   private static String oldSource;
+  private static HttpServer cspSandboxServer;
 
   private final String server = "http://localhost:1337/";
 
@@ -47,6 +51,41 @@ public class PlaywrightJavaTest {
   public static void reloadSource() throws IOException {
     URL oldSourceUrl = AxeBuilder.class.getResource("/axe.min.js");
     oldSource = URLReader(oldSourceUrl, StandardCharsets.UTF_8);
+  }
+
+  @BeforeClass
+  public static void startCspSandboxServer() throws IOException {
+    Path fixtures = Paths.get("node_modules/axe-test-fixtures/fixtures").toAbsolutePath();
+    cspSandboxServer = HttpServer.create(new InetSocketAddress("localhost", 0), 0);
+    cspSandboxServer.createContext(
+        "/",
+        exchange -> {
+          String path = exchange.getRequestURI().getPath();
+          if (path.startsWith("/csp-sandbox/")) {
+            exchange
+                .getResponseHeaders()
+                .set("Content-Security-Policy", "sandbox allow-same-origin");
+            path = path.substring("/csp-sandbox".length());
+          }
+          Path file = fixtures.resolve(path.substring(1)).normalize();
+          if (!file.startsWith(fixtures) || !Files.isRegularFile(file)) {
+            exchange.sendResponseHeaders(404, -1);
+            exchange.close();
+            return;
+          }
+          byte[] body = Files.readAllBytes(file);
+          exchange.getResponseHeaders().set("Content-Type", "text/html");
+          exchange.sendResponseHeaders(200, body.length);
+          try (OutputStream out = exchange.getResponseBody()) {
+            out.write(body);
+          }
+        });
+    cspSandboxServer.start();
+  }
+
+  @AfterClass
+  public static void stopCspSandboxServer() {
+    cspSandboxServer.stop(0);
   }
 
   @Before
@@ -103,6 +142,26 @@ public class PlaywrightJavaTest {
   private void appendAxeSourceWithString(String source) throws IOException, URISyntaxException {
     URL axeUrl = AxeBuilder.class.getResource("/axe.min.js");
     Files.write(Paths.get(axeUrl.toURI().getPath()), source.getBytes(), StandardOpenOption.APPEND);
+  }
+
+  private void appendIframe(String id, String sandbox, String src) {
+    page.evaluate(
+        "([id, sandbox, src]) => new Promise(resolve => {"
+            + "const iframe = document.createElement('iframe');"
+            + "iframe.id = id;"
+            + "if (sandbox != null) iframe.setAttribute('sandbox', sandbox);"
+            + "iframe.src = src;"
+            + "iframe.onload = () => resolve();"
+            + "document.body.appendChild(iframe);"
+            + "})",
+        Arrays.asList(id, sandbox, src));
+  }
+
+  private List<Object> frameTestedTargets(List<Rule> rules) {
+    return rules.stream()
+        .filter(r -> r.getId().equals("frame-tested"))
+        .flatMap(r -> r.getNodes().stream().map(n -> n.getTarget()))
+        .collect(Collectors.toList());
   }
 
   private String downloadFromURL(String url) throws Exception {
@@ -208,6 +267,85 @@ public class PlaywrightJavaTest {
     assertEquals(axeResults.getIncomplete().get(0).getNodes().size(), 1);
     assertEquals(axeResults.getViolations().get(0).getId(), "label");
     assertEquals(axeResults.getViolations().get(0).getNodes().size(), 2);
+  }
+
+  @Test(timeout = 20000)
+  public void reportsSandboxedFrameThatBlocksScripts() {
+    page.navigate(server + "index.html");
+    appendIframe("no-scripts", "allow-same-origin", "/index.html");
+
+    AxeResults axeResults =
+        new AxeBuilder(page).withRules(Collections.singletonList("frame-tested")).analyze();
+
+    assertEquals(
+        Arrays.asList(Arrays.asList("#no-scripts")),
+        frameTestedTargets(axeResults.getIncomplete()));
+  }
+
+  @Test(timeout = 20000)
+  public void reportsFrameSandboxedByCspHeader() {
+    page.navigate("http://localhost:" + cspSandboxServer.getAddress().getPort() + "/index.html");
+    appendIframe("csp-sandbox", null, "/csp-sandbox/index.html");
+
+    AxeResults axeResults =
+        new AxeBuilder(page).withRules(Collections.singletonList("frame-tested")).analyze();
+
+    assertEquals(
+        Arrays.asList(Arrays.asList("#csp-sandbox")),
+        frameTestedTargets(axeResults.getIncomplete()));
+  }
+
+  @Test(timeout = 20000)
+  public void usesSandboxFrameLoadedWith() {
+    page.navigate(server + "index.html");
+    appendIframe("sandbox-added-after-load", null, "/index.html");
+    appendIframe("sandbox-removed-after-load", "allow-same-origin", "/index.html");
+    page.evaluate(
+        "() => {"
+            + "document.getElementById('sandbox-added-after-load').setAttribute('sandbox', 'allow-same-origin');"
+            + "document.getElementById('sandbox-removed-after-load').removeAttribute('sandbox');"
+            + "}");
+
+    AxeResults axeResults =
+        new AxeBuilder(page).withRules(Collections.singletonList("frame-tested")).analyze();
+
+    assertEquals(
+        Arrays.asList(Arrays.asList("#sandbox-added-after-load")),
+        frameTestedTargets(axeResults.getPasses()));
+    assertEquals(
+        Arrays.asList(Arrays.asList("#sandbox-removed-after-load")),
+        frameTestedTargets(axeResults.getIncomplete()));
+  }
+
+  @Test(timeout = 20000)
+  public void scansSandboxedFrameThatAllowsScripts() {
+    page.navigate(server + "index.html");
+    appendIframe("allows-scripts", "allow-same-origin allow-scripts", "/index.html");
+
+    AxeResults axeResults =
+        new AxeBuilder(page).withRules(Collections.singletonList("frame-tested")).analyze();
+
+    assertEquals(
+        Arrays.asList(Arrays.asList("#allows-scripts")),
+        frameTestedTargets(axeResults.getPasses()));
+    assertTrue(frameTestedTargets(axeResults.getIncomplete()).isEmpty());
+  }
+
+  @Test(timeout = 20000)
+  public void scansPagesAndFramesThatReplaceWindowEvent() {
+    page.navigate(server + "index.html");
+    page.evaluate("() => { window.Event = function () {}; }");
+    appendIframe("replaced-event", null, "/index.html");
+    page.evaluate(
+        "() => { document.getElementById('replaced-event').contentWindow.Event = function () {}; }");
+
+    AxeResults axeResults =
+        new AxeBuilder(page).withRules(Collections.singletonList("frame-tested")).analyze();
+
+    assertEquals(
+        Arrays.asList(Arrays.asList("#replaced-event")),
+        frameTestedTargets(axeResults.getPasses()));
+    assertTrue(frameTestedTargets(axeResults.getIncomplete()).isEmpty());
   }
 
   @Test
