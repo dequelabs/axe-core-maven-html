@@ -647,31 +647,32 @@ public class Axe43xIntegrationTest {
   @Test(timeout = 20000)
   public void usesSandboxFrameLoadedWith() {
     webDriver.get(fixture("/index.html"));
-    appendIframe("sandboxed-later", null, "/index.html");
-    appendIframe("unsandboxed-later", "allow-same-origin", "/index.html");
+    appendIframe("sandbox-added-after-load", null, "/index.html");
+    appendIframe("sandbox-removed-after-load", "allow-same-origin", "/index.html");
     ((JavascriptExecutor) webDriver)
         .executeScript(
-            "document.getElementById('sandboxed-later').setAttribute('sandbox', 'allow-same-origin');"
-                + "document.getElementById('unsandboxed-later').removeAttribute('sandbox');");
+            "document.getElementById('sandbox-added-after-load').setAttribute('sandbox', 'allow-same-origin');"
+                + "document.getElementById('sandbox-removed-after-load').removeAttribute('sandbox');");
 
     Results res = new AxeBuilder().withRules(Arrays.asList("frame-tested")).analyze(webDriver);
 
     assertEquals(
-        Arrays.asList(Arrays.asList("#sandboxed-later")), frameTestedTargets(res.getPasses()));
+        Arrays.asList(Arrays.asList("#sandbox-added-after-load")),
+        frameTestedTargets(res.getPasses()));
     assertEquals(
-        Arrays.asList(Arrays.asList("#unsandboxed-later")),
+        Arrays.asList(Arrays.asList("#sandbox-removed-after-load")),
         frameTestedTargets(res.getIncomplete()));
   }
 
   @Test(timeout = 20000)
   public void withoutIframeSandboxesReportsFrameThatStillBlocksScripts() {
     webDriver.get(fixture("/index.html"));
-    appendIframe("sandboxed-later", null, "/index.html");
-    appendIframe("unsandboxed-later", "allow-same-origin", "/index.html");
+    appendIframe("sandbox-added-after-load", null, "/index.html");
+    appendIframe("sandbox-removed-after-load", "allow-same-origin", "/index.html");
     ((JavascriptExecutor) webDriver)
         .executeScript(
-            "document.getElementById('sandboxed-later').setAttribute('sandbox', 'allow-same-origin');"
-                + "document.getElementById('unsandboxed-later').removeAttribute('sandbox');");
+            "document.getElementById('sandbox-added-after-load').setAttribute('sandbox', 'allow-same-origin');"
+                + "document.getElementById('sandbox-removed-after-load').removeAttribute('sandbox');");
 
     Results res =
         new AxeBuilder()
@@ -680,9 +681,10 @@ public class Axe43xIntegrationTest {
             .analyze(webDriver);
 
     assertEquals(
-        Arrays.asList(Arrays.asList("#sandboxed-later")), frameTestedTargets(res.getPasses()));
+        Arrays.asList(Arrays.asList("#sandbox-added-after-load")),
+        frameTestedTargets(res.getPasses()));
     assertEquals(
-        Arrays.asList(Arrays.asList("#unsandboxed-later")),
+        Arrays.asList(Arrays.asList("#sandbox-removed-after-load")),
         frameTestedTargets(res.getIncomplete()));
   }
 

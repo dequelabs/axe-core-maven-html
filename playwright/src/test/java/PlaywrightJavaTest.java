@@ -296,22 +296,22 @@ public class PlaywrightJavaTest {
   @Test(timeout = 20000)
   public void usesSandboxFrameLoadedWith() {
     page.navigate(server + "index.html");
-    appendIframe("sandboxed-later", null, "/index.html");
-    appendIframe("unsandboxed-later", "allow-same-origin", "/index.html");
+    appendIframe("sandbox-added-after-load", null, "/index.html");
+    appendIframe("sandbox-removed-after-load", "allow-same-origin", "/index.html");
     page.evaluate(
         "() => {"
-            + "document.getElementById('sandboxed-later').setAttribute('sandbox', 'allow-same-origin');"
-            + "document.getElementById('unsandboxed-later').removeAttribute('sandbox');"
+            + "document.getElementById('sandbox-added-after-load').setAttribute('sandbox', 'allow-same-origin');"
+            + "document.getElementById('sandbox-removed-after-load').removeAttribute('sandbox');"
             + "}");
 
     AxeResults axeResults =
         new AxeBuilder(page).withRules(Collections.singletonList("frame-tested")).analyze();
 
     assertEquals(
-        Arrays.asList(Arrays.asList("#sandboxed-later")),
+        Arrays.asList(Arrays.asList("#sandbox-added-after-load")),
         frameTestedTargets(axeResults.getPasses()));
     assertEquals(
-        Arrays.asList(Arrays.asList("#unsandboxed-later")),
+        Arrays.asList(Arrays.asList("#sandbox-removed-after-load")),
         frameTestedTargets(axeResults.getIncomplete()));
   }
 
