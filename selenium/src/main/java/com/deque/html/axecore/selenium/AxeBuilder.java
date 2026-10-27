@@ -21,7 +21,9 @@ import com.deque.html.axecore.providers.IAxeScriptProvider;
 import com.deque.html.axecore.results.FrameContext;
 import com.deque.html.axecore.results.Results;
 import com.deque.html.axecore.results.Rule;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
@@ -142,7 +144,8 @@ public class AxeBuilder {
 
   private static String frameContextScript =
       "const context = typeof arguments[0] == 'string' ? JSON.parse(arguments[0]) : arguments[0];"
-          + "return window.axe.utils.getFrameContexts(context);";
+          + "const options = JSON.parse(arguments[1]);"
+          + "return window.axe.utils.getFrameContexts(context, options);";
 
   private static String storeChunk =
       "window.partialResults ??= '';" + "window.partialResults += arguments[0];";
@@ -661,11 +664,13 @@ public class AxeBuilder {
    */
   private Results analyzeRawContext(final WebDriver webDriver, final Object rawContextArg) {
     validateNotNullParameter(webDriver);
+    String rawOptionsArg =
+        getOptions().equals("{}") ? AxeReporter.serialize(runOptions) : getOptions();
+    boolean skipIframes = disableIframeTesting || iframesDisabled(rawOptionsArg);
 
     if (noSandbox) {
       try {
-        WebDriverInjectorExtensions.injectAsync(
-            webDriver, sandboxBusterScript, disableIframeTesting);
+        WebDriverInjectorExtensions.injectAsync(webDriver, sandboxBusterScript, skipIframes);
       } catch (Exception e) {
         throw new RuntimeException("Error when removing sandbox from iframes", e);
       }
@@ -700,7 +705,7 @@ public class AxeBuilder {
         webDriver.manage().timeouts().pageLoadTimeout(1, TimeUnit.SECONDS);
       }
       try {
-        return analyzePost43x(webDriver, rawContextArg);
+        return analyzePost43x(webDriver, rawContextArg, rawOptionsArg, skipIframes);
       } finally {
         if (isSelenium3) {
           webDriver.manage().timeouts().pageLoadTimeout(pageTimeout.getSeconds(), TimeUnit.SECONDS);
@@ -709,7 +714,7 @@ public class AxeBuilder {
         }
       }
     } else {
-      return analyzePre43x(webDriver, rawContextArg);
+      return analyzePre43x(webDriver, rawContextArg, rawOptionsArg, skipIframes);
     }
   }
 
@@ -731,6 +736,7 @@ public class AxeBuilder {
       final Object options,
       final Object context,
       final boolean isTopLevel,
+      final boolean skipIframes,
       final Stack<Object> frameStack) {
     String windowHandle = webDriver.getWindowHandle();
 
@@ -740,7 +746,8 @@ public class AxeBuilder {
         injectAxe(webDriver);
       }
       Object fcResponse =
-          WebDriverInjectorExtensions.executeScript(webDriver, frameContextScript, context);
+          WebDriverInjectorExtensions.executeScript(
+              webDriver, frameContextScript, context, options);
       ArrayList<FrameContext> contexts =
           objectMapper.convertValue(fcResponse, new TypeReference<ArrayList<FrameContext>>() {});
 
@@ -749,7 +756,7 @@ public class AxeBuilder {
               WebDriverInjectorExtensions.executeAsyncScript(
                   webDriver, runPartialScript, context, options, frameStack);
       partialResults.add(resResponse);
-      if (disableIframeTesting) {
+      if (skipIframes) {
         return partialResults;
       }
 
@@ -774,7 +781,7 @@ public class AxeBuilder {
           frameStack.push(frameSelector);
 
           ArrayList<String> morePartialResults =
-              runPartialRecursive(webDriver, options, frameContext, false, frameStack);
+              runPartialRecursive(webDriver, options, frameContext, false, skipIframes, frameStack);
           partialResults.addAll(morePartialResults);
         } catch (org.openqa.selenium.TimeoutException e) {
           webDriver.switchTo().window(windowHandle);
@@ -835,14 +842,16 @@ public class AxeBuilder {
     }
   }
 
-  private Results analyzePost43x(final WebDriver webDriver, final Object rawContextArg) {
-    String rawOptionsArg =
-        getOptions().equals("{}") ? AxeReporter.serialize(runOptions) : getOptions();
-
+  private Results analyzePost43x(
+      final WebDriver webDriver,
+      final Object rawContextArg,
+      final String rawOptionsArg,
+      final boolean skipIframes) {
     ArrayList<String> partialResults;
     try {
       partialResults =
-          runPartialRecursive(webDriver, rawOptionsArg, rawContextArg, true, new Stack<Object>());
+          runPartialRecursive(
+              webDriver, rawOptionsArg, rawContextArg, true, skipIframes, new Stack<Object>());
     } catch (RuntimeException re) {
       if (re.getMessage().contains("Unable to inject axe script")) {
         throw re;
@@ -878,16 +887,18 @@ public class AxeBuilder {
     return objectMapper.convertValue(resResponse, Results.class);
   }
 
-  private Results analyzePre43x(final WebDriver webDriver, final Object rawContextArg) {
-    String rawOptionsArg =
-        getOptions().equals("{}") ? AxeReporter.serialize(runOptions) : getOptions();
+  private Results analyzePre43x(
+      final WebDriver webDriver,
+      final Object rawContextArg,
+      final String rawOptionsArg,
+      final boolean skipIframes) {
     Object[] rawArgs = new Object[] {rawContextArg, rawOptionsArg};
 
     try {
       WebDriverInjectorExtensions.inject(
           webDriver,
           builderOptions.getScriptProvider().getScript(),
-          disableIframeTesting,
+          skipIframes,
           injectAxeCallback,
           doNotInjectAxe);
     } catch (Exception e) {
@@ -900,9 +911,7 @@ public class AxeBuilder {
       final String allowedOrigins = !legacyMode && !hasRunPartial ? unsafeAllOrigins : sameOrigin;
 
       WebDriverInjectorExtensions.inject(
-          webDriver,
-          String.format(iframeAllowScriptTemplate, allowedOrigins),
-          disableIframeTesting);
+          webDriver, String.format(iframeAllowScriptTemplate, allowedOrigins), skipIframes);
     } catch (Exception e) {
       throw new RuntimeException("Error when enabling iframe communication", e);
     }
@@ -916,6 +925,15 @@ public class AxeBuilder {
 
     Results results = objectMapper.convertValue(response, Results.class);
     return results;
+  }
+
+  private boolean iframesDisabled(final String rawOptions) {
+    try {
+      JsonNode iframes = objectMapper.readTree(rawOptions).get("iframes");
+      return iframes != null && iframes.isBoolean() && !iframes.booleanValue();
+    } catch (JsonProcessingException e) {
+      return false;
+    }
   }
 
   private void injectAxe(final WebDriver webDriver) {

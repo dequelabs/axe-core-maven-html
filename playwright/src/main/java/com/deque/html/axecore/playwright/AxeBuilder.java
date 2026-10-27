@@ -384,7 +384,7 @@ public class AxeBuilder {
       if (!isTopLevel) {
         injectAxeSource(frame, assertScriptsRunScript);
       }
-      Object frameContextResult = getFrameContexts(frame, context);
+      Object frameContextResult = getFrameContexts(frame, context, serialize(this.options));
 
       ArrayList<FrameContext> frameContexts =
           objectMapper.convertValue(
@@ -425,8 +425,7 @@ public class AxeBuilder {
 
   // Note: axe.run pre 4.3 (no runPartial / finishRun)
   private Object run(String axeContext, String axeOptions) {
-    // inject axe source into each iframe if legacyMode is not enabled
-    if (!legacyMode) {
+    if (!legacyMode && !Boolean.FALSE.equals(this.options.getIFrames())) {
       this.page.frames().forEach(frame -> injectAxeSource(frame, ""));
     }
 
@@ -444,18 +443,20 @@ public class AxeBuilder {
    *
    * @param frame current iframe
    * @param context current context
+   * @param options current run options
    * @return returns array of frameContexts
    * @see <a
    *     href="https://github.com/dequelabs/axe-core/blob/master/doc/run-partial.md#axeutilsgetframecontextscontext-framecontext>axe-core
    *     frameContexts</a>
    */
-  private Object getFrameContexts(Frame frame, String context) {
+  private Object getFrameContexts(Frame frame, String context, String options) {
     return frame.evaluate(
-        "(axeContext) => { "
+        "([axeContext, axeOptions]) => { "
             + "const context = JSON.parse(axeContext);"
-            + "return axe.utils.getFrameContexts(context)"
+            + "const options = JSON.parse(axeOptions);"
+            + "return axe.utils.getFrameContexts(context, options)"
             + "}",
-        context);
+        Arrays.asList(context, options));
   }
 
   private Object getIframeHandle(Frame frame, String iframeSelector) {
