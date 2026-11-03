@@ -141,7 +141,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     env:
-      GPG_KEY_FINGERPRINT: F8AF74A4CDA6E2063C8985E21A4AC53EFF73AC0F
+      GPG_KEY_FINGERPRINT: ${{ vars.GPG_KEY_FINGERPRINT }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -180,7 +180,7 @@ jobs:
     outputs:
       published-artifact-id: ${{ steps.store.outputs.artifact-id }}
     env:
-      GPG_KEY_FINGERPRINT: F8AF74A4CDA6E2063C8985E21A4AC53EFF73AC0F
+      GPG_KEY_FINGERPRINT: ${{ vars.GPG_KEY_FINGERPRINT }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1

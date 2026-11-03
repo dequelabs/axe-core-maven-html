@@ -11,32 +11,14 @@ The packages are listed below:
 
 ## Verifying releases
 
-Artifacts published to Maven Central are signed with Deque's code-signing key:
-
-```
-Deque Systems, Inc. <helpdesk@deque.com>
-F8AF 74A4 CDA6 E206 3C89  85E2 1A4A C53E FF73 AC0F
-```
-
-Fetch the key and check the `.asc` that accompanies the artifact:
+Artifacts published to Maven Central are signed with Deque's code-signing key, published on the keyservers under `Deque Systems, Inc. <helpdesk@deque.com>`. Fetch it, then check the `.asc` that accompanies the artifact:
 
 ```console
-gpg --keyserver keyserver.ubuntu.com --recv-keys F8AF74A4CDA6E2063C8985E21A4AC53EFF73AC0F
+gpg --keyserver keyserver.ubuntu.com --search-keys helpdesk@deque.com
 gpg --verify selenium-<version>.jar.asc selenium-<version>.jar
 ```
 
-Check that the signature is from the fingerprint above: that fingerprint,
-published here, is what identifies the key as ours.
-
-Releases published before this key was adopted, up to and including selenium
-4.13.0, were signed with key `7701193A898A849383D3E8B49F8AFEACBF07F7C4`. That
-key has not been revoked, so those releases still verify; fetch it instead
-when checking one of them:
-
-```console
-gpg --keyserver keyserver.ubuntu.com --recv-keys 7701193A898A849383D3E8B49F8AFEACBF07F7C4
-gpg --verify selenium-4.13.0.jar.asc selenium-4.13.0.jar
-```
+The key is also listed at <https://keyserver.ubuntu.com/pks/lookup?search=helpdesk%40deque.com&op=index>. Older releases may be signed with an earlier Deque key under the same identity; signing keys are not revoked when they are replaced, so those releases still verify.
 
 ## Development
 
@@ -74,13 +56,17 @@ GitHub Actions publishes from the [`CI` workflow](.github/workflows/ci.yml) once
 
 The artifacts are built and tested once on Java 8, and stored on the workflow run. The deploy jobs sign those stored artifacts and upload them. They don't rebuild anything.
 
-The deploy jobs run in the `central.sonatype.com` environment, which only `develop`, `release` and `master` can use. It holds these secrets:
+The deploy jobs run in the `central.sonatype.com` environment, which only `develop`, `release` and `master` can use. It holds these secrets and variable:
 
 | Secret | Contents |
 | --- | --- |
 | `CENTRAL_TOKEN_USERNAME` | Central Publisher Portal user token name |
 | `CENTRAL_TOKEN_PASSWORD` | Central Publisher Portal user token password |
-| `GPG_PRIVATE_KEY` | Base64-encoded export of the signing key above |
+| `GPG_PRIVATE_KEY` | Base64-encoded export of the signing key |
 | `GPG_PASSPHRASE` | Passphrase for the signing key |
+
+| Variable | Contents |
+| --- | --- |
+| `GPG_KEY_FINGERPRINT` | Full fingerprint of the signing key; the deploy jobs refuse to sign with any other key |
 
 Jobs that need the team's personal access token (the GitHub release, the release candidate, the master-to-develop sync and the axe-core update) run in the `PAT` environment, which only `develop` and `master` can use. They read the token from that environment's `TOKEN` secret.
