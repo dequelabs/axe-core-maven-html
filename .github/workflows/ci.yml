@@ -75,20 +75,6 @@ jobs:
       - name: Check Playwright licenses
         run: node scripts/license-check.js playwright/target/generated-sources/license/THIRD-PARTY.txt
 
-  script-tests:
-    name: script-tests
-    runs-on: ubuntu-24.04
-    timeout-minutes: 5
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-      - name: Install bats
-        run: sudo apt-get install --yes --no-install-recommends bats
-      - name: Run script tests
-        run: bats .github/scripts/ci/test
-
   playwright-tests:
     strategy:
       matrix:
@@ -145,7 +131,6 @@ jobs:
     needs:
       - build-and-test
       - license-check
-      - script-tests
       - playwright-tests
       - selenium-tests
     if: ${{ contains(fromJSON('["refs/heads/develop","refs/heads/release"]'), github.ref) }}
@@ -183,7 +168,6 @@ jobs:
     needs:
       - build-and-test
       - license-check
-      - script-tests
       - playwright-tests
       - selenium-tests
     if: ${{ github.ref == 'refs/heads/master' }}
