@@ -8,17 +8,26 @@ on:
         description: Prevent this action from creating a minor or major release
         default: true
 
+permissions:
+  contents: read # Needed to clone the repository
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   create-release-candidate:
+    name: Create release candidate
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: dequelabs/axe-api-team-public/.github/actions/create-release-candidate-v1@main
+      - name: Create release candidate
+        env:
+          GH_TOKEN: ${{ secrets.GH_PROJECT_TOKEN }}
+        uses: dequelabs/axe-api-team-public/.github/actions/create-release-candidate-v1@main
         with:
-          token: ${{ secrets.PAT }}
+          token: ${{ secrets.PAT }} # zizmor: ignore[secrets-outside-env]
           base: "master"
           head: "develop"
           release-script-path: "./.github/scripts/prepare_release.sh"
           version-locked: ${{ inputs.version-locked }}
-        env:
-          GH_TOKEN: ${{ secrets.GH_PROJECT_TOKEN }}

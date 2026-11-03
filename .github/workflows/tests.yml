@@ -2,24 +2,35 @@ name: Tests
 
 on: push
 
+permissions:
+  contents: read # Needed to clone the repository
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.sha }}
+  cancel-in-progress: false
+
 jobs:
   build:
+    name: build
     runs-on: ubuntu-latest
     strategy:
       matrix:
         java: [8, 11, 17]
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v7
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Set up JDK ${{ matrix.java }}
-        uses: actions/setup-java@v6
+        uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
         with:
           java-version: ${{ matrix.java }}
           distribution: "temurin"
 
       - name: Cache npm dependencies
-        uses: actions/cache@v6.1.0
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         id: npm-cache
         with:
           path: "**/node_modules"
@@ -27,7 +38,7 @@ jobs:
           restore-keys: |
             npm-cache-v1-${{ runner.os }}-
       - name: Cache Maven dependencies
-        uses: actions/cache@v6.1.0
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         id: maven-cache
         with:
           path: ~/.m2/repository
@@ -49,10 +60,14 @@ jobs:
 
   license-check:
     needs: build
+    name: license-check
     runs-on: ubuntu-latest
     timeout-minutes: 2
     steps:
-      - uses: actions/checkout@v7
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       - name: Maven compile licenses
         run: mvn compile license:add-third-party
       - name: Check Selenium licenses
@@ -62,23 +77,27 @@ jobs:
 
   playwright-tests:
     needs: [license-check, build]
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
     strategy:
       matrix:
         java: [8, 11, 17]
+    name: playwright-tests (${{ matrix.java }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/cache@v6.1.0
-        name: Restore npm cache
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Restore npm cache
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         id: npm-cache
         with:
           path: "**/node_modules"
           key: npm-cache-v1-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             npm-cache-v1-${{ runner.os }}-
-      - uses: actions/cache@v6.1.0
-        name: Restore Maven cache
+      - name: Restore Maven cache
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         id: maven-cache
         with:
           path: ~/.m2/repository
@@ -92,24 +111,29 @@ jobs:
 
   selenium-tests:
     needs: [license-check, build]
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
     strategy:
       matrix:
         java: [8, 11, 17]
+    name: selenium-tests (${{ matrix.java }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-python@v7
-      - uses: actions/cache@v6.1.0
-        name: Restore npm cache
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+      - name: Restore npm cache
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         id: npm-cache
         with:
           path: "**/node_modules"
           key: npm-cache-v1-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             npm-cache-v1-${{ runner.os }}-
-      - uses: actions/cache@v6.1.0
-        name: Restore Maven cache
+      - name: Restore Maven cache
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         id: maven-cache
         with:
           path: ~/.m2/repository
