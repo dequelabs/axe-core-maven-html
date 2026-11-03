@@ -58,6 +58,8 @@ updates:
       # Revisit once the project's minimum supported Java version is 17.
       - dependency-name: "com.github.eirslett:frontend-maven-plugin"
         update-types: ["version-update:semver-major"]
+      - dependency-name: "org.junit.vintage:junit-vintage-engine"
+        update-types: ["version-update:semver-major"]
     groups:
       # Any updates not caught by the group config will get individual PRs
       maven-low-risk:
