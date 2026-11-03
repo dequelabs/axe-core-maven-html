@@ -1,25 +1,32 @@
 name: Automatically create patch release every 2 weeks
+
 on:
   workflow_dispatch:
+
+permissions:
+  contents: read # Needed to clone the repository
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   create_patch_release:
     name: Create release
+    permissions:
+      contents: write # Needed to push the release branch
+      issues: write # Needed to open the QA issue
+      pull-requests: write # Needed to open the release pull request
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
-      - name: Determine if we skip cancel checks
-        id: skip-checks
-        shell: bash
-        # Skip checks if we are not a scheduled run
-        run: echo value=$(test ${{ github.event_name }} != schedule && echo true || echo false) >> "$GITHUB_OUTPUT"
-
-
       - name: Create release
         uses: dequelabs/axe-api-team-public/.github/actions/auto-patch-release-v1@main
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          project_token: ${{ secrets.GH_PROJECT_TOKEN }}
-          skip_checks: ${{ steps.skip-checks.outputs.value }}
-          slack_webhook: ${{ secrets.SLACK_WEBHOOK }}
+          project_token: ${{ secrets.GH_PROJECT_TOKEN }} # zizmor: ignore[secrets-outside-env]
+          skip_checks: ${{ github.event_name != 'schedule' }}
+          slack_webhook: ${{ secrets.SLACK_WEBHOOK }} # zizmor: ignore[secrets-outside-env]
           odd_release: 'true'
           release-command: bash .github/scripts/prepare_release.sh
           release-branch: master

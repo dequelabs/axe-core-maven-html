@@ -1,0 +1,239 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - '**'
+
+permissions:
+  contents: read # Needed to clone the repository
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.sha }}
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build-and-test:
+    name: build-and-test (8)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    outputs:
+      staging-artifact-id: ${{ steps.store.outputs.artifact-id }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up JDK 8
+        uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          java-version: 8
+          distribution: temurin
+      - name: Install npm dependencies
+        run: |
+          npm --prefix=selenium ci --ignore-scripts
+          npm --prefix=playwright ci --ignore-scripts
+      - name: Use snapshot version
+        if: ${{ contains(fromJSON('["refs/heads/develop","refs/heads/release"]'), github.ref) }}
+        run: python3 -I .github/scripts/ci/snapshot-version.py .
+      - name: Start fixture servers
+        run: .github/scripts/ci/start-fixture-servers.sh
+      - name: Build, test and stage artifacts
+        run: mvn --batch-mode --no-transfer-progress --strict-checksums -P release deploy -DaltDeploymentRepository="staging::file:$RUNNER_TEMP/staging"
+      - name: Store staged artifacts
+        id: store
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: maven-staging
+          path: ${{ runner.temp }}/staging
+          if-no-files-found: error
+          retention-days: 7
+          compression-level: 0
+
+  license-check:
+    name: license-check
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up JDK 8
+        uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          java-version: 8
+          distribution: temurin
+      - name: Maven compile licenses
+        run: mvn --batch-mode --no-transfer-progress --strict-checksums compile license:add-third-party
+      - name: Check Selenium licenses
+        run: node scripts/license-check.js selenium/target/generated-sources/license/THIRD-PARTY.txt
+      - name: Check Playwright licenses
+        run: node scripts/license-check.js playwright/target/generated-sources/license/THIRD-PARTY.txt
+
+  playwright-tests:
+    strategy:
+      matrix:
+        java:
+          - 11
+          - 17
+    name: playwright-tests (${{ matrix.java }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up JDK ${{ matrix.java }}
+        uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          java-version: ${{ matrix.java }}
+          distribution: temurin
+      - name: Install npm dependencies
+        run: npm --prefix=playwright ci --ignore-scripts
+      - name: Start fixture server
+        run: .github/scripts/ci/start-fixture-servers.sh playwright
+      - name: Run Playwright tests
+        run: mvn --batch-mode --no-transfer-progress --strict-checksums test -pl playwright -am
+
+  selenium-tests:
+    strategy:
+      matrix:
+        java:
+          - 11
+          - 17
+    name: selenium-tests (${{ matrix.java }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up JDK ${{ matrix.java }}
+        uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          java-version: ${{ matrix.java }}
+          distribution: temurin
+      - name: Install npm dependencies
+        run: npm --prefix=selenium ci --ignore-scripts
+      - name: Start fixture server
+        run: .github/scripts/ci/start-fixture-servers.sh selenium
+      - name: Run Selenium tests
+        run: mvn --batch-mode --no-transfer-progress --strict-checksums test -pl selenium -am
+
+  deploy-snapshot:
+    needs:
+      - build-and-test
+      - license-check
+      - playwright-tests
+      - selenium-tests
+    if: ${{ contains(fromJSON('["refs/heads/develop","refs/heads/release"]'), github.ref) }}
+    name: Deploy snapshot
+    environment:
+      name: central.sonatype.com
+      url: https://central.sonatype.com/repository/maven-snapshots/com/deque/html/axe-core/
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      GPG_KEY_FINGERPRINT: ${{ vars.GPG_KEY_FINGERPRINT }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Download staged artifacts
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          artifact-ids: ${{ needs.build-and-test.outputs.staging-artifact-id }}
+          merge-multiple: true
+          path: ${{ runner.temp }}/staging
+      - name: Sign artifacts
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+        run: .github/scripts/ci/sign-artifacts.sh "$RUNNER_TEMP/staging"
+      - name: Deploy to the snapshot repository
+        env:
+          CENTRAL_TOKEN_USERNAME: ${{ secrets.CENTRAL_TOKEN_USERNAME }}
+          CENTRAL_TOKEN_PASSWORD: ${{ secrets.CENTRAL_TOKEN_PASSWORD }}
+        run: python3 -I .github/scripts/ci/deploy-snapshot.py "$RUNNER_TEMP/staging"
+
+  deploy-release:
+    needs:
+      - build-and-test
+      - license-check
+      - playwright-tests
+      - selenium-tests
+    if: ${{ github.ref == 'refs/heads/master' }}
+    name: Deploy release
+    environment:
+      name: central.sonatype.com
+      url: https://central.sonatype.com/namespace/com.deque.html.axe-core
+    runs-on: ubuntu-24.04
+    timeout-minutes: 70
+    outputs:
+      published-artifact-id: ${{ steps.store.outputs.artifact-id }}
+    env:
+      GPG_KEY_FINGERPRINT: ${{ vars.GPG_KEY_FINGERPRINT }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Download staged artifacts
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          artifact-ids: ${{ needs.build-and-test.outputs.staging-artifact-id }}
+          merge-multiple: true
+          path: ${{ runner.temp }}/staging
+      - name: Sign artifacts
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+        run: .github/scripts/ci/sign-artifacts.sh "$RUNNER_TEMP/staging"
+      - name: Deploy to Maven Central
+        env:
+          CENTRAL_TOKEN_USERNAME: ${{ secrets.CENTRAL_TOKEN_USERNAME }}
+          CENTRAL_TOKEN_PASSWORD: ${{ secrets.CENTRAL_TOKEN_PASSWORD }}
+        run: .github/scripts/ci/deploy-release.sh "$RUNNER_TEMP/staging"
+      - name: Store published artifacts
+        id: store
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: published-release
+          path: ${{ runner.temp }}/staging
+          if-no-files-found: error
+          retention-days: 7
+          compression-level: 0
+
+  github-release:
+    needs:
+      - deploy-release
+    name: GitHub release
+    environment:
+      name: PAT
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Download published artifacts
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          artifact-ids: ${{ needs.deploy-release.outputs.published-artifact-id }}
+          merge-multiple: true
+          path: ${{ runner.temp }}/published
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ secrets.TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          TARGET_SHA: ${{ github.sha }}
+        run: .github/scripts/ci/create-github-release.sh "$RUNNER_TEMP/published"

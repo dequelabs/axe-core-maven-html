@@ -8,9 +8,17 @@ on:
       - edited
       - synchronize
 
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   semantic-pr-title:
+    name: semantic-pr-title
     runs-on: ubuntu-latest
     timeout-minutes: 1
     steps:
-      - uses: dequelabs/semantic-pr-title@v1
+      - name: Check PR title
+        uses: dequelabs/semantic-pr-title@v1

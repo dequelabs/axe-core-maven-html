@@ -1,19 +1,29 @@
 name: Sync master/develop branches
 
 on:
-  pull_request:
-    branches: master
-    types: closed
-    
+  push:
+    branches:
+      - master
+
+permissions:
+  contents: read # Needed to clone the repository
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   create_sync_pull_request:
-    if: github.event.pull_request.merged == true
+    name: Create sync pull request
+    environment:
+      name: PAT
     runs-on: ubuntu-latest
     timeout-minutes: 1
     steps:
-      - uses: dequelabs/action-sync-branches@v1.0.2
+      - name: Open master into develop pull request
+        uses: dequelabs/action-sync-branches@v1.0.2
         with:
-          github-token: ${{ secrets.PAT }}
+          github-token: ${{ secrets.TOKEN }}
           pr-title: "chore: merge master into develop"
           pr-team-reviewers: axe-api-team
           pr-labels: chore
