@@ -67,16 +67,20 @@ In order to contribute, you must accept the [contributor licence agreement](http
 
 ## Deployment (Maintainers Only)
 
-This package is deployed to Maven Central via OSSRH. To deploy this package, follow [these instructions on StackOverflow](https://stackoverflow.com/a/42917618).
+GitHub Actions publishes from the [`CI` workflow](.github/workflows/ci.yml) once every test passes:
 
-Additionally add your OSSRH credentials to your `~/.m2/settings.xml` file as such:
+- A push to `develop` or `release` publishes a snapshot to the Maven Central snapshot repository.
+- A push to `master` publishes a release to Maven Central, then creates the GitHub release with the version's changelog and the signed artifacts attached.
 
-```xml
-<servers>
-  <server>
-    <id>ossrh</id>
-    <username>YOUR_OSSRH_JIRA_USERNAME</username>
-    <password>YOUR_OSSRH_JIRA_PASSWORD</password>
-  </server>
-</servers>
-```
+The artifacts are built and tested once on Java 8, and stored on the workflow run. The deploy jobs sign those stored artifacts and upload them. They don't rebuild anything.
+
+The deploy jobs run in the `central.sonatype.com` environment, which only `develop`, `release` and `master` can use. It holds these secrets:
+
+| Secret | Contents |
+| --- | --- |
+| `CENTRAL_TOKEN_USERNAME` | Central Publisher Portal user token name |
+| `CENTRAL_TOKEN_PASSWORD` | Central Publisher Portal user token password |
+| `GPG_PRIVATE_KEY` | Base64-encoded export of the signing key above |
+| `GPG_PASSPHRASE` | Passphrase for the signing key |
+
+The GitHub release job runs in the `PAT` environment, and reads its token from that environment's `TOKEN` secret.
