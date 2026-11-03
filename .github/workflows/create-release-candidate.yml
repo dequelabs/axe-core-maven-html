@@ -18,6 +18,8 @@ concurrency:
 jobs:
   create-release-candidate:
     name: Create release candidate
+    environment:
+      name: PAT
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -26,7 +28,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GH_PROJECT_TOKEN }}
         uses: dequelabs/axe-api-team-public/.github/actions/create-release-candidate-v1@main
         with:
-          token: ${{ secrets.PAT }} # zizmor: ignore[secrets-outside-env]
+          token: ${{ secrets.TOKEN }}
           base: "master"
           head: "develop"
           release-script-path: "./.github/scripts/prepare_release.sh"

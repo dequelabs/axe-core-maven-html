@@ -13,6 +13,8 @@ concurrency:
 jobs:
   build:
     name: Open axe-core update pull request
+    environment:
+      name: PAT
     runs-on: ubuntu-latest
     timeout-minutes: 1
     steps:
@@ -27,4 +29,4 @@ jobs:
       - name: Create update pull request
         uses: dequelabs/axe-api-team-public/.github/actions/create-update-axe-core-pull-request-v1@main
         with:
-          token: ${{ secrets.PAT }} # zizmor: ignore[secrets-outside-env]
+          token: ${{ secrets.TOKEN }}

@@ -83,4 +83,4 @@ The deploy jobs run in the `central.sonatype.com` environment, which only `devel
 | `GPG_PRIVATE_KEY` | Base64-encoded export of the signing key above |
 | `GPG_PASSPHRASE` | Passphrase for the signing key |
 
-The GitHub release job runs in the `PAT` environment, and reads its token from that environment's `TOKEN` secret.
+Jobs that need the team's personal access token (the GitHub release, the release candidate, the master-to-develop sync and the axe-core update) run in the `PAT` environment, which only `develop` and `master` can use. They read the token from that environment's `TOKEN` secret.
