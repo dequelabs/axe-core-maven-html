@@ -1,3 +1,16 @@
+## [4.14.1](https://github.com/dequelabs/axe-core-maven-html/compare/v4.13.0...v4.14.1) (2026-11-19)
+
+
+### Bug Fixes
+
+* skip child frames when iframes is false ([#683](https://github.com/dequelabs/axe-core-maven-html/issues/683)) ([446869f](https://github.com/dequelabs/axe-core-maven-html/commit/446869f0fcf18b391fb915e63a54515b8ff5af35)), closes [dequelabs/axe-core-npm#1485](https://github.com/dequelabs/axe-core-npm/issues/1485) [#682](https://github.com/dequelabs/axe-core-maven-html/issues/682)
+* skip frames that cannot run scripts instead of hanging ([#684](https://github.com/dequelabs/axe-core-maven-html/issues/684)) ([f4ee31e](https://github.com/dequelabs/axe-core-maven-html/commit/f4ee31eaf430b5bb89e4a95c09985133d40633f9)), closes [dequelabs/axe-core-npm#1469](https://github.com/dequelabs/axe-core-npm/issues/1469)
+* update axe-core to v4.14.1 ([#698](https://github.com/dequelabs/axe-core-maven-html/issues/698)) ([247c41e](https://github.com/dequelabs/axe-core-maven-html/commit/247c41e384b8ad91a1394d5f6892ff68d03dfc09)), closes [#697](https://github.com/dequelabs/axe-core-maven-html/issues/697)
+
+
+### Features
+
+* Update axe-core to v4.14.0 ([#662](https://github.com/dequelabs/axe-core-maven-html/issues/662)) ([54c29bc](https://github.com/dequelabs/axe-core-maven-html/commit/54c29bcf074544641d325506c48dda7f4d0cf004))
 # [4.14.0](https://github.com/dequelabs/axe-core-maven-html/compare/v4.13.0...v4.14.0) (2026-10-06)
 
 
