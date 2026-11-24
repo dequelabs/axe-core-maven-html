@@ -15,6 +15,8 @@ package com.deque.html.axecore.selenium;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 
+import com.deque.html.axecore.args.AxeRunOnlyOptions;
+import com.deque.html.axecore.args.AxeRunOptions;
 import com.deque.html.axecore.args.FromFrames;
 import com.deque.html.axecore.args.FromShadowDom;
 import com.deque.html.axecore.providers.EmbeddedResourceAxeProvider;
@@ -23,10 +25,16 @@ import com.deque.html.axecore.results.CheckedNode;
 import com.deque.html.axecore.results.Results;
 import com.deque.html.axecore.results.Rule;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sun.net.httpserver.HttpServer;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.InetSocketAddress;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -38,6 +46,7 @@ import org.junit.rules.ExpectedException;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.UnexpectedAlertBehaviour;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -68,6 +77,7 @@ public class Axe43xIntegrationTest {
       ";window.open = () => { throw new Error('No window.open')}";
   private static String finishRunThrows =
       ";axe.finishRun = () => { throw new Error('No finishRun')}";
+  private static HttpServer cspSandboxServer;
 
   private static String fixture(String path) {
     return "http://localhost:8001" + path;
@@ -94,6 +104,68 @@ public class Axe43xIntegrationTest {
     axeCrasherJS = downloadFromURL(fixture("/axe-crasher.js"));
     axeForceLegacyJS = downloadFromURL(fixture("/axe-force-legacy.js"));
     axeLargePartialJS = downloadFromURL(fixture("/axe-large-partial.js"));
+    cspSandboxServer = startCspSandboxServer();
+  }
+
+  @AfterClass
+  public static void teardownClass() {
+    cspSandboxServer.stop(0);
+  }
+
+  private static HttpServer startCspSandboxServer() throws IOException {
+    Path fixtures = Paths.get("node_modules/axe-test-fixtures/fixtures").toAbsolutePath();
+    HttpServer server = HttpServer.create(new InetSocketAddress("localhost", 0), 0);
+    server.createContext(
+        "/",
+        exchange -> {
+          String path = exchange.getRequestURI().getPath();
+          if (path.startsWith("/csp-sandbox/")) {
+            exchange
+                .getResponseHeaders()
+                .set("Content-Security-Policy", "sandbox allow-same-origin");
+            path = path.substring("/csp-sandbox".length());
+          }
+          Path file = fixtures.resolve(path.substring(1)).normalize();
+          if (!file.startsWith(fixtures) || !Files.isRegularFile(file)) {
+            exchange.sendResponseHeaders(404, -1);
+            exchange.close();
+            return;
+          }
+          byte[] body = Files.readAllBytes(file);
+          exchange.getResponseHeaders().set("Content-Type", "text/html");
+          exchange.sendResponseHeaders(200, body.length);
+          try (OutputStream out = exchange.getResponseBody()) {
+            out.write(body);
+          }
+        });
+    server.start();
+    return server;
+  }
+
+  private static String cspSandboxFixture(String path) {
+    return "http://localhost:" + cspSandboxServer.getAddress().getPort() + path;
+  }
+
+  private void appendIframe(String id, String sandbox, String src) {
+    ((JavascriptExecutor) webDriver)
+        .executeAsyncScript(
+            "var done = arguments[arguments.length - 1];"
+                + "var iframe = document.createElement('iframe');"
+                + "iframe.id = arguments[0];"
+                + "if (arguments[1] !== null) iframe.setAttribute('sandbox', arguments[1]);"
+                + "iframe.src = arguments[2];"
+                + "iframe.onload = function () { done(); };"
+                + "document.body.appendChild(iframe);",
+            id,
+            sandbox,
+            src);
+  }
+
+  private List<Object> frameTestedTargets(List<Rule> rules) {
+    return rules.stream()
+        .filter(r -> r.getId().equals("frame-tested"))
+        .flatMap(r -> r.getNodes().stream().map(n -> n.getTarget()))
+        .collect(Collectors.toList());
   }
 
   private static String downloadFromURL(String url) throws Exception {
@@ -189,6 +261,93 @@ public class Axe43xIntegrationTest {
     assertEquals(Arrays.asList("#ifr-foo", "#foo-baz", "input"), nodes.get(1).getTarget());
     assertEquals(Arrays.asList("#ifr-bar", "#bar-baz", "input"), nodes.get(2).getTarget());
     assertEquals(Arrays.asList("#ifr-baz", "input"), nodes.get(3).getTarget());
+  }
+
+  @Test
+  public void iframesFalseSkipsChildFrames() throws Exception {
+    webDriver.get(fixture("/nested-iframes.html"));
+    Results res = new AxeBuilder().withOptions(iframesFalse()).analyze(webDriver);
+
+    assertFalse(res.isErrored());
+    assertEquals(Collections.emptyList(), res.getViolations());
+    assertNoAxeInChildFrames();
+  }
+
+  @Test
+  public void iframesFalseSkipsChildFramesInLegacyMode() throws Exception {
+    webDriver.get(fixture("/nested-iframes.html"));
+    Results res = new AxeBuilder().withOptions(iframesFalse()).setLegacyMode().analyze(webDriver);
+
+    assertFalse(res.isErrored());
+    assertEquals(Collections.emptyList(), res.getViolations());
+    assertNoAxeInChildFrames();
+  }
+
+  @Test
+  public void iframesFalseSkipsChildFramesWithoutRunPartial() throws Exception {
+    webDriver.get(fixture("/nested-iframes.html"));
+    Results res =
+        new AxeBuilder()
+            .withOptions(iframesFalse())
+            .setAxeScriptProvider(new StringAxeScriptProvider(axePre43x))
+            .analyze(webDriver);
+
+    assertFalse(res.isErrored());
+    assertEquals("4.2.3", res.getTestEngine().getVersion());
+    assertEquals(Collections.emptyList(), res.getViolations());
+    assertNoAxeInChildFrames();
+  }
+
+  @Test
+  public void iframesFalseLeavesChildFrameSandboxes() throws Exception {
+    webDriver.get(fixture("/index.html"));
+    ((JavascriptExecutor) webDriver)
+        .executeAsyncScript(
+            "const done = arguments[arguments.length - 1];"
+                + "const outer = document.createElement('iframe');"
+                + "outer.onload = () => done();"
+                + "outer.srcdoc = '<iframe sandbox srcdoc=\"<p>inner</p>\"></iframe>';"
+                + "document.body.appendChild(outer);");
+
+    Results res =
+        new AxeBuilder().withOptions(iframesFalse()).withoutIframeSandboxes().analyze(webDriver);
+
+    assertFalse(res.isErrored());
+    assertEquals(
+        true,
+        ((JavascriptExecutor) webDriver)
+            .executeScript(
+                "return document.querySelector('iframe').contentDocument"
+                    + ".querySelector('iframe').hasAttribute('sandbox');"));
+  }
+
+  @Test
+  public void disableIframeTestingSkipsChildFrames() throws Exception {
+    webDriver.get(fixture("/nested-iframes.html"));
+    Results res =
+        new AxeBuilder()
+            .withOnlyRules(Collections.singletonList("label"))
+            .disableIframeTesting()
+            .analyze(webDriver);
+
+    assertFalse(res.isErrored());
+    assertEquals(Collections.emptyList(), res.getViolations());
+    assertNoAxeInChildFrames();
+  }
+
+  @Test
+  public void disableIframeTestingSkipsChildFramesInLegacyMode() throws Exception {
+    webDriver.get(fixture("/nested-iframes.html"));
+    Results res =
+        new AxeBuilder()
+            .withOnlyRules(Collections.singletonList("label"))
+            .disableIframeTesting()
+            .setLegacyMode()
+            .analyze(webDriver);
+
+    assertFalse(res.isErrored());
+    assertEquals(Collections.emptyList(), res.getViolations());
+    assertNoAxeInChildFrames();
   }
 
   @Test
@@ -552,6 +711,100 @@ public class Axe43xIntegrationTest {
     assertEquals(passes.get(0).getId(), "duplicate-id");
   }
 
+  @Test(timeout = 20000)
+  public void reportsSandboxedFrameThatBlocksScripts() {
+    webDriver.get(fixture("/index.html"));
+    appendIframe("no-scripts", "allow-same-origin", "/index.html");
+
+    Results res = new AxeBuilder().withRules(Arrays.asList("frame-tested")).analyze(webDriver);
+
+    assertEquals(
+        Arrays.asList(Arrays.asList("#no-scripts")), frameTestedTargets(res.getIncomplete()));
+  }
+
+  @Test(timeout = 20000)
+  public void reportsFrameSandboxedByCspHeader() {
+    webDriver.get(cspSandboxFixture("/index.html"));
+    appendIframe("csp-sandbox", null, "/csp-sandbox/index.html");
+
+    Results res = new AxeBuilder().withRules(Arrays.asList("frame-tested")).analyze(webDriver);
+
+    assertEquals(
+        Arrays.asList(Arrays.asList("#csp-sandbox")), frameTestedTargets(res.getIncomplete()));
+  }
+
+  @Test(timeout = 20000)
+  public void usesSandboxFrameLoadedWith() {
+    webDriver.get(fixture("/index.html"));
+    appendIframe("sandbox-added-after-load", null, "/index.html");
+    appendIframe("sandbox-removed-after-load", "allow-same-origin", "/index.html");
+    ((JavascriptExecutor) webDriver)
+        .executeScript(
+            "document.getElementById('sandbox-added-after-load').setAttribute('sandbox', 'allow-same-origin');"
+                + "document.getElementById('sandbox-removed-after-load').removeAttribute('sandbox');");
+
+    Results res = new AxeBuilder().withRules(Arrays.asList("frame-tested")).analyze(webDriver);
+
+    assertEquals(
+        Arrays.asList(Arrays.asList("#sandbox-added-after-load")),
+        frameTestedTargets(res.getPasses()));
+    assertEquals(
+        Arrays.asList(Arrays.asList("#sandbox-removed-after-load")),
+        frameTestedTargets(res.getIncomplete()));
+  }
+
+  @Test(timeout = 20000)
+  public void withoutIframeSandboxesReportsFrameThatStillBlocksScripts() {
+    webDriver.get(fixture("/index.html"));
+    appendIframe("sandbox-added-after-load", null, "/index.html");
+    appendIframe("sandbox-removed-after-load", "allow-same-origin", "/index.html");
+    ((JavascriptExecutor) webDriver)
+        .executeScript(
+            "document.getElementById('sandbox-added-after-load').setAttribute('sandbox', 'allow-same-origin');"
+                + "document.getElementById('sandbox-removed-after-load').removeAttribute('sandbox');");
+
+    Results res =
+        new AxeBuilder()
+            .withoutIframeSandboxes()
+            .withRules(Arrays.asList("frame-tested"))
+            .analyze(webDriver);
+
+    assertEquals(
+        Arrays.asList(Arrays.asList("#sandbox-added-after-load")),
+        frameTestedTargets(res.getPasses()));
+    assertEquals(
+        Arrays.asList(Arrays.asList("#sandbox-removed-after-load")),
+        frameTestedTargets(res.getIncomplete()));
+  }
+
+  @Test(timeout = 20000)
+  public void scansSandboxedFrameThatAllowsScripts() {
+    webDriver.get(fixture("/index.html"));
+    appendIframe("allows-scripts", "allow-same-origin allow-scripts", "/index.html");
+
+    Results res = new AxeBuilder().withRules(Arrays.asList("frame-tested")).analyze(webDriver);
+
+    assertEquals(
+        Arrays.asList(Arrays.asList("#allows-scripts")), frameTestedTargets(res.getPasses()));
+    assertTrue(frameTestedTargets(res.getIncomplete()).isEmpty());
+  }
+
+  @Test(timeout = 20000)
+  public void scansPagesAndFramesThatReplaceWindowEvent() {
+    webDriver.get(fixture("/index.html"));
+    ((JavascriptExecutor) webDriver).executeScript("window.Event = function () {};");
+    appendIframe("replaced-event", null, "/index.html");
+    ((JavascriptExecutor) webDriver)
+        .executeScript(
+            "document.getElementById('replaced-event').contentWindow.Event = function () {};");
+
+    Results res = new AxeBuilder().withRules(Arrays.asList("frame-tested")).analyze(webDriver);
+
+    assertEquals(
+        Arrays.asList(Arrays.asList("#replaced-event")), frameTestedTargets(res.getPasses()));
+    assertTrue(frameTestedTargets(res.getIncomplete()).isEmpty());
+  }
+
   @Test
   public void putsBackPageLoad() {
     webDriver.get(fixture("/lazy-loaded-iframe.html"));
@@ -577,8 +830,8 @@ public class Axe43xIntegrationTest {
     assertEquals(axeResults.getIncomplete().get(0).getId(), "frame-tested");
     assertEquals(axeResults.getIncomplete().get(0).getNodes().size(), 1);
     assertTargetEquals(
-       axeResults.getIncomplete().get(0).getNodes().get(0).getTarget(),
-       new String[] {"#ifr-lazy", "#lazy-iframe"});
+        axeResults.getIncomplete().get(0).getNodes().get(0).getTarget(),
+        new String[] {"#ifr-lazy", "#lazy-iframe"});
     assertEquals(axeResults.getViolations().size(), 2);
     assertEquals(axeResults.getViolations().get(1).getId(), "label");
     assertEquals(axeResults.getViolations().get(1).getNodes().size(), 1);
@@ -624,6 +877,33 @@ public class Axe43xIntegrationTest {
     } else {
       fail("Passed object is not a Collection");
     }
+  }
+
+  private static AxeRunOptions iframesFalse() {
+    AxeRunOnlyOptions runOnly = new AxeRunOnlyOptions();
+    runOnly.setType("rule");
+    runOnly.setValues(Collections.singletonList("label"));
+    AxeRunOptions options = new AxeRunOptions();
+    options.setRunOnly(runOnly);
+    options.setIFrames(false);
+    return options;
+  }
+
+  private void assertNoAxeInChildFrames() {
+    List<Object> axeTypes =
+        (List<Object>)
+            ((JavascriptExecutor) webDriver)
+                .executeScript(
+                    "return (function walk(win) {"
+                        + "  var found = [];"
+                        + "  for (var i = 0; i < win.frames.length; i++) {"
+                        + "    found.push(typeof win.frames[i].axe);"
+                        + "    found = found.concat(walk(win.frames[i]));"
+                        + "  }"
+                        + "  return found;"
+                        + "})(window);");
+    assertFalse(axeTypes.isEmpty());
+    assertEquals(Collections.nCopies(axeTypes.size(), "undefined"), axeTypes);
   }
 
   /**

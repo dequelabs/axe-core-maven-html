@@ -88,7 +88,7 @@ jobs:
       - name: Start fixture server
         run: npm --prefix=playwright start &
       - name: Run Playwright tests
-        run: mvn test -q -pl playwright
+        run: mvn test -q -pl playwright -am
 
   selenium-tests:
     needs: [license-check, build]
@@ -99,7 +99,7 @@ jobs:
         java: [8, 11, 17]
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@v7
       - uses: actions/cache@v6.1.0
         name: Restore npm cache
         id: npm-cache
@@ -120,4 +120,4 @@ jobs:
         run: python -m http.server 8001 &
         working-directory: selenium/node_modules/axe-test-fixtures/fixtures
       - name: Run Selenium tests
-        run: mvn test -q -pl selenium
+        run: mvn test -q -pl selenium -am
