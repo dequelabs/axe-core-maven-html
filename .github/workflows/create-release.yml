@@ -8,7 +8,6 @@ permissions:
 
 concurrency:
   group: ${{ github.workflow }}
-  # If this is dispatched multiple times, cancel what is queued.
   cancel-in-progress: true
 
 jobs:
@@ -21,5 +20,4 @@ jobs:
         uses: dequelabs/axe-api-team-public/.github/actions/create-release-v1@main
         with:
           base: 'master'
-          token: ${{ secrets.GH_PROJECT_TOKEN }}
-
+          token: ${{ secrets.GH_PROJECT_TOKEN }} # zizmor: ignore[secrets-outside-env]

@@ -8,9 +8,17 @@ on:
       - edited
       - synchronize
 
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   semantic-pr-footer:
+    name: semantic-pr-footer
     runs-on: ubuntu-latest
     timeout-minutes: 1
     steps:
-      - uses: dequelabs/axe-api-team-public/.github/actions/semantic-pr-footer-v1@main
+      - name: Check PR footer
+        uses: dequelabs/axe-api-team-public/.github/actions/semantic-pr-footer-v1@main
